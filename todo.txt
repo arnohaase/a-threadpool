@@ -1,0 +1,70 @@
+todo
+----
+* Benchmarks:
+  * JDK-9 LIFO
+  * JDK-9 FIFO
+  * JDK-9 global
+  * naive
+
+* submit for JAX
+  * LMAX: Single (or multi, but single preferred) producer, *single* consumer (but potentially several consumers for each event, a la Kafka); support for workflows by communicating of consumers through events; low latency over CPU usage
+  * memory barriers
+  * cache lines
+    * typically 64 bytes, 32-256, effectively hash map with fixed buckets --> associativity; false sharing; poisoning; latency / cost for different levels vs. RAM (vs. network or SSD)
+* M Michael: *single* consumer
+* M Roland: starvation due to LIFO in private queues?
+
+* explicit trade-offs:
+  * low latency
+  * high throughput
+  * optimized for "external" vs. "internal" submissions
+  * special optimizations for "single external producer"?
+
+* allow tasks to be resubmitted (?)
+
+
+
+ideas / decisions
+-----------------
+* many top-level queues
+* cancel does *not* eagerly remove task(!)
+* FIFO vs LIFO for local queues - LIFO is faster (in F/J), FIFO is expected behavior
+* pre-allocate tasks in array? --> wrapper objects, factory
+* notifications for finished tasks - array with listener refs instead of linked list
+
+insights
+--------
+* putOrdered(): store-store barrier without store-load barrier --> ordering guarantees w/o strong visibility guarantees, but eventually (typically fast) visible
+
+
+F/J
+===
+
+naming conventions
+------------------
+* a = array with worker queues
+* t = task
+* c = ctl
+* b = base
+* s = top
+
+
+Ansehen
+-------
+* SPINS field
+* awaitRunStateLock()
+* tryRelease()
+* scan()
+* awaitWork()
+* awaitQuiescence()
+* when is the check for 'is everything blocked' done?
+* why does ForkJoinTask store exceptions in a static array?!
+
+Bugs (?) / problems in FJ
+-------------------------
+* 'top' is int --> overflow --> code in push()
+* '(b = base) - top' with the read of 'top' relying on volatile read of 'top' happening before
+* many regular assignments to 'top' are now 'putOrdered' (JDK 8 vs. head of JDK 9)
+* dynamic growth
+* tie-in to Fork/Join support
+* GPL (?)
