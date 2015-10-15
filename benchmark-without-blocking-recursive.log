@@ -1,0 +1,2503 @@
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = naive)
+
+# Run progress: 0,00% complete, ETA 00:55:00
+# Fork: 1 of 1
+# Warmup Iteration   1: 460,624 ops/s
+# Warmup Iteration   2: 490,154 ops/s
+# Warmup Iteration   3: 489,586 ops/s
+Iteration   1: 495,949 ops/s
+Iteration   2: 494,022 ops/s
+Iteration   3: 490,794 ops/s
+
+
+Result: 493,588 ±(99.9%) 47,518 ops/s [Average]
+  Statistics: (min, avg, max) = (490,794, 493,588, 495,949), stdev = 2,605
+  Confidence interval (99.9%): [446,070, 541,107]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 1,00% complete, ETA 00:57:03
+# Fork: 1 of 1
+# Warmup Iteration   1: 438,776 ops/s
+# Warmup Iteration   2: 459,457 ops/s
+# Warmup Iteration   3: 459,120 ops/s
+Iteration   1: 461,861 ops/s
+Iteration   2: 459,283 ops/s
+Iteration   3: 459,098 ops/s
+
+
+Result: 460,081 ±(99.9%) 28,176 ops/s [Average]
+  Statistics: (min, avg, max) = (459,098, 460,081, 461,861), stdev = 1,544
+  Confidence interval (99.9%): [431,905, 488,257]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 2,00% complete, ETA 00:56:26
+# Fork: 1 of 1
+# Warmup Iteration   1: 416,947 ops/s
+# Warmup Iteration   2: 442,740 ops/s
+# Warmup Iteration   3: 444,064 ops/s
+Iteration   1: 437,949 ops/s
+Iteration   2: 436,939 ops/s
+Iteration   3: 431,163 ops/s
+
+
+Result: 435,350 ±(99.9%) 66,790 ops/s [Average]
+  Statistics: (min, avg, max) = (431,163, 435,350, 437,949), stdev = 3,661
+  Confidence interval (99.9%): [368,560, 502,141]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = Fixed)
+
+# Run progress: 3,00% complete, ETA 00:55:50
+# Fork: 1 of 1
+# Warmup Iteration   1: 351,821 ops/s
+# Warmup Iteration   2: 393,481 ops/s
+# Warmup Iteration   3: 398,248 ops/s
+Iteration   1: 394,911 ops/s
+Iteration   2: 395,954 ops/s
+Iteration   3: 395,474 ops/s
+
+
+Result: 395,447 ±(99.9%) 9,523 ops/s [Average]
+  Statistics: (min, avg, max) = (394,911, 395,447, 395,954), stdev = 0,522
+  Confidence interval (99.9%): [385,924, 404,969]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 4,00% complete, ETA 00:55:15
+# Fork: 1 of 1
+# Warmup Iteration   1: 482,529 ops/s
+# Warmup Iteration   2: 544,649 ops/s
+# Warmup Iteration   3: 534,561 ops/s
+Iteration   1: 532,564 ops/s
+Iteration   2: 530,131 ops/s
+Iteration   3: 530,388 ops/s
+
+
+Result: 531,028 ±(99.9%) 24,380 ops/s [Average]
+  Statistics: (min, avg, max) = (530,131, 531,028, 532,564), stdev = 1,336
+  Confidence interval (99.9%): [506,647, 555,408]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 5,00% complete, ETA 00:54:40
+# Fork: 1 of 1
+# Warmup Iteration   1: 495,762 ops/s
+# Warmup Iteration   2: 537,662 ops/s
+# Warmup Iteration   3: 542,725 ops/s
+Iteration   1: 538,142 ops/s
+Iteration   2: 536,181 ops/s
+Iteration   3: 536,776 ops/s
+
+
+Result: 537,033 ±(99.9%) 18,343 ops/s [Average]
+  Statistics: (min, avg, max) = (536,181, 537,033, 538,142), stdev = 1,005
+  Confidence interval (99.9%): [518,690, 555,376]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 6,00% complete, ETA 00:54:05
+# Fork: 1 of 1
+# Warmup Iteration   1: 497,128 ops/s
+# Warmup Iteration   2: 552,864 ops/s
+# Warmup Iteration   3: 548,582 ops/s
+Iteration   1: 547,490 ops/s
+Iteration   2: 546,190 ops/s
+Iteration   3: 544,183 ops/s
+
+
+Result: 545,954 ±(99.9%) 30,390 ops/s [Average]
+  Statistics: (min, avg, max) = (544,183, 545,954, 547,490), stdev = 1,666
+  Confidence interval (99.9%): [515,564, 576,345]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 7,00% complete, ETA 00:53:30
+# Fork: 1 of 1
+# Warmup Iteration   1: 508,250 ops/s
+# Warmup Iteration   2: 547,727 ops/s
+# Warmup Iteration   3: 549,222 ops/s
+Iteration   1: 537,580 ops/s
+Iteration   2: 532,302 ops/s
+Iteration   3: 534,180 ops/s
+
+
+Result: 534,687 ±(99.9%) 48,806 ops/s [Average]
+  Statistics: (min, avg, max) = (532,302, 534,687, 537,580), stdev = 2,675
+  Confidence interval (99.9%): [485,881, 583,493]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 8,00% complete, ETA 00:52:56
+# Fork: 1 of 1
+# Warmup Iteration   1: 507,703 ops/s
+# Warmup Iteration   2: 548,220 ops/s
+# Warmup Iteration   3: 520,721 ops/s
+Iteration   1: 503,823 ops/s
+Iteration   2: 510,219 ops/s
+Iteration   3: 508,729 ops/s
+
+
+Result: 507,590 ±(99.9%) 61,050 ops/s [Average]
+  Statistics: (min, avg, max) = (503,823, 507,590, 510,219), stdev = 3,346
+  Confidence interval (99.9%): [446,541, 568,640]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 9,00% complete, ETA 00:52:21
+# Fork: 1 of 1
+# Warmup Iteration   1: 503,736 ops/s
+# Warmup Iteration   2: 542,119 ops/s
+# Warmup Iteration   3: 533,908 ops/s
+Iteration   1: 514,886 ops/s
+Iteration   2: 514,052 ops/s
+Iteration   3: 509,755 ops/s
+
+
+Result: 512,898 ±(99.9%) 50,228 ops/s [Average]
+  Statistics: (min, avg, max) = (509,755, 512,898, 514,886), stdev = 2,753
+  Confidence interval (99.9%): [462,669, 563,126]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = naive)
+
+# Run progress: 10,00% complete, ETA 00:51:47
+# Fork: 1 of 1
+# Warmup Iteration   1: 210,374 ops/s
+# Warmup Iteration   2: 206,831 ops/s
+# Warmup Iteration   3: 209,212 ops/s
+Iteration   1: 210,151 ops/s
+Iteration   2: 208,791 ops/s
+Iteration   3: 209,133 ops/s
+
+
+Result: 209,358 ±(99.9%) 12,911 ops/s [Average]
+  Statistics: (min, avg, max) = (208,791, 209,358, 210,151), stdev = 0,708
+  Confidence interval (99.9%): [196,448, 222,269]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 11,00% complete, ETA 00:51:12
+# Fork: 1 of 1
+# Warmup Iteration   1: 212,360 ops/s
+# Warmup Iteration   2: 223,739 ops/s
+# Warmup Iteration   3: 231,067 ops/s
+Iteration   1: 231,939 ops/s
+Iteration   2: 231,130 ops/s
+Iteration   3: 230,848 ops/s
+
+
+Result: 231,306 ±(99.9%) 10,334 ops/s [Average]
+  Statistics: (min, avg, max) = (230,848, 231,306, 231,939), stdev = 0,566
+  Confidence interval (99.9%): [220,972, 241,639]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 12,00% complete, ETA 00:50:37
+# Fork: 1 of 1
+# Warmup Iteration   1: 305,376 ops/s
+# Warmup Iteration   2: 332,729 ops/s
+# Warmup Iteration   3: 335,340 ops/s
+Iteration   1: 337,606 ops/s
+Iteration   2: 337,660 ops/s
+Iteration   3: 336,408 ops/s
+
+
+Result: 337,224 ±(99.9%) 12,909 ops/s [Average]
+  Statistics: (min, avg, max) = (336,408, 337,224, 337,660), stdev = 0,708
+  Confidence interval (99.9%): [324,316, 350,133]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = Fixed)
+
+# Run progress: 13,00% complete, ETA 00:50:03
+# Fork: 1 of 1
+# Warmup Iteration   1: 193,804 ops/s
+# Warmup Iteration   2: 212,746 ops/s
+# Warmup Iteration   3: 212,197 ops/s
+Iteration   1: 214,329 ops/s
+Iteration   2: 214,776 ops/s
+Iteration   3: 214,759 ops/s
+
+
+Result: 214,621 ±(99.9%) 4,625 ops/s [Average]
+  Statistics: (min, avg, max) = (214,329, 214,621, 214,776), stdev = 0,254
+  Confidence interval (99.9%): [209,996, 219,246]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 14,00% complete, ETA 00:49:28
+# Fork: 1 of 1
+# Warmup Iteration   1: 553,760 ops/s
+# Warmup Iteration   2: 591,157 ops/s
+# Warmup Iteration   3: 597,800 ops/s
+Iteration   1: 595,632 ops/s
+Iteration   2: 594,798 ops/s
+Iteration   3: 595,424 ops/s
+
+
+Result: 595,285 ±(99.9%) 7,913 ops/s [Average]
+  Statistics: (min, avg, max) = (594,798, 595,285, 595,632), stdev = 0,434
+  Confidence interval (99.9%): [587,372, 603,197]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 15,00% complete, ETA 00:48:54
+# Fork: 1 of 1
+# Warmup Iteration   1: 728,202 ops/s
+# Warmup Iteration   2: 841,615 ops/s
+# Warmup Iteration   3: 836,563 ops/s
+Iteration   1: 819,413 ops/s
+Iteration   2: 815,743 ops/s
+Iteration   3: 813,550 ops/s
+
+
+Result: 816,235 ±(99.9%) 54,048 ops/s [Average]
+  Statistics: (min, avg, max) = (813,550, 816,235, 819,413), stdev = 2,963
+  Confidence interval (99.9%): [762,187, 870,284]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 16,00% complete, ETA 00:48:19
+# Fork: 1 of 1
+# Warmup Iteration   1: 558,560 ops/s
+# Warmup Iteration   2: 694,098 ops/s
+# Warmup Iteration   3: 696,353 ops/s
+Iteration   1: 692,694 ops/s
+Iteration   2: 690,518 ops/s
+Iteration   3: 692,566 ops/s
+
+
+Result: 691,926 ±(99.9%) 22,274 ops/s [Average]
+  Statistics: (min, avg, max) = (690,518, 691,926, 692,694), stdev = 1,221
+  Confidence interval (99.9%): [669,652, 714,200]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 17,00% complete, ETA 00:47:45
+# Fork: 1 of 1
+# Warmup Iteration   1: 509,366 ops/s
+# Warmup Iteration   2: 540,831 ops/s
+# Warmup Iteration   3: 558,550 ops/s
+Iteration   1: 550,135 ops/s
+Iteration   2: 553,499 ops/s
+Iteration   3: 553,710 ops/s
+
+
+Result: 552,448 ±(99.9%) 36,591 ops/s [Average]
+  Statistics: (min, avg, max) = (550,135, 552,448, 553,710), stdev = 2,006
+  Confidence interval (99.9%): [515,857, 589,039]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 18,00% complete, ETA 00:47:10
+# Fork: 1 of 1
+# Warmup Iteration   1: 705,837 ops/s
+# Warmup Iteration   2: 776,729 ops/s
+# Warmup Iteration   3: 775,034 ops/s
+Iteration   1: 775,299 ops/s
+Iteration   2: 772,205 ops/s
+Iteration   3: 774,196 ops/s
+
+
+Result: 773,900 ±(99.9%) 28,602 ops/s [Average]
+  Statistics: (min, avg, max) = (772,205, 773,900, 775,299), stdev = 1,568
+  Confidence interval (99.9%): [745,298, 802,502]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 19,00% complete, ETA 00:46:36
+# Fork: 1 of 1
+# Warmup Iteration   1: 592,582 ops/s
+# Warmup Iteration   2: 642,586 ops/s
+# Warmup Iteration   3: 655,672 ops/s
+Iteration   1: 651,311 ops/s
+Iteration   2: 649,673 ops/s
+Iteration   3: 647,417 ops/s
+
+
+Result: 649,467 ±(99.9%) 35,667 ops/s [Average]
+  Statistics: (min, avg, max) = (647,417, 649,467, 651,311), stdev = 1,955
+  Confidence interval (99.9%): [613,799, 685,134]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = naive)
+
+# Run progress: 20,00% complete, ETA 00:46:01
+# Fork: 1 of 1
+# Warmup Iteration   1: 452,309 ops/s
+# Warmup Iteration   2: 486,062 ops/s
+# Warmup Iteration   3: 490,650 ops/s
+Iteration   1: 486,590 ops/s
+Iteration   2: 487,887 ops/s
+Iteration   3: 486,141 ops/s
+
+
+Result: 486,873 ±(99.9%) 16,537 ops/s [Average]
+  Statistics: (min, avg, max) = (486,141, 486,873, 487,887), stdev = 0,906
+  Confidence interval (99.9%): [470,336, 503,410]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 21,00% complete, ETA 00:45:26
+# Fork: 1 of 1
+# Warmup Iteration   1: 465,123 ops/s
+# Warmup Iteration   2: 485,484 ops/s
+# Warmup Iteration   3: 487,366 ops/s
+Iteration   1: 486,911 ops/s
+Iteration   2: 484,399 ops/s
+Iteration   3: 485,085 ops/s
+
+
+Result: 485,465 ±(99.9%) 23,690 ops/s [Average]
+  Statistics: (min, avg, max) = (484,399, 485,465, 486,911), stdev = 1,299
+  Confidence interval (99.9%): [461,775, 509,156]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 22,00% complete, ETA 00:44:52
+# Fork: 1 of 1
+# Warmup Iteration   1: 1402,437 ops/s
+# Warmup Iteration   2: 1477,467 ops/s
+# Warmup Iteration   3: 1148,474 ops/s
+Iteration   1: 1696,313 ops/s
+Iteration   2: 1726,345 ops/s
+Iteration   3: 1683,035 ops/s
+
+
+Result: 1701,898 ±(99.9%) 404,798 ops/s [Average]
+  Statistics: (min, avg, max) = (1683,035, 1701,898, 1726,345), stdev = 22,188
+  Confidence interval (99.9%): [1297,099, 2106,696]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = Fixed)
+
+# Run progress: 23,00% complete, ETA 00:44:17
+# Fork: 1 of 1
+# Warmup Iteration   1: 371,625 ops/s
+# Warmup Iteration   2: 403,924 ops/s
+# Warmup Iteration   3: 399,401 ops/s
+Iteration   1: 398,905 ops/s
+Iteration   2: 401,289 ops/s
+Iteration   3: 401,157 ops/s
+
+
+Result: 400,450 ±(99.9%) 24,444 ops/s [Average]
+  Statistics: (min, avg, max) = (398,905, 400,450, 401,289), stdev = 1,340
+  Confidence interval (99.9%): [376,006, 424,895]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 24,00% complete, ETA 00:43:43
+# Fork: 1 of 1
+# Warmup Iteration   1: 482,953 ops/s
+# Warmup Iteration   2: 523,568 ops/s
+# Warmup Iteration   3: 546,881 ops/s
+Iteration   1: 548,971 ops/s
+Iteration   2: 541,991 ops/s
+Iteration   3: 545,856 ops/s
+
+
+Result: 545,606 ±(99.9%) 63,796 ops/s [Average]
+  Statistics: (min, avg, max) = (541,991, 545,606, 548,971), stdev = 3,497
+  Confidence interval (99.9%): [481,810, 609,402]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 25,00% complete, ETA 00:43:08
+# Fork: 1 of 1
+# Warmup Iteration   1: 708,416 ops/s
+# Warmup Iteration   2: 753,524 ops/s
+# Warmup Iteration   3: 752,171 ops/s
+Iteration   1: 747,435 ops/s
+Iteration   2: 745,292 ops/s
+Iteration   3: 746,378 ops/s
+
+
+Result: 746,368 ±(99.9%) 19,547 ops/s [Average]
+  Statistics: (min, avg, max) = (745,292, 746,368, 747,435), stdev = 1,071
+  Confidence interval (99.9%): [726,822, 765,915]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 26,00% complete, ETA 00:42:34
+# Fork: 1 of 1
+# Warmup Iteration   1: 559,302 ops/s
+# Warmup Iteration   2: 595,854 ops/s
+# Warmup Iteration   3: 595,546 ops/s
+Iteration   1: 593,365 ops/s
+Iteration   2: 591,707 ops/s
+Iteration   3: 591,775 ops/s
+
+
+Result: 592,282 ±(99.9%) 17,123 ops/s [Average]
+  Statistics: (min, avg, max) = (591,707, 592,282, 593,365), stdev = 0,939
+  Confidence interval (99.9%): [575,159, 609,405]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 27,00% complete, ETA 00:41:59
+# Fork: 1 of 1
+# Warmup Iteration   1: 445,265 ops/s
+# Warmup Iteration   2: 503,431 ops/s
+# Warmup Iteration   3: 506,477 ops/s
+Iteration   1: 502,266 ops/s
+Iteration   2: 499,935 ops/s
+Iteration   3: 498,861 ops/s
+
+
+Result: 500,354 ±(99.9%) 31,760 ops/s [Average]
+  Statistics: (min, avg, max) = (498,861, 500,354, 502,266), stdev = 1,741
+  Confidence interval (99.9%): [468,593, 532,114]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 28,00% complete, ETA 00:41:25
+# Fork: 1 of 1
+# Warmup Iteration   1: 652,535 ops/s
+# Warmup Iteration   2: 669,510 ops/s
+# Warmup Iteration   3: 675,284 ops/s
+Iteration   1: 663,093 ops/s
+Iteration   2: 646,289 ops/s
+Iteration   3: 658,058 ops/s
+
+
+Result: 655,813 ±(99.9%) 157,326 ops/s [Average]
+  Statistics: (min, avg, max) = (646,289, 655,813, 663,093), stdev = 8,624
+  Confidence interval (99.9%): [498,487, 813,139]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 29,00% complete, ETA 00:40:50
+# Fork: 1 of 1
+# Warmup Iteration   1: 512,060 ops/s
+# Warmup Iteration   2: 546,272 ops/s
+# Warmup Iteration   3: 543,408 ops/s
+Iteration   1: 543,507 ops/s
+Iteration   2: 540,800 ops/s
+Iteration   3: 542,869 ops/s
+
+
+Result: 542,392 ±(99.9%) 25,818 ops/s [Average]
+  Statistics: (min, avg, max) = (540,800, 542,392, 543,507), stdev = 1,415
+  Confidence interval (99.9%): [516,574, 568,210]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = naive)
+
+# Run progress: 30,00% complete, ETA 00:40:16
+# Fork: 1 of 1
+# Warmup Iteration   1: 308672,707 ops/s
+# Warmup Iteration   2: 321085,150 ops/s
+# Warmup Iteration   3: 328474,494 ops/s
+Iteration   1: 326450,265 ops/s
+Iteration   2: 324479,343 ops/s
+Iteration   3: 322901,131 ops/s
+
+
+Result: 324610,246 ±(99.9%) 32440,703 ops/s [Average]
+  Statistics: (min, avg, max) = (322901,131, 324610,246, 326450,265), stdev = 1778,184
+  Confidence interval (99.9%): [292169,543, 357050,949]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 31,00% complete, ETA 00:39:41
+# Fork: 1 of 1
+# Warmup Iteration   1: 312605,166 ops/s
+# Warmup Iteration   2: 330060,350 ops/s
+# Warmup Iteration   3: 336823,920 ops/s
+Iteration   1: 334688,868 ops/s
+Iteration   2: 330862,860 ops/s
+Iteration   3: 332442,150 ops/s
+
+
+Result: 332664,626 ±(99.9%) 35076,880 ops/s [Average]
+  Statistics: (min, avg, max) = (330862,860, 332664,626, 334688,868), stdev = 1922,682
+  Confidence interval (99.9%): [297587,746, 367741,506]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 32,00% complete, ETA 00:39:07
+# Fork: 1 of 1
+# Warmup Iteration   1: 411282,853 ops/s
+# Warmup Iteration   2: 444116,136 ops/s
+# Warmup Iteration   3: 448243,261 ops/s
+Iteration   1: 446845,196 ops/s
+Iteration   2: 439933,784 ops/s
+Iteration   3: 438888,763 ops/s
+
+
+Result: 441889,248 ±(99.9%) 78879,761 ops/s [Average]
+  Statistics: (min, avg, max) = (438888,763, 441889,248, 446845,196), stdev = 4323,666
+  Confidence interval (99.9%): [363009,487, 520769,008]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = Fixed)
+
+# Run progress: 33,00% complete, ETA 00:38:32
+# Fork: 1 of 1
+# Warmup Iteration   1: 274131,798 ops/s
+# Warmup Iteration   2: 294762,668 ops/s
+# Warmup Iteration   3: 299588,625 ops/s
+Iteration   1: 296137,623 ops/s
+Iteration   2: 296862,279 ops/s
+Iteration   3: 295598,890 ops/s
+
+
+Result: 296199,597 ±(99.9%) 11565,975 ops/s [Average]
+  Statistics: (min, avg, max) = (295598,890, 296199,597, 296862,279), stdev = 633,970
+  Confidence interval (99.9%): [284633,623, 307765,572]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 34,00% complete, ETA 00:37:58
+# Fork: 1 of 1
+# Warmup Iteration   1: 598401,085 ops/s
+# Warmup Iteration   2: 656682,952 ops/s
+# Warmup Iteration   3: 668565,959 ops/s
+Iteration   1: 657851,573 ops/s
+Iteration   2: 637805,464 ops/s
+Iteration   3: 625742,703 ops/s
+
+
+Result: 640466,580 ±(99.9%) 295894,977 ops/s [Average]
+  Statistics: (min, avg, max) = (625742,703, 640466,580, 657851,573), stdev = 16219,002
+  Confidence interval (99.9%): [344571,603, 936361,556]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 35,00% complete, ETA 00:37:23
+# Fork: 1 of 1
+# Warmup Iteration   1: 755990,335 ops/s
+# Warmup Iteration   2: 799349,069 ops/s
+# Warmup Iteration   3: 805444,964 ops/s
+Iteration   1: 800351,598 ops/s
+Iteration   2: 792467,508 ops/s
+Iteration   3: 789853,066 ops/s
+
+
+Result: 794224,057 ±(99.9%) 99706,399 ops/s [Average]
+  Statistics: (min, avg, max) = (789853,066, 794224,057, 800351,598), stdev = 5465,244
+  Confidence interval (99.9%): [694517,658, 893930,456]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 36,00% complete, ETA 00:36:49
+# Fork: 1 of 1
+# Warmup Iteration   1: 718903,732 ops/s
+# Warmup Iteration   2: 791607,636 ops/s
+# Warmup Iteration   3: 787366,176 ops/s
+Iteration   1: 774045,243 ops/s
+Iteration   2: 766954,361 ops/s
+Iteration   3: 769953,477 ops/s
+
+
+Result: 770317,694 ±(99.9%) 64937,508 ops/s [Average]
+  Statistics: (min, avg, max) = (766954,361, 770317,694, 774045,243), stdev = 3559,444
+  Confidence interval (99.9%): [705380,186, 835255,201]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 37,00% complete, ETA 00:36:14
+# Fork: 1 of 1
+# Warmup Iteration   1: 569069,413 ops/s
+# Warmup Iteration   2: 612161,055 ops/s
+# Warmup Iteration   3: 526334,992 ops/s
+Iteration   1: 581055,044 ops/s
+Iteration   2: 569443,351 ops/s
+Iteration   3: 545643,653 ops/s
+
+
+Result: 565380,683 ±(99.9%) 329333,608 ops/s [Average]
+  Statistics: (min, avg, max) = (545643,653, 565380,683, 581055,044), stdev = 18051,886
+  Confidence interval (99.9%): [236047,075, 894714,290]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 38,00% complete, ETA 00:35:40
+# Fork: 1 of 1
+# Warmup Iteration   1: 707998,176 ops/s
+# Warmup Iteration   2: 741435,392 ops/s
+# Warmup Iteration   3: 745481,828 ops/s
+Iteration   1: 740000,888 ops/s
+Iteration   2: 728003,562 ops/s
+Iteration   3: 729894,940 ops/s
+
+
+Result: 732633,130 ±(99.9%) 117678,693 ops/s [Average]
+  Statistics: (min, avg, max) = (728003,562, 732633,130, 740000,888), stdev = 6450,366
+  Confidence interval (99.9%): [614954,437, 850311,823]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 39,00% complete, ETA 00:35:05
+# Fork: 1 of 1
+# Warmup Iteration   1: 685917,251 ops/s
+# Warmup Iteration   2: 745276,773 ops/s
+# Warmup Iteration   3: 762549,891 ops/s
+Iteration   1: 753921,540 ops/s
+Iteration   2: 746412,074 ops/s
+Iteration   3: 745267,643 ops/s
+
+
+Result: 748533,752 ±(99.9%) 85762,224 ops/s [Average]
+  Statistics: (min, avg, max) = (745267,643, 748533,752, 753921,540), stdev = 4700,917
+  Confidence interval (99.9%): [662771,529, 834295,976]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = naive)
+
+# Run progress: 40,00% complete, ETA 00:34:31
+# Fork: 1 of 1
+# Warmup Iteration   1: 316867,303 ops/s
+# Warmup Iteration   2: 337544,261 ops/s
+# Warmup Iteration   3: 344618,071 ops/s
+Iteration   1: 340368,134 ops/s
+Iteration   2: 337514,819 ops/s
+Iteration   3: 335152,524 ops/s
+
+
+Result: 337678,492 ±(99.9%) 47646,294 ops/s [Average]
+  Statistics: (min, avg, max) = (335152,524, 337678,492, 340368,134), stdev = 2611,654
+  Confidence interval (99.9%): [290032,199, 385324,786]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 41,00% complete, ETA 00:33:56
+# Fork: 1 of 1
+# Warmup Iteration   1: 302421,974 ops/s
+# Warmup Iteration   2: 312689,511 ops/s
+# Warmup Iteration   3: 320852,073 ops/s
+Iteration   1: 320829,359 ops/s
+Iteration   2: 316701,219 ops/s
+Iteration   3: 316493,196 ops/s
+
+
+Result: 318007,925 ±(99.9%) 44617,698 ops/s [Average]
+  Statistics: (min, avg, max) = (316493,196, 318007,925, 320829,359), stdev = 2445,647
+  Confidence interval (99.9%): [273390,226, 362625,623]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 42,00% complete, ETA 00:33:22
+# Fork: 1 of 1
+# Warmup Iteration   1: 426818,568 ops/s
+# Warmup Iteration   2: 461100,990 ops/s
+# Warmup Iteration   3: 463706,205 ops/s
+Iteration   1: 458699,812 ops/s
+Iteration   2: 453074,454 ops/s
+Iteration   3: 451300,762 ops/s
+
+
+Result: 454358,343 ±(99.9%) 70475,481 ops/s [Average]
+  Statistics: (min, avg, max) = (451300,762, 454358,343, 458699,812), stdev = 3862,999
+  Confidence interval (99.9%): [383882,862, 524833,824]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = Fixed)
+
+# Run progress: 43,00% complete, ETA 00:32:47
+# Fork: 1 of 1
+# Warmup Iteration   1: 283668,812 ops/s
+# Warmup Iteration   2: 304687,106 ops/s
+# Warmup Iteration   3: 310400,844 ops/s
+Iteration   1: 305878,466 ops/s
+Iteration   2: 305982,072 ops/s
+Iteration   3: 306261,979 ops/s
+
+
+Result: 306040,839 ±(99.9%) 3619,472 ops/s [Average]
+  Statistics: (min, avg, max) = (305878,466, 306040,839, 306261,979), stdev = 198,395
+  Confidence interval (99.9%): [302421,367, 309660,311]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 44,00% complete, ETA 00:32:12
+# Fork: 1 of 1
+# Warmup Iteration   1: 573729,422 ops/s
+# Warmup Iteration   2: 633914,016 ops/s
+# Warmup Iteration   3: 669953,592 ops/s
+Iteration   1: 654591,132 ops/s
+Iteration   2: 657289,825 ops/s
+Iteration   3: 650726,473 ops/s
+
+
+Result: 654202,476 ±(99.9%) 60184,062 ops/s [Average]
+  Statistics: (min, avg, max) = (650726,473, 654202,476, 657289,825), stdev = 3298,892
+  Confidence interval (99.9%): [594018,414, 714386,539]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 45,00% complete, ETA 00:31:38
+# Fork: 1 of 1
+# Warmup Iteration   1: 975256,079 ops/s
+# Warmup Iteration   2: 1057437,209 ops/s
+# Warmup Iteration   3: 1088295,165 ops/s
+Iteration   1: 1067198,432 ops/s
+Iteration   2: 1049344,839 ops/s
+Iteration   3: 1047752,056 ops/s
+
+
+Result: 1054765,109 ±(99.9%) 196977,199 ops/s [Average]
+  Statistics: (min, avg, max) = (1047752,056, 1054765,109, 1067198,432), stdev = 10796,985
+  Confidence interval (99.9%): [857787,911, 1251742,308]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 46,00% complete, ETA 00:31:03
+# Fork: 1 of 1
+# Warmup Iteration   1: 896357,600 ops/s
+# Warmup Iteration   2: 934985,744 ops/s
+# Warmup Iteration   3: 958312,843 ops/s
+Iteration   1: 951739,363 ops/s
+Iteration   2: 941949,917 ops/s
+Iteration   3: 935352,240 ops/s
+
+
+Result: 943013,840 ±(99.9%) 150423,227 ops/s [Average]
+  Statistics: (min, avg, max) = (935352,240, 943013,840, 951739,363), stdev = 8245,205
+  Confidence interval (99.9%): [792590,613, 1093437,066]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 47,00% complete, ETA 00:30:29
+# Fork: 1 of 1
+# Warmup Iteration   1: 493629,231 ops/s
+# Warmup Iteration   2: 599955,997 ops/s
+# Warmup Iteration   3: 586051,542 ops/s
+Iteration   1: 624503,470 ops/s
+Iteration   2: 544632,207 ops/s
+Iteration   3: 583769,198 ops/s
+
+
+Result: 584301,625 ±(99.9%) 728623,149 ops/s [Average]
+  Statistics: (min, avg, max) = (544632,207, 584301,625, 624503,470), stdev = 39938,293
+  Confidence interval (99.9%): [-144321,524, 1312924,774]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 48,00% complete, ETA 00:29:54
+# Fork: 1 of 1
+# Warmup Iteration   1: 768930,012 ops/s
+# Warmup Iteration   2: 799650,385 ops/s
+# Warmup Iteration   3: 813060,071 ops/s
+Iteration   1: 811168,295 ops/s
+Iteration   2: 801854,994 ops/s
+Iteration   3: 800045,525 ops/s
+
+
+Result: 804356,271 ±(99.9%) 108885,065 ops/s [Average]
+  Statistics: (min, avg, max) = (800045,525, 804356,271, 811168,295), stdev = 5968,358
+  Confidence interval (99.9%): [695471,206, 913241,337]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 49,00% complete, ETA 00:29:20
+# Fork: 1 of 1
+# Warmup Iteration   1: 914762,954 ops/s
+# Warmup Iteration   2: 969079,527 ops/s
+# Warmup Iteration   3: 992395,258 ops/s
+Iteration   1: 988571,675 ops/s
+Iteration   2: 976258,686 ops/s
+Iteration   3: 969246,075 ops/s
+
+
+Result: 978025,478 ±(99.9%) 178481,867 ops/s [Average]
+  Statistics: (min, avg, max) = (969246,075, 978025,478, 988571,675), stdev = 9783,193
+  Confidence interval (99.9%): [799543,611, 1156507,345]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = naive)
+
+# Run progress: 50,00% complete, ETA 00:28:45
+# Fork: 1 of 1
+# Warmup Iteration   1: 104886,143 ops/s
+# Warmup Iteration   2: 120049,458 ops/s
+# Warmup Iteration   3: 118599,651 ops/s
+Iteration   1: 119227,203 ops/s
+Iteration   2: 118156,888 ops/s
+Iteration   3: 118442,167 ops/s
+
+
+Result: 118608,752 ±(99.9%) 10111,806 ops/s [Average]
+  Statistics: (min, avg, max) = (118156,888, 118608,752, 119227,203), stdev = 554,262
+  Confidence interval (99.9%): [108496,946, 128720,558]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 51,00% complete, ETA 00:28:11
+# Fork: 1 of 1
+# Warmup Iteration   1: 106907,678 ops/s
+# Warmup Iteration   2: 118933,028 ops/s
+# Warmup Iteration   3: 118079,568 ops/s
+Iteration   1: 114745,237 ops/s
+Iteration   2: 114165,432 ops/s
+Iteration   3: 112972,801 ops/s
+
+
+Result: 113961,157 ±(99.9%) 16486,900 ops/s [Average]
+  Statistics: (min, avg, max) = (112972,801, 113961,157, 114745,237), stdev = 903,703
+  Confidence interval (99.9%): [97474,257, 130448,057]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 52,00% complete, ETA 00:27:36
+# Fork: 1 of 1
+# Warmup Iteration   1: 112158,664 ops/s
+# Warmup Iteration   2: 121309,142 ops/s
+# Warmup Iteration   3: 124778,357 ops/s
+Iteration   1: 120503,774 ops/s
+Iteration   2: 120469,286 ops/s
+Iteration   3: 120574,750 ops/s
+
+
+Result: 120515,937 ±(99.9%) 981,028 ops/s [Average]
+  Statistics: (min, avg, max) = (120469,286, 120515,937, 120574,750), stdev = 53,773
+  Confidence interval (99.9%): [119534,909, 121496,965]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = Fixed)
+
+# Run progress: 53,00% complete, ETA 00:27:02
+# Fork: 1 of 1
+# Warmup Iteration   1: 73026,809 ops/s
+# Warmup Iteration   2: 86691,861 ops/s
+# Warmup Iteration   3: 87428,007 ops/s
+Iteration   1: 88903,693 ops/s
+Iteration   2: 89208,490 ops/s
+Iteration   3: 89213,422 ops/s
+
+
+Result: 89108,535 ±(99.9%) 3236,716 ops/s [Average]
+  Statistics: (min, avg, max) = (88903,693, 89108,535, 89213,422), stdev = 177,415
+  Confidence interval (99.9%): [85871,819, 92345,250]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 54,00% complete, ETA 00:26:27
+# Fork: 1 of 1
+# Warmup Iteration   1: 63145,769 ops/s
+# Warmup Iteration   2: 69068,760 ops/s
+# Warmup Iteration   3: 69011,561 ops/s
+Iteration   1: 69267,479 ops/s
+Iteration   2: 69191,823 ops/s
+Iteration   3: 69187,751 ops/s
+
+
+Result: 69215,684 ±(99.9%) 819,173 ops/s [Average]
+  Statistics: (min, avg, max) = (69187,751, 69215,684, 69267,479), stdev = 44,902
+  Confidence interval (99.9%): [68396,511, 70034,857]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 55,00% complete, ETA 00:25:53
+# Fork: 1 of 1
+# Warmup Iteration   1: 69055,422 ops/s
+# Warmup Iteration   2: 73714,835 ops/s
+# Warmup Iteration   3: 74991,279 ops/s
+Iteration   1: 74873,841 ops/s
+Iteration   2: 74666,761 ops/s
+Iteration   3: 74731,118 ops/s
+
+
+Result: 74757,240 ±(99.9%) 1933,518 ops/s [Average]
+  Statistics: (min, avg, max) = (74666,761, 74757,240, 74873,841), stdev = 105,983
+  Confidence interval (99.9%): [72823,722, 76690,758]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 56,00% complete, ETA 00:25:18
+# Fork: 1 of 1
+# Warmup Iteration   1: 66741,757 ops/s
+# Warmup Iteration   2: 72262,300 ops/s
+# Warmup Iteration   3: 73711,666 ops/s
+Iteration   1: 73793,676 ops/s
+Iteration   2: 73873,373 ops/s
+Iteration   3: 73859,658 ops/s
+
+
+Result: 73842,236 ±(99.9%) 777,354 ops/s [Average]
+  Statistics: (min, avg, max) = (73793,676, 73842,236, 73873,373), stdev = 42,609
+  Confidence interval (99.9%): [73064,881, 74619,590]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 57,00% complete, ETA 00:24:44
+# Fork: 1 of 1
+# Warmup Iteration   1: 54742,992 ops/s
+# Warmup Iteration   2: 60389,747 ops/s
+# Warmup Iteration   3: 60947,909 ops/s
+Iteration   1: 60965,253 ops/s
+Iteration   2: 60969,207 ops/s
+Iteration   3: 60936,801 ops/s
+
+
+Result: 60957,087 ±(99.9%) 322,537 ops/s [Average]
+  Statistics: (min, avg, max) = (60936,801, 60957,087, 60969,207), stdev = 17,679
+  Confidence interval (99.9%): [60634,550, 61279,624]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 58,00% complete, ETA 00:24:09
+# Fork: 1 of 1
+# Warmup Iteration   1: 60138,621 ops/s
+# Warmup Iteration   2: 65277,508 ops/s
+# Warmup Iteration   3: 65455,025 ops/s
+Iteration   1: 65406,586 ops/s
+Iteration   2: 65326,610 ops/s
+Iteration   3: 65230,122 ops/s
+
+
+Result: 65321,106 ±(99.9%) 1612,024 ops/s [Average]
+  Statistics: (min, avg, max) = (65230,122, 65321,106, 65406,586), stdev = 88,360
+  Confidence interval (99.9%): [63709,082, 66933,130]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 59,00% complete, ETA 00:23:35
+# Fork: 1 of 1
+# Warmup Iteration   1: 60762,686 ops/s
+# Warmup Iteration   2: 65933,951 ops/s
+# Warmup Iteration   3: 65445,853 ops/s
+Iteration   1: 65553,091 ops/s
+Iteration   2: 65599,776 ops/s
+Iteration   3: 65577,652 ops/s
+
+
+Result: 65576,839 ±(99.9%) 426,046 ops/s [Average]
+  Statistics: (min, avg, max) = (65553,091, 65576,839, 65599,776), stdev = 23,353
+  Confidence interval (99.9%): [65150,794, 66002,885]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = naive)
+
+# Run progress: 60,00% complete, ETA 00:23:00
+# Fork: 1 of 1
+# Warmup Iteration   1: 352,467 ops/s
+# Warmup Iteration   2: 376,464 ops/s
+# Warmup Iteration   3: 379,036 ops/s
+Iteration   1: 377,479 ops/s
+Iteration   2: 374,420 ops/s
+Iteration   3: 374,679 ops/s
+
+
+Result: 375,526 ±(99.9%) 30,944 ops/s [Average]
+  Statistics: (min, avg, max) = (374,420, 375,526, 377,479), stdev = 1,696
+  Confidence interval (99.9%): [344,582, 406,470]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 61,00% complete, ETA 00:22:26
+# Fork: 1 of 1
+# Warmup Iteration   1: 351,312 ops/s
+# Warmup Iteration   2: 384,399 ops/s
+# Warmup Iteration   3: 389,911 ops/s
+Iteration   1: 385,192 ops/s
+Iteration   2: 382,184 ops/s
+Iteration   3: 382,246 ops/s
+
+
+Result: 383,207 ±(99.9%) 31,364 ops/s [Average]
+  Statistics: (min, avg, max) = (382,184, 383,207, 385,192), stdev = 1,719
+  Confidence interval (99.9%): [351,843, 414,571]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 62,00% complete, ETA 00:21:51
+# Fork: 1 of 1
+# Warmup Iteration   1: 1472,173 ops/s
+# Warmup Iteration   2: 1396,192 ops/s
+# Warmup Iteration   3: 1220,725 ops/s
+Iteration   1: 1805,214 ops/s
+Iteration   2: 1859,933 ops/s
+Iteration   3: 1878,024 ops/s
+
+
+Result: 1847,723 ±(99.9%) 691,606 ops/s [Average]
+  Statistics: (min, avg, max) = (1805,214, 1847,723, 1878,024), stdev = 37,909
+  Confidence interval (99.9%): [1156,117, 2539,330]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = Fixed)
+
+# Run progress: 63,00% complete, ETA 00:21:17
+# Fork: 1 of 1
+# Warmup Iteration   1: 281,769 ops/s
+# Warmup Iteration   2: 319,413 ops/s
+# Warmup Iteration   3: 322,242 ops/s
+Iteration   1: 321,557 ops/s
+Iteration   2: 321,553 ops/s
+Iteration   3: 321,516 ops/s
+
+
+Result: 321,542 ±(99.9%) 0,416 ops/s [Average]
+  Statistics: (min, avg, max) = (321,516, 321,542, 321,557), stdev = 0,023
+  Confidence interval (99.9%): [321,126, 321,958]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 64,00% complete, ETA 00:20:42
+# Fork: 1 of 1
+# Warmup Iteration   1: 242,149 ops/s
+# Warmup Iteration   2: 264,791 ops/s
+# Warmup Iteration   3: 259,401 ops/s
+Iteration   1: 260,272 ops/s
+Iteration   2: 261,349 ops/s
+Iteration   3: 260,723 ops/s
+
+
+Result: 260,781 ±(99.9%) 9,868 ops/s [Average]
+  Statistics: (min, avg, max) = (260,272, 260,781, 261,349), stdev = 0,541
+  Confidence interval (99.9%): [250,913, 270,649]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 65,00% complete, ETA 00:20:08
+# Fork: 1 of 1
+# Warmup Iteration   1: 469,718 ops/s
+# Warmup Iteration   2: 507,340 ops/s
+# Warmup Iteration   3: 504,083 ops/s
+Iteration   1: 502,709 ops/s
+Iteration   2: 503,156 ops/s
+Iteration   3: 504,118 ops/s
+
+
+Result: 503,328 ±(99.9%) 13,132 ops/s [Average]
+  Statistics: (min, avg, max) = (502,709, 503,328, 504,118), stdev = 0,720
+  Confidence interval (99.9%): [490,195, 516,460]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 66,00% complete, ETA 00:19:33
+# Fork: 1 of 1
+# Warmup Iteration   1: 445,814 ops/s
+# Warmup Iteration   2: 476,619 ops/s
+# Warmup Iteration   3: 477,135 ops/s
+Iteration   1: 475,329 ops/s
+Iteration   2: 479,001 ops/s
+Iteration   3: 479,277 ops/s
+
+
+Result: 477,869 ±(99.9%) 40,205 ops/s [Average]
+  Statistics: (min, avg, max) = (475,329, 477,869, 479,277), stdev = 2,204
+  Confidence interval (99.9%): [437,664, 518,074]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 67,00% complete, ETA 00:18:59
+# Fork: 1 of 1
+# Warmup Iteration   1: 243,575 ops/s
+# Warmup Iteration   2: 269,322 ops/s
+# Warmup Iteration   3: 265,012 ops/s
+Iteration   1: 263,632 ops/s
+Iteration   2: 263,110 ops/s
+Iteration   3: 263,427 ops/s
+
+
+Result: 263,390 ±(99.9%) 4,799 ops/s [Average]
+  Statistics: (min, avg, max) = (263,110, 263,390, 263,632), stdev = 0,263
+  Confidence interval (99.9%): [258,590, 268,189]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 68,00% complete, ETA 00:18:24
+# Fork: 1 of 1
+# Warmup Iteration   1: 402,712 ops/s
+# Warmup Iteration   2: 455,372 ops/s
+# Warmup Iteration   3: 456,536 ops/s
+Iteration   1: 459,274 ops/s
+Iteration   2: 459,285 ops/s
+Iteration   3: 460,173 ops/s
+
+
+Result: 459,577 ±(99.9%) 9,418 ops/s [Average]
+  Statistics: (min, avg, max) = (459,274, 459,577, 460,173), stdev = 0,516
+  Confidence interval (99.9%): [450,159, 468,995]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 69,00% complete, ETA 00:17:50
+# Fork: 1 of 1
+# Warmup Iteration   1: 384,521 ops/s
+# Warmup Iteration   2: 421,176 ops/s
+# Warmup Iteration   3: 421,714 ops/s
+Iteration   1: 421,593 ops/s
+Iteration   2: 421,040 ops/s
+Iteration   3: 421,197 ops/s
+
+
+Result: 421,277 ±(99.9%) 5,197 ops/s [Average]
+  Statistics: (min, avg, max) = (421,040, 421,277, 421,593), stdev = 0,285
+  Confidence interval (99.9%): [416,080, 426,473]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = naive)
+
+# Run progress: 70,00% complete, ETA 00:17:15
+# Fork: 1 of 1
+# Warmup Iteration   1: 203,541 ops/s
+# Warmup Iteration   2: 211,751 ops/s
+# Warmup Iteration   3: 213,963 ops/s
+Iteration   1: 212,781 ops/s
+Iteration   2: 211,059 ops/s
+Iteration   3: 211,074 ops/s
+
+
+Result: 211,638 ±(99.9%) 18,059 ops/s [Average]
+  Statistics: (min, avg, max) = (211,059, 211,638, 212,781), stdev = 0,990
+  Confidence interval (99.9%): [193,579, 229,697]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 71,00% complete, ETA 00:16:40
+# Fork: 1 of 1
+# Warmup Iteration   1: 195,830 ops/s
+# Warmup Iteration   2: 215,655 ops/s
+# Warmup Iteration   3: 219,586 ops/s
+Iteration   1: 216,615 ops/s
+Iteration   2: 215,051 ops/s
+Iteration   3: 215,604 ops/s
+
+
+Result: 215,757 ±(99.9%) 14,467 ops/s [Average]
+  Statistics: (min, avg, max) = (215,051, 215,757, 216,615), stdev = 0,793
+  Confidence interval (99.9%): [201,289, 230,224]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 72,00% complete, ETA 00:16:06
+# Fork: 1 of 1
+# Warmup Iteration   1: 756,198 ops/s
+# Warmup Iteration   2: 685,634 ops/s
+# Warmup Iteration   3: 634,477 ops/s
+Iteration   1: 810,819 ops/s
+Iteration   2: 799,186 ops/s
+Iteration   3: 772,268 ops/s
+
+
+Result: 794,091 ±(99.9%) 360,748 ops/s [Average]
+  Statistics: (min, avg, max) = (772,268, 794,091, 810,819), stdev = 19,774
+  Confidence interval (99.9%): [433,343, 1154,839]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = Fixed)
+
+# Run progress: 73,00% complete, ETA 00:15:31
+# Fork: 1 of 1
+# Warmup Iteration   1: 165,210 ops/s
+# Warmup Iteration   2: 180,595 ops/s
+# Warmup Iteration   3: 182,378 ops/s
+Iteration   1: 182,065 ops/s
+Iteration   2: 182,268 ops/s
+Iteration   3: 181,961 ops/s
+
+
+Result: 182,098 ±(99.9%) 2,852 ops/s [Average]
+  Statistics: (min, avg, max) = (181,961, 182,098, 182,268), stdev = 0,156
+  Confidence interval (99.9%): [179,246, 184,949]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 74,00% complete, ETA 00:14:57
+# Fork: 1 of 1
+# Warmup Iteration   1: 264,966 ops/s
+# Warmup Iteration   2: 293,180 ops/s
+# Warmup Iteration   3: 290,475 ops/s
+Iteration   1: 290,466 ops/s
+Iteration   2: 288,120 ops/s
+Iteration   3: 281,449 ops/s
+
+
+Result: 286,678 ±(99.9%) 85,343 ops/s [Average]
+  Statistics: (min, avg, max) = (281,449, 286,678, 290,466), stdev = 4,678
+  Confidence interval (99.9%): [201,335, 372,022]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 75,00% complete, ETA 00:14:22
+# Fork: 1 of 1
+# Warmup Iteration   1: 596,319 ops/s
+# Warmup Iteration   2: 650,174 ops/s
+# Warmup Iteration   3: 650,686 ops/s
+Iteration   1: 648,145 ops/s
+Iteration   2: 645,678 ops/s
+Iteration   3: 643,878 ops/s
+
+
+Result: 645,900 ±(99.9%) 39,081 ops/s [Average]
+  Statistics: (min, avg, max) = (643,878, 645,900, 648,145), stdev = 2,142
+  Confidence interval (99.9%): [606,819, 684,981]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 76,00% complete, ETA 00:13:48
+# Fork: 1 of 1
+# Warmup Iteration   1: 731,852 ops/s
+# Warmup Iteration   2: 757,201 ops/s
+# Warmup Iteration   3: 843,139 ops/s
+Iteration   1: 853,938 ops/s
+Iteration   2: 828,997 ops/s
+Iteration   3: 824,500 ops/s
+
+
+Result: 835,812 ±(99.9%) 289,309 ops/s [Average]
+  Statistics: (min, avg, max) = (824,500, 835,812, 853,938), stdev = 15,858
+  Confidence interval (99.9%): [546,503, 1125,120]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 77,00% complete, ETA 00:13:13
+# Fork: 1 of 1
+# Warmup Iteration   1: 273,421 ops/s
+# Warmup Iteration   2: 291,422 ops/s
+# Warmup Iteration   3: 291,939 ops/s
+Iteration   1: 288,822 ops/s
+Iteration   2: 289,691 ops/s
+Iteration   3: 289,545 ops/s
+
+
+Result: 289,353 ±(99.9%) 8,491 ops/s [Average]
+  Statistics: (min, avg, max) = (288,822, 289,353, 289,691), stdev = 0,465
+  Confidence interval (99.9%): [280,862, 297,844]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 78,00% complete, ETA 00:12:39
+# Fork: 1 of 1
+# Warmup Iteration   1: 552,272 ops/s
+# Warmup Iteration   2: 603,681 ops/s
+# Warmup Iteration   3: 608,073 ops/s
+Iteration   1: 602,425 ops/s
+Iteration   2: 586,395 ops/s
+Iteration   3: 586,047 ops/s
+
+
+Result: 591,622 ±(99.9%) 170,704 ops/s [Average]
+  Statistics: (min, avg, max) = (586,047, 591,622, 602,425), stdev = 9,357
+  Confidence interval (99.9%): [420,919, 762,326]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 79,00% complete, ETA 00:12:04
+# Fork: 1 of 1
+# Warmup Iteration   1: 631,687 ops/s
+# Warmup Iteration   2: 740,809 ops/s
+# Warmup Iteration   3: 761,543 ops/s
+Iteration   1: 748,553 ops/s
+Iteration   2: 735,422 ops/s
+Iteration   3: 735,372 ops/s
+
+
+Result: 739,782 ±(99.9%) 138,575 ops/s [Average]
+  Statistics: (min, avg, max) = (735,372, 739,782, 748,553), stdev = 7,596
+  Confidence interval (99.9%): [601,208, 878,357]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = naive)
+
+# Run progress: 80,00% complete, ETA 00:11:30
+# Fork: 1 of 1
+# Warmup Iteration   1: 55,316 ops/s
+# Warmup Iteration   2: 53,893 ops/s
+# Warmup Iteration   3: 53,835 ops/s
+Iteration   1: 53,842 ops/s
+Iteration   2: 53,627 ops/s
+Iteration   3: 53,475 ops/s
+
+
+Result: 53,648 ±(99.9%) 3,364 ops/s [Average]
+  Statistics: (min, avg, max) = (53,475, 53,648, 53,842), stdev = 0,184
+  Confidence interval (99.9%): [50,284, 57,012]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 81,00% complete, ETA 00:10:55
+# Fork: 1 of 1
+# Warmup Iteration   1: 60,163 ops/s
+# Warmup Iteration   2: 61,168 ops/s
+# Warmup Iteration   3: 61,049 ops/s
+Iteration   1: 61,003 ops/s
+Iteration   2: 60,598 ops/s
+Iteration   3: 60,669 ops/s
+
+
+Result: 60,757 ±(99.9%) 3,946 ops/s [Average]
+  Statistics: (min, avg, max) = (60,598, 60,757, 61,003), stdev = 0,216
+  Confidence interval (99.9%): [56,811, 64,703]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 82,00% complete, ETA 00:10:21
+# Fork: 1 of 1
+# Warmup Iteration   1: 442,149 ops/s
+# Warmup Iteration   2: 624,830 ops/s
+# Warmup Iteration   3: 682,204 ops/s
+Iteration   1: 675,829 ops/s
+Iteration   2: 669,062 ops/s
+Iteration   3: 676,638 ops/s
+
+
+Result: 673,843 ±(99.9%) 75,902 ops/s [Average]
+  Statistics: (min, avg, max) = (669,062, 673,843, 676,638), stdev = 4,160
+  Confidence interval (99.9%): [597,940, 749,745]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = Fixed)
+
+# Run progress: 83,00% complete, ETA 00:09:46
+# Fork: 1 of 1
+# Warmup Iteration   1: 47,806 ops/s
+# Warmup Iteration   2: 49,965 ops/s
+# Warmup Iteration   3: 50,315 ops/s
+Iteration   1: 50,127 ops/s
+Iteration   2: 50,192 ops/s
+Iteration   3: 50,060 ops/s
+
+
+Result: 50,126 ±(99.9%) 1,201 ops/s [Average]
+  Statistics: (min, avg, max) = (50,060, 50,126, 50,192), stdev = 0,066
+  Confidence interval (99.9%): [48,925, 51,327]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 84,00% complete, ETA 00:09:12
+# Fork: 1 of 1
+# Warmup Iteration   1: 175,861 ops/s
+# Warmup Iteration   2: 195,874 ops/s
+# Warmup Iteration   3: 195,282 ops/s
+Iteration   1: 192,721 ops/s
+Iteration   2: 189,726 ops/s
+Iteration   3: 188,554 ops/s
+
+
+Result: 190,334 ±(99.9%) 39,200 ops/s [Average]
+  Statistics: (min, avg, max) = (188,554, 190,334, 192,721), stdev = 2,149
+  Confidence interval (99.9%): [151,134, 229,534]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 85,00% complete, ETA 00:08:37
+# Fork: 1 of 1
+# Warmup Iteration   1: 994,344 ops/s
+# Warmup Iteration   2: 1266,474 ops/s
+# Warmup Iteration   3: 1713,282 ops/s
+Iteration   1: 1649,458 ops/s
+Iteration   2: 1654,637 ops/s
+Iteration   3: 1666,599 ops/s
+
+
+Result: 1656,898 ±(99.9%) 160,387 ops/s [Average]
+  Statistics: (min, avg, max) = (1649,458, 1656,898, 1666,599), stdev = 8,791
+  Confidence interval (99.9%): [1496,511, 1817,285]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 86,00% complete, ETA 00:08:03
+# Fork: 1 of 1
+# Warmup Iteration   1: 845,708 ops/s
+# Warmup Iteration   2: 1109,851 ops/s
+# Warmup Iteration   3: 1467,282 ops/s
+Iteration   1: 1415,267 ops/s
+Iteration   2: 1406,588 ops/s
+Iteration   3: 1412,251 ops/s
+
+
+Result: 1411,368 ±(99.9%) 80,390 ops/s [Average]
+  Statistics: (min, avg, max) = (1406,588, 1411,368, 1415,267), stdev = 4,406
+  Confidence interval (99.9%): [1330,978, 1491,759]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 87,00% complete, ETA 00:07:28
+# Fork: 1 of 1
+# Warmup Iteration   1: 172,023 ops/s
+# Warmup Iteration   2: 198,738 ops/s
+# Warmup Iteration   3: 207,995 ops/s
+Iteration   1: 202,104 ops/s
+Iteration   2: 196,018 ops/s
+Iteration   3: 195,211 ops/s
+
+
+Result: 197,778 ±(99.9%) 68,746 ops/s [Average]
+  Statistics: (min, avg, max) = (195,211, 197,778, 202,104), stdev = 3,768
+  Confidence interval (99.9%): [129,032, 266,524]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 88,00% complete, ETA 00:06:54
+# Fork: 1 of 1
+# Warmup Iteration   1: 684,786 ops/s
+# Warmup Iteration   2: 888,910 ops/s
+# Warmup Iteration   3: 1176,079 ops/s
+Iteration   1: 1149,996 ops/s
+Iteration   2: 1129,731 ops/s
+Iteration   3: 1122,983 ops/s
+
+
+Result: 1134,237 ±(99.9%) 256,489 ops/s [Average]
+  Statistics: (min, avg, max) = (1122,983, 1134,237, 1149,996), stdev = 14,059
+  Confidence interval (99.9%): [877,748, 1390,725]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 89,00% complete, ETA 00:06:19
+# Fork: 1 of 1
+# Warmup Iteration   1: 624,507 ops/s
+# Warmup Iteration   2: 566,290 ops/s
+# Warmup Iteration   3: 794,522 ops/s
+Iteration   1: 781,957 ops/s
+Iteration   2: 758,670 ops/s
+Iteration   3: 751,343 ops/s
+
+
+Result: 763,990 ±(99.9%) 291,628 ops/s [Average]
+  Statistics: (min, avg, max) = (751,343, 763,990, 781,957), stdev = 15,985
+  Confidence interval (99.9%): [472,362, 1055,618]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = naive)
+
+# Run progress: 90,00% complete, ETA 00:05:45
+# Fork: 1 of 1
+# Warmup Iteration   1: 11,383 ops/s
+# Warmup Iteration   2: 11,681 ops/s
+# Warmup Iteration   3: 11,730 ops/s
+Iteration   1: 11,725 ops/s
+Iteration   2: 11,645 ops/s
+Iteration   3: 11,618 ops/s
+
+
+Result: 11,663 ±(99.9%) 1,017 ops/s [Average]
+  Statistics: (min, avg, max) = (11,618, 11,663, 11,725), stdev = 0,056
+  Confidence interval (99.9%): [10,646, 12,679]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = a-global-queue)
+
+# Run progress: 91,00% complete, ETA 00:05:10
+# Fork: 1 of 1
+# Warmup Iteration   1: 11,606 ops/s
+# Warmup Iteration   2: 12,283 ops/s
+# Warmup Iteration   3: 12,351 ops/s
+Iteration   1: 12,354 ops/s
+Iteration   2: 12,320 ops/s
+Iteration   3: 12,275 ops/s
+
+
+Result: 12,316 ±(99.9%) 0,716 ops/s [Average]
+  Statistics: (min, avg, max) = (12,275, 12,316, 12,354), stdev = 0,039
+  Confidence interval (99.9%): [11,601, 13,032]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = a-strict-own)
+
+# Run progress: 92,00% complete, ETA 00:04:36
+# Fork: 1 of 1
+# Warmup Iteration   1: 104,857 ops/s
+# Warmup Iteration   2: 196,588 ops/s
+# Warmup Iteration   3: 200,795 ops/s
+Iteration   1: 198,874 ops/s
+Iteration   2: 198,287 ops/s
+Iteration   3: 197,166 ops/s
+
+
+Result: 198,109 ±(99.9%) 15,833 ops/s [Average]
+  Statistics: (min, avg, max) = (197,166, 198,109, 198,874), stdev = 0,868
+  Confidence interval (99.9%): [182,276, 213,942]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = Fixed)
+
+# Run progress: 93,00% complete, ETA 00:04:01
+# Fork: 1 of 1
+# Warmup Iteration   1: 9,693 ops/s
+# Warmup Iteration   2: 10,488 ops/s
+# Warmup Iteration   3: 10,650 ops/s
+Iteration   1: 10,528 ops/s
+Iteration   2: 10,475 ops/s
+Iteration   3: 10,526 ops/s
+
+
+Result: 10,510 ±(99.9%) 0,550 ops/s [Average]
+  Statistics: (min, avg, max) = (10,475, 10,510, 10,528), stdev = 0,030
+  Confidence interval (99.9%): [9,960, 11,060]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = ForkJoinSharedQueues)
+
+# Run progress: 94,00% complete, ETA 00:03:27
+# Fork: 1 of 1
+# Warmup Iteration   1: 45,999 ops/s
+# Warmup Iteration   2: 50,366 ops/s
+# Warmup Iteration   3: 51,067 ops/s
+Iteration   1: 51,243 ops/s
+Iteration   2: 49,773 ops/s
+Iteration   3: 49,722 ops/s
+
+
+Result: 50,246 ±(99.9%) 15,760 ops/s [Average]
+  Statistics: (min, avg, max) = (49,722, 50,246, 51,243), stdev = 0,864
+  Confidence interval (99.9%): [34,486, 66,006]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = ForkJoinLifo)
+
+# Run progress: 95,00% complete, ETA 00:02:52
+# Fork: 1 of 1
+# Warmup Iteration   1: 238,598 ops/s
+# Warmup Iteration   2: 326,512 ops/s
+# Warmup Iteration   3: 333,684 ops/s
+Iteration   1: 324,823 ops/s
+Iteration   2: 321,030 ops/s
+Iteration   3: 316,444 ops/s
+
+
+Result: 320,766 ±(99.9%) 76,547 ops/s [Average]
+  Statistics: (min, avg, max) = (316,444, 320,766, 324,823), stdev = 4,196
+  Confidence interval (99.9%): [244,219, 397,313]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = ForkJoinFifo)
+
+# Run progress: 96,00% complete, ETA 00:02:18
+# Fork: 1 of 1
+# Warmup Iteration   1: 230,106 ops/s
+# Warmup Iteration   2: 272,158 ops/s
+# Warmup Iteration   3: 293,330 ops/s
+Iteration   1: 292,165 ops/s
+Iteration   2: 289,784 ops/s
+Iteration   3: 290,035 ops/s
+
+
+Result: 290,661 ±(99.9%) 23,869 ops/s [Average]
+  Statistics: (min, avg, max) = (289,784, 290,661, 292,165), stdev = 1,308
+  Confidence interval (99.9%): [266,792, 314,531]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = J9FjSharedQueues)
+
+# Run progress: 97,00% complete, ETA 00:01:43
+# Fork: 1 of 1
+# Warmup Iteration   1: 47,364 ops/s
+# Warmup Iteration   2: 50,564 ops/s
+# Warmup Iteration   3: 51,464 ops/s
+Iteration   1: 52,203 ops/s
+Iteration   2: 50,150 ops/s
+Iteration   3: 49,722 ops/s
+
+
+Result: 50,692 ±(99.9%) 24,198 ops/s [Average]
+  Statistics: (min, avg, max) = (49,722, 50,692, 52,203), stdev = 1,326
+  Confidence interval (99.9%): [26,494, 74,890]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = J9FjLifo)
+
+# Run progress: 98,00% complete, ETA 00:01:09
+# Fork: 1 of 1
+# Warmup Iteration   1: 234,631 ops/s
+# Warmup Iteration   2: 336,115 ops/s
+# Warmup Iteration   3: 372,868 ops/s
+Iteration   1: 348,013 ops/s
+Iteration   2: 355,052 ops/s
+Iteration   3: 349,733 ops/s
+
+
+Result: 350,933 ±(99.9%) 66,953 ops/s [Average]
+  Statistics: (min, avg, max) = (348,013, 350,933, 355,052), stdev = 3,670
+  Confidence interval (99.9%): [283,979, 417,886]
+
+
+# VM invoker: /opt/jdk1.8.0_60/jre/bin/java
+# VM options: <none>
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 10 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = J9FjFifo)
+
+# Run progress: 99,00% complete, ETA 00:00:34
+# Fork: 1 of 1
+# Warmup Iteration   1: 200,171 ops/s
+# Warmup Iteration   2: 251,947 ops/s
+# Warmup Iteration   3: 286,325 ops/s
+Iteration   1: 268,834 ops/s
+Iteration   2: 268,591 ops/s
+Iteration   3: 266,517 ops/s
+
+
+Result: 267,981 ±(99.9%) 23,227 ops/s [Average]
+  Statistics: (min, avg, max) = (266,517, 267,981, 268,834), stdev = 1,273
+  Confidence interval (99.9%): [244,753, 291,208]
+
+
+# Run complete. Total time: 00:57:32
+
+Benchmark                                          (strategy)   Mode  Samples        Score  Score error  Units
+b.PoolBenchmark._testSimpleScheduling                   naive  thrpt        3      493,588       47,518  ops/s
+b.PoolBenchmark._testSimpleScheduling          a-global-queue  thrpt        3      460,081       28,176  ops/s
+b.PoolBenchmark._testSimpleScheduling            a-strict-own  thrpt        3      435,350       66,790  ops/s
+b.PoolBenchmark._testSimpleScheduling                   Fixed  thrpt        3      395,447        9,523  ops/s
+b.PoolBenchmark._testSimpleScheduling    ForkJoinSharedQueues  thrpt        3      531,028       24,380  ops/s
+b.PoolBenchmark._testSimpleScheduling            ForkJoinLifo  thrpt        3      537,033       18,343  ops/s
+b.PoolBenchmark._testSimpleScheduling            ForkJoinFifo  thrpt        3      545,954       30,390  ops/s
+b.PoolBenchmark._testSimpleScheduling        J9FjSharedQueues  thrpt        3      534,687       48,806  ops/s
+b.PoolBenchmark._testSimpleScheduling                J9FjLifo  thrpt        3      507,590       61,050  ops/s
+b.PoolBenchmark._testSimpleScheduling                J9FjFifo  thrpt        3      512,898       50,228  ops/s
+b.PoolBenchmark._testStealExpensive                     naive  thrpt        3      209,358       12,911  ops/s
+b.PoolBenchmark._testStealExpensive            a-global-queue  thrpt        3      231,306       10,334  ops/s
+b.PoolBenchmark._testStealExpensive              a-strict-own  thrpt        3      337,224       12,909  ops/s
+b.PoolBenchmark._testStealExpensive                     Fixed  thrpt        3      214,621        4,625  ops/s
+b.PoolBenchmark._testStealExpensive      ForkJoinSharedQueues  thrpt        3      595,285        7,913  ops/s
+b.PoolBenchmark._testStealExpensive              ForkJoinLifo  thrpt        3      816,235       54,048  ops/s
+b.PoolBenchmark._testStealExpensive              ForkJoinFifo  thrpt        3      691,926       22,274  ops/s
+b.PoolBenchmark._testStealExpensive          J9FjSharedQueues  thrpt        3      552,448       36,591  ops/s
+b.PoolBenchmark._testStealExpensive                  J9FjLifo  thrpt        3      773,900       28,602  ops/s
+b.PoolBenchmark._testStealExpensive                  J9FjFifo  thrpt        3      649,467       35,667  ops/s
+b.PoolBenchmark._testStealVeryCheap                     naive  thrpt        3      486,873       16,537  ops/s
+b.PoolBenchmark._testStealVeryCheap            a-global-queue  thrpt        3      485,465       23,690  ops/s
+b.PoolBenchmark._testStealVeryCheap              a-strict-own  thrpt        3     1701,898      404,798  ops/s
+b.PoolBenchmark._testStealVeryCheap                     Fixed  thrpt        3      400,450       24,444  ops/s
+b.PoolBenchmark._testStealVeryCheap      ForkJoinSharedQueues  thrpt        3      545,606       63,796  ops/s
+b.PoolBenchmark._testStealVeryCheap              ForkJoinLifo  thrpt        3      746,368       19,547  ops/s
+b.PoolBenchmark._testStealVeryCheap              ForkJoinFifo  thrpt        3      592,282       17,123  ops/s
+b.PoolBenchmark._testStealVeryCheap          J9FjSharedQueues  thrpt        3      500,354       31,760  ops/s
+b.PoolBenchmark._testStealVeryCheap                  J9FjLifo  thrpt        3      655,813      157,326  ops/s
+b.PoolBenchmark._testStealVeryCheap                  J9FjFifo  thrpt        3      542,392       25,818  ops/s
+b.PoolBenchmark.testFactorialMulti7                     naive  thrpt        3   324610,246    32440,703  ops/s
+b.PoolBenchmark.testFactorialMulti7            a-global-queue  thrpt        3   332664,626    35076,880  ops/s
+b.PoolBenchmark.testFactorialMulti7              a-strict-own  thrpt        3   441889,248    78879,761  ops/s
+b.PoolBenchmark.testFactorialMulti7                     Fixed  thrpt        3   296199,597    11565,975  ops/s
+b.PoolBenchmark.testFactorialMulti7      ForkJoinSharedQueues  thrpt        3   640466,580   295894,977  ops/s
+b.PoolBenchmark.testFactorialMulti7              ForkJoinLifo  thrpt        3   794224,057    99706,399  ops/s
+b.PoolBenchmark.testFactorialMulti7              ForkJoinFifo  thrpt        3   770317,694    64937,508  ops/s
+b.PoolBenchmark.testFactorialMulti7          J9FjSharedQueues  thrpt        3   565380,683   329333,608  ops/s
+b.PoolBenchmark.testFactorialMulti7                  J9FjLifo  thrpt        3   732633,130   117678,693  ops/s
+b.PoolBenchmark.testFactorialMulti7                  J9FjFifo  thrpt        3   748533,752    85762,224  ops/s
+b.PoolBenchmark.testFactorialMulti8                     naive  thrpt        3   337678,492    47646,294  ops/s
+b.PoolBenchmark.testFactorialMulti8            a-global-queue  thrpt        3   318007,925    44617,698  ops/s
+b.PoolBenchmark.testFactorialMulti8              a-strict-own  thrpt        3   454358,343    70475,481  ops/s
+b.PoolBenchmark.testFactorialMulti8                     Fixed  thrpt        3   306040,839     3619,472  ops/s
+b.PoolBenchmark.testFactorialMulti8      ForkJoinSharedQueues  thrpt        3   654202,476    60184,062  ops/s
+b.PoolBenchmark.testFactorialMulti8              ForkJoinLifo  thrpt        3  1054765,109   196977,199  ops/s
+b.PoolBenchmark.testFactorialMulti8              ForkJoinFifo  thrpt        3   943013,840   150423,227  ops/s
+b.PoolBenchmark.testFactorialMulti8          J9FjSharedQueues  thrpt        3   584301,625   728623,149  ops/s
+b.PoolBenchmark.testFactorialMulti8                  J9FjLifo  thrpt        3   804356,271   108885,065  ops/s
+b.PoolBenchmark.testFactorialMulti8                  J9FjFifo  thrpt        3   978025,478   178481,867  ops/s
+b.PoolBenchmark.testFactorialSingle                     naive  thrpt        3   118608,752    10111,806  ops/s
+b.PoolBenchmark.testFactorialSingle            a-global-queue  thrpt        3   113961,157    16486,900  ops/s
+b.PoolBenchmark.testFactorialSingle              a-strict-own  thrpt        3   120515,937      981,028  ops/s
+b.PoolBenchmark.testFactorialSingle                     Fixed  thrpt        3    89108,535     3236,716  ops/s
+b.PoolBenchmark.testFactorialSingle      ForkJoinSharedQueues  thrpt        3    69215,684      819,173  ops/s
+b.PoolBenchmark.testFactorialSingle              ForkJoinLifo  thrpt        3    74757,240     1933,518  ops/s
+b.PoolBenchmark.testFactorialSingle              ForkJoinFifo  thrpt        3    73842,236      777,354  ops/s
+b.PoolBenchmark.testFactorialSingle          J9FjSharedQueues  thrpt        3    60957,087      322,537  ops/s
+b.PoolBenchmark.testFactorialSingle                  J9FjLifo  thrpt        3    65321,106     1612,024  ops/s
+b.PoolBenchmark.testFactorialSingle                  J9FjFifo  thrpt        3    65576,839      426,046  ops/s
+b.PoolBenchmark.testPingPong01                          naive  thrpt        3      375,526       30,944  ops/s
+b.PoolBenchmark.testPingPong01                 a-global-queue  thrpt        3      383,207       31,364  ops/s
+b.PoolBenchmark.testPingPong01                   a-strict-own  thrpt        3     1847,723      691,606  ops/s
+b.PoolBenchmark.testPingPong01                          Fixed  thrpt        3      321,542        0,416  ops/s
+b.PoolBenchmark.testPingPong01           ForkJoinSharedQueues  thrpt        3      260,781        9,868  ops/s
+b.PoolBenchmark.testPingPong01                   ForkJoinLifo  thrpt        3      503,328       13,132  ops/s
+b.PoolBenchmark.testPingPong01                   ForkJoinFifo  thrpt        3      477,869       40,205  ops/s
+b.PoolBenchmark.testPingPong01               J9FjSharedQueues  thrpt        3      263,390        4,799  ops/s
+b.PoolBenchmark.testPingPong01                       J9FjLifo  thrpt        3      459,577        9,418  ops/s
+b.PoolBenchmark.testPingPong01                       J9FjFifo  thrpt        3      421,277        5,197  ops/s
+b.PoolBenchmark.testPingPong02                          naive  thrpt        3      211,638       18,059  ops/s
+b.PoolBenchmark.testPingPong02                 a-global-queue  thrpt        3      215,757       14,467  ops/s
+b.PoolBenchmark.testPingPong02                   a-strict-own  thrpt        3      794,091      360,748  ops/s
+b.PoolBenchmark.testPingPong02                          Fixed  thrpt        3      182,098        2,852  ops/s
+b.PoolBenchmark.testPingPong02           ForkJoinSharedQueues  thrpt        3      286,678       85,343  ops/s
+b.PoolBenchmark.testPingPong02                   ForkJoinLifo  thrpt        3      645,900       39,081  ops/s
+b.PoolBenchmark.testPingPong02                   ForkJoinFifo  thrpt        3      835,812      289,309  ops/s
+b.PoolBenchmark.testPingPong02               J9FjSharedQueues  thrpt        3      289,353        8,491  ops/s
+b.PoolBenchmark.testPingPong02                       J9FjLifo  thrpt        3      591,622      170,704  ops/s
+b.PoolBenchmark.testPingPong02                       J9FjFifo  thrpt        3      739,782      138,575  ops/s
+b.PoolBenchmark.testPingPong07                          naive  thrpt        3       53,648        3,364  ops/s
+b.PoolBenchmark.testPingPong07                 a-global-queue  thrpt        3       60,757        3,946  ops/s
+b.PoolBenchmark.testPingPong07                   a-strict-own  thrpt        3      673,843       75,902  ops/s
+b.PoolBenchmark.testPingPong07                          Fixed  thrpt        3       50,126        1,201  ops/s
+b.PoolBenchmark.testPingPong07           ForkJoinSharedQueues  thrpt        3      190,334       39,200  ops/s
+b.PoolBenchmark.testPingPong07                   ForkJoinLifo  thrpt        3     1656,898      160,387  ops/s
+b.PoolBenchmark.testPingPong07                   ForkJoinFifo  thrpt        3     1411,368       80,390  ops/s
+b.PoolBenchmark.testPingPong07               J9FjSharedQueues  thrpt        3      197,778       68,746  ops/s
+b.PoolBenchmark.testPingPong07                       J9FjLifo  thrpt        3     1134,237      256,489  ops/s
+b.PoolBenchmark.testPingPong07                       J9FjFifo  thrpt        3      763,990      291,628  ops/s
+b.PoolBenchmark.testPingPong32                          naive  thrpt        3       11,663        1,017  ops/s
+b.PoolBenchmark.testPingPong32                 a-global-queue  thrpt        3       12,316        0,716  ops/s
+b.PoolBenchmark.testPingPong32                   a-strict-own  thrpt        3      198,109       15,833  ops/s
+b.PoolBenchmark.testPingPong32                          Fixed  thrpt        3       10,510        0,550  ops/s
+b.PoolBenchmark.testPingPong32           ForkJoinSharedQueues  thrpt        3       50,246       15,760  ops/s
+b.PoolBenchmark.testPingPong32                   ForkJoinLifo  thrpt        3      320,766       76,547  ops/s
+b.PoolBenchmark.testPingPong32                   ForkJoinFifo  thrpt        3      290,661       23,869  ops/s
+b.PoolBenchmark.testPingPong32               J9FjSharedQueues  thrpt        3       50,692       24,198  ops/s
+b.PoolBenchmark.testPingPong32                       J9FjLifo  thrpt        3      350,933       66,953  ops/s
+b.PoolBenchmark.testPingPong32                       J9FjFifo  thrpt        3      267,981       23,227  ops/s

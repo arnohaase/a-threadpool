@@ -17,8 +17,8 @@ import java.util.concurrent.*;
 //@Fork (0)
 @Fork (1)
 @Threads (1)
-@Warmup (iterations = 3, time = 3)
-@Measurement (iterations = 5, time = 30)
+@Warmup (iterations = 3, time = 1)
+@Measurement (iterations = 3, time = 10)
 @State (Scope.Benchmark)
 public class PoolBenchmark {
     APool pool;
@@ -26,7 +26,7 @@ public class PoolBenchmark {
     @Param ({
             "naive",
             "a-global-queue",
-            "work-stealing",
+//            "work-stealing",
             "a-strict-own",
             "Fixed",
             "ForkJoinSharedQueues",
@@ -43,7 +43,7 @@ public class PoolBenchmark {
         switch (strategy) {
             case "naive":          pool = new NaivePool (8); break;
             case "a-global-queue": pool = new APoolImpl (8, ASchedulingStrategy.SingleQueue ()).start (); break;
-            case "a-strict-own":   pool = new APoolImpl (8, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
+            case "a-strict-own":   pool = new APoolImpl (32, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
 //            case "work-stealing":  pool = new WorkStealingPoolImpl (1).start (); break;
             case "work-stealing":  pool = new WorkStealingPoolImpl (8).start (); break;
             case "Fixed":          pool = new DelegatingPool (Executors.newFixedThreadPool (8)); break;
@@ -133,7 +133,7 @@ public class PoolBenchmark {
         }
     }
 
-    @Benchmark
+//    @Benchmark
     public void testRecursiveFibo() throws ExecutionException, InterruptedException {
         fibo (8);
     }
