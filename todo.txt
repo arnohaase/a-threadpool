@@ -1,18 +1,6 @@
 todo
 ----
-* Benchmarks:
-  * JDK-9 LIFO
-  * JDK-9 FIFO
-  * JDK-9 global
-  * naive
-
-* submit for JAX
-  * LMAX: Single (or multi, but single preferred) producer, *single* consumer (but potentially several consumers for each event, a la Kafka); support for workflows by communicating of consumers through events; low latency over CPU usage
-  * memory barriers
-  * cache lines
-    * typically 64 bytes, 32-256, effectively hash map with fixed buckets --> associativity; false sharing; poisoning; latency / cost for different levels vs. RAM (vs. network or SSD)
 * M Michael: *single* consumer
-* M Roland: starvation due to LIFO in private queues?
 
 * explicit trade-offs:
   * low latency
