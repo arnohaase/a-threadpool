@@ -1,8 +1,5 @@
 package com.ajjpj.concurrent.pool.a;
 
-import com.ajjpj.concurrent.pool.AFuture;
-import com.ajjpj.concurrent.pool.APool;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
@@ -10,7 +7,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @author arno
  */
-public class APoolImpl implements APool {
+public class APoolImpl implements APoolOld {
     private final ASchedulingStrategy schedulingStrategy;
 
     final AThread[] threads;
@@ -43,15 +40,15 @@ public class APoolImpl implements APool {
         return this;
     }
 
-    @Override public <T> AFuture<T> submit (Callable<T> code) {
+    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
         final Thread curThread = Thread.currentThread ();
         if (curThread instanceof AThread && ((AThread) curThread).pool == this) {
-            final ATask<T> result = new ATask<> ();
+            final ATaskOld<T> result = new ATaskOld<> ();
             ((AThread) curThread).queue.submit (new ASubmittable (result, code));
             return result;
         }
         else {
-            final ATask<T> result = new ATask<> ();
+            final ATaskOld<T> result = new ATaskOld<> ();
             globalQueue.submit (new ASubmittable (result, code));
             return result;
         }
@@ -72,10 +69,10 @@ public class APoolImpl implements APool {
     }
 
     static class ASubmittable implements Runnable {
-        private final ATask result;
+        private final ATaskOld result;
         private final Callable code;
 
-        public ASubmittable (ATask result, Callable code) {
+        public ASubmittable (ATaskOld result, Callable code) {
             this.result = result;
             this.code = code;
         }

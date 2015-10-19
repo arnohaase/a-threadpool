@@ -1,7 +1,6 @@
 package com.ajjpj.concurrent.pool.a;
 
 import com.ajjpj.afoundation.collection.immutable.AList;
-import com.ajjpj.concurrent.pool.AFuture;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -11,7 +10,7 @@ import java.util.concurrent.locks.LockSupport;
 /**
  * @author arno
  */
-public class ATask<T> implements AFuture<T> {
+public class ATaskOld<T> implements AFutureOld<T> {
     //TODO make original Callable extractable --> resubmit
     private final AtomicReference<AList<Thread>> waiters = new AtomicReference<> (AList.nil ());
     private final AtomicReference<Result> result = new AtomicReference<> ();

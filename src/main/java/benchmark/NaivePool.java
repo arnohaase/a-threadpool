@@ -1,6 +1,8 @@
-package com.ajjpj.concurrent.pool;
+package benchmark;
 
 import com.ajjpj.afoundation.collection.immutable.AList;
+import com.ajjpj.concurrent.pool.a.AFutureOld;
+import com.ajjpj.concurrent.pool.a.APoolOld;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,7 +13,7 @@ import java.util.concurrent.locks.LockSupport;
 /**
  * @author arno
  */
-public class NaivePool implements APool {
+public class NaivePool implements APoolOld {
     private final Runnable SHUTDOWN = () -> {};
 
     private final AtomicBoolean shutdown = new AtomicBoolean (false);
@@ -44,7 +46,7 @@ public class NaivePool implements APool {
         }
     }
 
-    @Override public <T> AFuture<T> submit (final Callable<T> code) {
+    @Override public <T> AFutureOld<T> submit (final Callable<T> code) {
         if (shutdown.get ()) {
             throw new RejectedExecutionException ();
         }

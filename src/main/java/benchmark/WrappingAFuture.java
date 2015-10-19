@@ -1,4 +1,6 @@
-package com.ajjpj.concurrent.pool;
+package benchmark;
+
+import com.ajjpj.concurrent.pool.a.AFutureOld;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -7,7 +9,7 @@ import java.util.concurrent.Future;
 /**
  * @author arno
  */
-class WrappingAFuture<T> implements AFuture<T> {
+class WrappingAFuture<T> implements AFutureOld<T> {
     private final Future<T> inner;
 
     public WrappingAFuture (Future<T> inner) {

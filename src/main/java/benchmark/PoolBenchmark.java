@@ -1,9 +1,6 @@
 package benchmark;
 
-import com.ajjpj.concurrent.pool.*;
-import com.ajjpj.concurrent.pool.a.APoolImpl;
-import com.ajjpj.concurrent.pool.a.ASchedulingStrategy;
-import com.ajjpj.concurrent.pool.a.WorkStealingPoolImpl;
+import com.ajjpj.concurrent.pool.a.*;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -21,7 +18,7 @@ import java.util.concurrent.*;
 @Measurement (iterations = 3, time = 10)
 @State (Scope.Benchmark)
 public class PoolBenchmark {
-    APool pool;
+    APoolOld pool;
 
     @Param ({
             "naive",
@@ -141,7 +138,7 @@ public class PoolBenchmark {
     long fibo (long n) throws ExecutionException, InterruptedException {
         if (n <= 1) return 1;
 
-        final AFuture<Long> f = pool.submit (() -> fibo(n-1));
+        final AFutureOld<Long> f = pool.submit (() -> fibo(n-1));
         return f.get() + pool.submit (() -> fibo(n-2)).get ();
     }
 

@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool;
+package com.ajjpj.concurrent.pool.a;
 
 import java.util.concurrent.ExecutionException;
 
@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author arno
  */
-public interface AFuture<T> {
+public interface AFutureOld<T> {
     boolean isDone ();
     T get () throws InterruptedException, ExecutionException;
 }

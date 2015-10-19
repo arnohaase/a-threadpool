@@ -7,18 +7,43 @@ todo
   * high throughput
   * optimized for "external" vs. "internal" submissions
   * special optimizations for "single external producer"?
+  * number of external producers
+  * bounded / unbounded queues
+
+* how to handle queue overflow (esp. for thread-local queues!)
 
 * allow tasks to be resubmitted (?)
 
+* benchmarks on real multi-processor machine
+* benchmarks for different number of producer threads
+
+* divide and conquer - issues to tackle / design separately
+  * "private" queues
+  * "shared" queues
+  * managing idle workers, waking them up when work arrives, work stealing
+  * algorithmic optimizations --> PingPong01, delay work stealing, ...
+  * AFuture, APromise --> notifications, ...
+  * AThreadPoolTask --> implements AStatement0(?), AFunction0, APromise(?), AFuture(?)
+    * is it a significant optimization to put all these into a single class? --> is it worth giving up separation of concerns and encapsulation?
+  * lifecycle management - cancellation, shutdown, Thread.stop(), Thread.interrupt(), ...
 
 
 ideas / decisions
 -----------------
 * many top-level queues
 * cancel does *not* eagerly remove task(!)
-* FIFO vs LIFO for local queues - LIFO is faster (in F/J), FIFO is expected behavior
+* FIFO vs LIFO for local queues - LIFO is faster (in F/J), FIFO is expected behavior --> LIFO with intermittent FIFO fetching?
+  * --> latency vs. throughput
 * pre-allocate tasks in array? --> wrapper objects, factory
 * notifications for finished tasks - array with listener refs instead of linked list
+  * fixed number of refs --> avoid indirection, good locality
+* for "shared" queues: configurable number of non-ThreadPool producers --> single, "pool" (i.e. bounded with a low change rate), "unknown" (i.e. default, no optimizations)
+  * queue per producer
+  * possible optimizations for lookup of tasks from workers
+  * --> does performance even benefit from this?
+* different handling for "fire-and-forget" vs. stuff returning AFuture
+* affinity / locality for new (locally submitted) tasks as a parameter on submission
+
 
 insights
 --------
@@ -35,6 +60,7 @@ naming conventions
 * c = ctl
 * b = base
 * s = top
+* m = (bit) mask to project offset into array bounds
 
 
 Ansehen

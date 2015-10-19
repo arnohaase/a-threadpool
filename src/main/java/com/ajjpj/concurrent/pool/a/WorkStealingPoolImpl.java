@@ -1,8 +1,5 @@
 package com.ajjpj.concurrent.pool.a;
 
-import com.ajjpj.concurrent.pool.AFuture;
-import com.ajjpj.concurrent.pool.APool;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RejectedExecutionException;
@@ -20,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author arno
  */
-public class WorkStealingPoolImpl implements APool {
+public class WorkStealingPoolImpl implements APoolOld {
     final WorkStealingThread[] threads;
     final WorkStealingLocalQueue[] localQueues;
     final WorkStealingGlobalQueue globalQueue;
@@ -56,8 +53,8 @@ public class WorkStealingPoolImpl implements APool {
         return this;
     }
 
-    @Override public <T> AFuture<T> submit (Callable<T> code) {
-        final ATask<T> result = new ATask<> ();
+    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
+        final ATaskOld<T> result = new ATaskOld<> ();
         final ASubmittable submittable = new ASubmittable (result, code);
 
         doSubmit (submittable);
@@ -160,15 +157,15 @@ public class WorkStealingPoolImpl implements APool {
     static class ASubmittable implements Runnable {
         static final long UNQUEUED = -1;
 
-        private final ATask result;
+        private final ATaskOld result;
         private final Callable code;
         long queueIndex;
 
-        ASubmittable (ATask result, Callable code) {
+        ASubmittable (ATaskOld result, Callable code) {
             this (result, code, UNQUEUED);
         }
 
-        ASubmittable (ATask result, Callable code, long queueIndex) {
+        ASubmittable (ATaskOld result, Callable code, long queueIndex) {
             this.result = result;
             this.code = code;
             this.queueIndex = queueIndex;

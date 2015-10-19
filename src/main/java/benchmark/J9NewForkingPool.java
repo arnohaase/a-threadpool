@@ -1,19 +1,23 @@
-package com.ajjpj.concurrent.pool;
+package benchmark;
 
-import java.util.concurrent.*;
+import com.ajjpj.concurrent.pool.a.AFutureOld;
+import com.ajjpj.concurrent.pool.a.APoolOld;
+import jdk.j9new.*;
+
+import java.util.concurrent.Callable;
 
 
 /**
  * @author arno
  */
-public class ForkJoinForkingPool implements APool {
-    private final ForkJoinPool ec;
+public class J9NewForkingPool implements APoolOld {
+    private final jdk.j9new.ForkJoinPool ec;
 
-    public ForkJoinForkingPool (ForkJoinPool ec) {
+    public J9NewForkingPool (ForkJoinPool ec) {
         this.ec = ec;
     }
 
-    @Override public <T> AFuture<T> submit (Callable<T> code) {
+    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
         if (Thread.currentThread () instanceof ForkJoinWorkerThread) {
             final ForkJoinTask<T> task = ForkJoinTask.adapt (code);
             task.fork ();
