@@ -120,13 +120,17 @@ public class PoolBenchmark {
         }
     }
 
-    static class SettableFutureTask<T> extends FutureTask<T> {
+    public static class SettableFutureTask<T> extends FutureTask<T> {
         public SettableFutureTask (Callable<T> callable) {
             super (callable);
         }
 
         @Override public void set (T t) {
             super.set (t);
+        }
+
+        @Override public void setException (Throwable t) {
+            super.setException (t);
         }
     }
 

@@ -26,6 +26,7 @@ todo
   * AThreadPoolTask --> implements AStatement0(?), AFunction0, APromise(?), AFuture(?)
     * is it a significant optimization to put all these into a single class? --> is it worth giving up separation of concerns and encapsulation?
   * lifecycle management - cancellation, shutdown, Thread.stop(), Thread.interrupt(), ...
+  * execution and error handling
 
 
 ideas / decisions
@@ -42,12 +43,17 @@ ideas / decisions
   * possible optimizations for lookup of tasks from workers
   * --> does performance even benefit from this?
 * different handling for "fire-and-forget" vs. stuff returning AFuture
-* affinity / locality for new (locally submitted) tasks as a parameter on submission
+* affinity / locality for new (locally submitted) tasks as a parameter on submission --> how eagerly or lazily it is stolen
 
 
 insights
 --------
 * putOrdered(): store-store barrier without store-load barrier --> ordering guarantees w/o strong visibility guarantees, but eventually (typically fast) visible
+* volatile in Java: LOCK ADDL..., 0
+* MFENCE, LFENCE, SFENCE, CPUID
+* Memory Type Range Registers (MTRR)
+* grouping of operations with barriers at the start and at the end
+* injecting work *into* idling workers does not work (or at least incurs significant overhead): There is no (cheap) way to maintain a list of all currently idling workers
 
 
 F/J
