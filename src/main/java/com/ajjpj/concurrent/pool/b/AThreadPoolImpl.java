@@ -39,7 +39,11 @@ public class AThreadPoolImpl {
             localQueues[i] = new LocalQueue (this, localQueueSize);
             final WorkerThread thread = new WorkerThread (localQueues[i], globalQueue, this, i);
             localQueues[i].init (thread);
-            thread.start ();
+        }
+
+        for (LocalQueue queue: localQueues) {
+            //noinspection ConstantConditions
+            queue.thread.start ();
         }
     }
 
@@ -50,10 +54,18 @@ public class AThreadPoolImpl {
 
         final AThreadPoolTask<T> task = new AThreadPoolTask<> (code);
         globalQueue.add (task);
+        if (globalQueue.size () < 2) {
+            onStealableTask ();
+        }
+
         return task.future;
     }
 
     public void shutdown() {
+        if (shutdown) {
+            return;
+        }
+
         shutdown = true;
         globalQueue.clear ();
 

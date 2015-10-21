@@ -12,10 +12,11 @@ public class AThreadPoolTask<T> {
     final Callable<T> code;
 
     //TODO clean up this hack
-    public final PoolBenchmark.SettableFutureTask<T> future = new PoolBenchmark.SettableFutureTask<T> (null);
+    public final PoolBenchmark.SettableFutureTask<T> future;
 
     public AThreadPoolTask (Callable<T> code) {
         this.code = code;
+        this.future = new PoolBenchmark.SettableFutureTask<T> (code);
     }
 
     void execute() {

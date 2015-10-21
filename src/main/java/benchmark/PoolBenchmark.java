@@ -1,6 +1,7 @@
 package benchmark;
 
 import com.ajjpj.concurrent.pool.a.*;
+import com.ajjpj.concurrent.pool.b.AThreadPoolImpl;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -15,22 +16,23 @@ import java.util.concurrent.*;
 @Fork (1)
 @Threads (1)
 @Warmup (iterations = 3, time = 1)
-@Measurement (iterations = 3, time = 10)
+@Measurement (iterations = 3, time = 3)
 @State (Scope.Benchmark)
 public class PoolBenchmark {
     APoolOld pool;
 
     @Param ({
-            "naive",
-            "a-global-queue",
+            "b",
+//            "naive",
+//            "a-global-queue",
 //            "work-stealing",
-            "a-strict-own",
-            "Fixed",
-            "ForkJoinSharedQueues",
-            "ForkJoinLifo",
-            "ForkJoinFifo",
-            "J9FjSharedQueues",
-            "J9FjLifo",
+//            "a-strict-own",
+//            "Fixed",
+//            "ForkJoinSharedQueues",
+//            "ForkJoinLifo",
+//            "ForkJoinFifo",
+//            "J9FjSharedQueues",
+//            "J9FjLifo",
             "J9FjFifo"
     })
     public String strategy;
@@ -38,6 +40,7 @@ public class PoolBenchmark {
     @Setup
     public void setUp() {
         switch (strategy) {
+            case "b":              pool = new NewPoolAdapter_B (new AThreadPoolImpl (8, 65536, 65536)); break;
             case "naive":          pool = new NaivePool (8); break;
             case "a-global-queue": pool = new APoolImpl (8, ASchedulingStrategy.SingleQueue ()).start (); break;
             case "a-strict-own":   pool = new APoolImpl (32, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
