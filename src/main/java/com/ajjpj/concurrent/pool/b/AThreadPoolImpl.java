@@ -4,9 +4,7 @@ import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 
 /**
@@ -24,15 +22,16 @@ public class AThreadPoolImpl {
      * TODO this currently limits the number of threads to 64 --> generalize
      */
     @SuppressWarnings ("FieldCanBeLocal")
-    private volatile long idleThreads = 0;
+//    private volatile long idleThreads = 0;
 
-    private final ArrayBlockingQueue<AThreadPoolTask> globalQueue;
+    private final BlockingQueue<AThreadPoolTask> globalQueue;
     final LocalQueue[] localQueues;
 
     volatile boolean shutdown;
 
     public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize) {
-        globalQueue = new ArrayBlockingQueue<> (globalQueueSize);
+        globalQueue = new LinkedBlockingQueue<> (globalQueueSize);
+//        globalQueue = new ArrayBlockingQueue<> (globalQueueSize);
 
         localQueues = new LocalQueue[numThreads];
         for (int i=0; i<numThreads; i++) {
@@ -93,30 +92,30 @@ public class AThreadPoolImpl {
 
 
     void onStealableTask () {
-        long idleBitMask = idleThreads;
+//        long idleBitMask = idleThreads;
 
         for (LocalQueue localQueue : localQueues) {
-            if ((idleBitMask & 1L) != 0) {
+//            if ((idleBitMask & 1L) != 0) {
                 UNSAFE.unpark (localQueue.thread);
-            }
-            idleBitMask = idleBitMask >> 1;
+//            }
+//            idleBitMask = idleBitMask >> 1;
         }
     }
 
     void markWorkerAsIdle (long mask) {
-        long prev;
-        do {
-            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
-        }
-        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev | mask));
+//        long prev;
+//        do {
+//            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+//        }
+//        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev | mask));
     }
 
     void markWorkerAsUnIdle (long mask) {
-        long prev;
-        do {
-            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
-        }
-        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev & ~mask));
+//        long prev;
+//        do {
+//            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+//        }
+//        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev & ~mask));
     }
 
     //------------------ Unsafe stuff

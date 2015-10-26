@@ -5,6 +5,7 @@ import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 
 /**
@@ -12,12 +13,12 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 class WorkerThread extends Thread {
     final LocalQueue localQueue;
-    final ArrayBlockingQueue<AThreadPoolTask> globalQueue;
+    final BlockingQueue<AThreadPoolTask> globalQueue;
     final LocalQueue[] allLocalQueues;
     final AThreadPoolImpl pool;
     final long idleThreadMask;
 
-    WorkerThread (LocalQueue localQueue, ArrayBlockingQueue<AThreadPoolTask> globalQueue, AThreadPoolImpl pool, int threadIdx) {
+    WorkerThread (LocalQueue localQueue, BlockingQueue<AThreadPoolTask> globalQueue, AThreadPoolImpl pool, int threadIdx) {
         this.localQueue = localQueue;
         this.globalQueue = globalQueue;
         this.pool = pool;
