@@ -24,13 +24,9 @@ class LocalQueue {
 
     final AThreadPoolImpl pool;
 
+    @SuppressWarnings ("FieldCanBeLocal")
     private long base = 0;
     private long top = 0;
-
-    /**
-     * This variable serves solely to provide memory barriers - with release of Java 9 more explicit solutions will hopefully be available
-     */
-    private volatile int v=0;
 
     LocalQueue (AThreadPoolImpl pool, int size) {
         this.pool = pool;
@@ -54,16 +50,18 @@ class LocalQueue {
      * Add a new task to the top of the localQueue, incrementing 'top'. This is only ever called from the owning thread.
      */
     void push (AThreadPoolTask task) {
-        final long _base = base; // read base first (and only once)
+        final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE); // read base first (and only once)
         final long _top = top;
         if (_top == _base + mask) {
             //TODO handle overflow
             throw new ArrayIndexOutOfBoundsException ("local localQueue overflow");
         }
 
+        //TODO must these be putOrdered?
         tasks[asArrayindex (_top)] = task;
-        top = _top+1; // 'top' is only ever modified by the owning thread, so we need no CAS here
-        v = 0;        // issue a store barrier
+        // 'top' is only ever modified by the owning thread, so we need no CAS here. Storing 'top' with volatile semantics publishes the task and ensures that changes to the task
+        //  can never overtake changes to 'top' wrt visibility.
+        UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1);
 
         // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
         //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
@@ -87,7 +85,7 @@ class LocalQueue {
             return null;
         }
 
-        if (! UNSAFE.compareAndSwapObject (this, taskOffset (_top-1), result, null)) {
+        if (! UNSAFE.compareAndSwapObject (tasks, taskOffset (_top-1), result, null)) {
             // The CAS operation failing means that another thread pulled the top-most item from the queue, so the queue is now definitely
             //  empty. It also null'ed out the task in the array if it was previously available, allowing to to be GC'ed when processing is
             //  finished.
@@ -95,7 +93,7 @@ class LocalQueue {
         }
 
         // Since 'result' is not null, and was not previously consumed by another thread, we can safely consume it --> decrement 'top'
-        top = _top-1;
+        UNSAFE.putOrderedLong (this, OFFS_TOP, _top-1);
         return result;
     }
 
@@ -106,8 +104,8 @@ class LocalQueue {
         long _base, _top;
 
         while (true) {
-            int i = v; // issue a load barrier
-            _base = base;
+            // reading 'base' with volatile semantics emits the necessary barriers to ensure visibility of 'top'
+            _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
             _top = top;
 
             if (_base == _top) {
@@ -116,12 +114,14 @@ class LocalQueue {
                 return null;
             }
 
+            // a regular read is OK here: 'push()' emits a store barrier after storing the task, 'popLifo()' modifies it with CAS, and 'popFifo()' does
+            //  a volatile read of 'base' before reading the task
             final AThreadPoolTask result = tasks[asArrayindex (_base)];
+
             // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
             //  gets the task, and allows GC when processing is finished
-            if (result != null && UNSAFE.compareAndSwapObject (this, taskOffset (_base), result, null)) {
-                base = _base+1;
-                v=0; // issue a store barrier
+            if (result != null && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
+                UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1);
                 return result;
             }
         }
@@ -141,6 +141,9 @@ class LocalQueue {
     private static final long OFFS_TASKS;
     private static final long SCALE_TASKS;
 
+    private static final long OFFS_BASE;
+    private static final long OFFS_TOP;
+
     static {
         try {
             final Field f = Unsafe.class.getDeclaredField ("theUnsafe");
@@ -149,6 +152,9 @@ class LocalQueue {
 
             OFFS_TASKS = UNSAFE.arrayBaseOffset (AThreadPoolTask[].class);
             SCALE_TASKS = UNSAFE.arrayIndexScale (AThreadPoolTask[].class);
+
+            OFFS_BASE = UNSAFE.objectFieldOffset (LocalQueue.class.getDeclaredField ("base"));
+            OFFS_TOP = UNSAFE.objectFieldOffset (LocalQueue.class.getDeclaredField ("top"));
         }
         catch (Exception e) {
             AUnchecker.throwUnchecked (e);

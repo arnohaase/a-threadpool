@@ -23,7 +23,7 @@ public class PoolBenchmark {
 
     @Param ({
             "b",
-//            "naive",
+            "naive",
 //            "a-global-queue",
 //            "work-stealing",
 //            "a-strict-own",
@@ -40,7 +40,7 @@ public class PoolBenchmark {
     @Setup
     public void setUp() {
         switch (strategy) {
-            case "b":              pool = new NewPoolAdapter_B (new AThreadPoolImpl (8, 65536, 65536)); break;
+            case "b":              pool = new NewPoolAdapter_B (new AThreadPoolImpl (8, 16384, 16384)); break;
             case "naive":          pool = new NaivePool (8); break;
             case "a-global-queue": pool = new APoolImpl (8, ASchedulingStrategy.SingleQueue ()).start (); break;
             case "a-strict-own":   pool = new APoolImpl (32, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
@@ -85,7 +85,9 @@ public class PoolBenchmark {
                 latch.countDown ();
                 return null;});
         }
+//        System.err.println ("### finished submitting");
         latch.await ();
+//        System.out.println ("---");
     }
 
     @Benchmark

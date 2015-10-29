@@ -4,8 +4,6 @@ import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 
 /**
@@ -13,12 +11,12 @@ import java.util.concurrent.BlockingQueue;
  */
 class WorkerThread extends Thread {
     final LocalQueue localQueue;
-    final BlockingQueue<AThreadPoolTask> globalQueue;
+    final SharedQueue globalQueue;
     final LocalQueue[] allLocalQueues;
     final AThreadPoolImpl pool;
     final long idleThreadMask;
 
-    WorkerThread (LocalQueue localQueue, BlockingQueue<AThreadPoolTask> globalQueue, AThreadPoolImpl pool, int threadIdx) {
+    WorkerThread (LocalQueue localQueue, SharedQueue globalQueue, AThreadPoolImpl pool, int threadIdx) {
         this.localQueue = localQueue;
         this.globalQueue = globalQueue;
         this.pool = pool;
@@ -27,29 +25,61 @@ class WorkerThread extends Thread {
     }
 
     @Override public void run () {
+        _run ();
+    }
+
+    private void _runGlobalOnly () {
         while (true) {
             try {
                 AThreadPoolTask task;
 
-                //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
-                if ((task = localQueue.popLifo ()) != null) {
+                if ((task = globalQueue.popFifo ()) != null) {
                     task.execute ();
                 }
-                else if ((task = tryFetchWork ()) != null) {
+            }
+            catch (Exception e) {
+                //TODO error handling
+                e.printStackTrace ();
+            }
+            catch (PoolShutdown e) {
+                return;
+            }
+        }
+
+    }
+
+    private void _run () {
+        topLevelLoop:
+        while (true) {
+
+            try {
+                AThreadPoolTask task;
+
+                //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
+                if ((task = tryGetWork ()) != null) {
                     task.execute ();
                 }
                 else {
+                    // spin a little before parking
+                    for (int i=0; i<2_00; i++) {
+                        if ((task = tryGetForeignWork ()) != null) {
+                            pool.markWorkerAsUnIdle (idleThreadMask);
+                            task.execute ();
+                            continue topLevelLoop;
+                        }
+                    }
+
                     pool.markWorkerAsIdle (idleThreadMask);
 
-                    // re-check availability of work to avoid races
-                    if ((task = tryFetchWork ()) != null) {
+                    // re-check availability of work after marking the thread as idle --> avoid races
+                    if ((task = tryGetForeignWork ()) != null) {
                         pool.markWorkerAsUnIdle (idleThreadMask);
                         task.execute ();
                         continue;
                     }
 
                     UNSAFE.park (false, 0L);
-                    pool.markWorkerAsUnIdle (idleThreadMask);
+//                    pool.markWorkerAsUnIdle (idleThreadMask);
                 }
             }
             catch (Exception e) {
@@ -62,12 +92,36 @@ class WorkerThread extends Thread {
         }
     }
 
-    AThreadPoolTask tryFetchWork() {
+    private AThreadPoolTask tryGetWork() {
         AThreadPoolTask task;
-        if ((task = globalQueue.poll ()) != null) {
+
+        //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
+        if ((task = localQueue.popLifo ()) != null) {
             return task;
         }
+        else if ((task = globalQueue.popFifo ()) != null) {
+            return task;
+        }
+        else if ((task = tryStealWork ()) != null) {
+            return task;
+        }
+        return null;
+    }
 
+    private AThreadPoolTask tryGetForeignWork() {
+        AThreadPoolTask task;
+
+        if ((task = globalQueue.popFifo ()) != null) {
+            return task;
+        }
+        else if ((task = tryStealWork ()) != null) {
+            return task;
+        }
+        return null;
+    }
+
+    private AThreadPoolTask tryStealWork () {
+        AThreadPoolTask task;
         for (LocalQueue otherQueue: allLocalQueues) {
             if (otherQueue == localQueue) {
                 continue;

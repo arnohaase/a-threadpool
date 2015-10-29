@@ -22,16 +22,15 @@ public class AThreadPoolImpl {
      * TODO this currently limits the number of threads to 64 --> generalize
      */
     @SuppressWarnings ("FieldCanBeLocal")
-//    private volatile long idleThreads = 0;
+    private volatile long idleThreads = 0;
 
-    private final BlockingQueue<AThreadPoolTask> globalQueue;
+    private final SharedQueue globalQueue;
     final LocalQueue[] localQueues;
 
     volatile boolean shutdown;
 
     public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize) {
-        globalQueue = new LinkedBlockingQueue<> (globalQueueSize);
-//        globalQueue = new ArrayBlockingQueue<> (globalQueueSize);
+        globalQueue = new SharedQueue (this, globalQueueSize);
 
         localQueues = new LocalQueue[numThreads];
         for (int i=0; i<numThreads; i++) {
@@ -52,10 +51,7 @@ public class AThreadPoolImpl {
         }
 
         final AThreadPoolTask<T> task = new AThreadPoolTask<> (code);
-        globalQueue.add (task);
-        if (globalQueue.size () < 2) {
-            onStealableTask ();
-        }
+        globalQueue.push (task);
 
         return task.future;
     }
@@ -66,7 +62,10 @@ public class AThreadPoolImpl {
         }
 
         shutdown = true;
-        globalQueue.clear ();
+        //noinspection StatementWithEmptyBody
+        while (globalQueue.popFifo () != null) {
+            // do nothing, just drain the queue
+        }
 
         for (LocalQueue queue: localQueues) {
             //noinspection StatementWithEmptyBody
@@ -76,7 +75,7 @@ public class AThreadPoolImpl {
         }
 
         for (LocalQueue localQueue : localQueues) {
-            globalQueue.add (new AThreadPoolTask<> (() -> {
+            globalQueue.push (new AThreadPoolTask<> (() -> {
                 throw new PoolShutdown ();
             }));
             UNSAFE.unpark (localQueue.thread);
@@ -92,30 +91,34 @@ public class AThreadPoolImpl {
 
 
     void onStealableTask () {
-//        long idleBitMask = idleThreads;
+        long idleBitMask = UNSAFE.getAndSetLong (this, OFFS_IDLE_THREADS, 0L);
+
+        if (idleBitMask != 0) {
+            System.err.println ("unparking: " + idleBitMask);
+        }
 
         for (LocalQueue localQueue : localQueues) {
-//            if ((idleBitMask & 1L) != 0) {
+            if ((idleBitMask & 1L) != 0) {
                 UNSAFE.unpark (localQueue.thread);
-//            }
-//            idleBitMask = idleBitMask >> 1;
+            }
+            idleBitMask = idleBitMask >> 1;
         }
     }
 
     void markWorkerAsIdle (long mask) {
-//        long prev;
-//        do {
-//            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
-//        }
-//        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev | mask));
+        long prev;
+        do {
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+        }
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev | mask));
     }
 
     void markWorkerAsUnIdle (long mask) {
-//        long prev;
-//        do {
-//            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
-//        }
-//        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev & ~mask));
+        long prev;
+        do {
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+        }
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev & ~mask));
     }
 
     //------------------ Unsafe stuff

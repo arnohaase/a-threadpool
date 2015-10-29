@@ -12,6 +12,10 @@ todo
 
 * how to handle queue overflow (esp. for thread-local queues!)
 
+* benchmarks
+  * submission throughput
+  * multi producers
+
 * allow tasks to be resubmitted (?)
 
 * benchmarks on real multi-processor machine
