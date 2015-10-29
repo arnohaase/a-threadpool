@@ -51,7 +51,14 @@ public class AThreadPoolImpl {
         }
 
         final AThreadPoolTask<T> task = new AThreadPoolTask<> (code);
-        globalQueue.push (task);
+
+        WorkerThread wt;
+        if (Thread.currentThread () instanceof WorkerThread && (wt = (WorkerThread) Thread.currentThread ()).pool == this) {
+            wt.localQueue.push (task);
+        }
+        else {
+            globalQueue.push (task);
+        }
 
         return task.future;
     }
@@ -60,6 +67,9 @@ public class AThreadPoolImpl {
         if (shutdown) {
             return;
         }
+
+        //TODO flag for 'finish submitted work'
+        //TODO clean completion of submitted and cancelled tasks
 
         shutdown = true;
         //noinspection StatementWithEmptyBody
@@ -90,16 +100,23 @@ public class AThreadPoolImpl {
     }
 
 
-    void onStealableTask () {
+    void onAvailableTask () {
         long idleBitMask = UNSAFE.getAndSetLong (this, OFFS_IDLE_THREADS, 0L);
 
-        if (idleBitMask != 0) {
-            System.err.println ("unparking: " + idleBitMask);
+        if (idleBitMask == 0) {
+            return;
         }
+
+//        if (idleBitMask != 0) {
+//            System.err.println ("unparking: " + idleBitMask);
+//        }
 
         for (LocalQueue localQueue : localQueues) {
             if ((idleBitMask & 1L) != 0) {
+                //noinspection ConstantConditions
+                markWorkerAsUnIdle (localQueue.thread.idleThreadMask);
                 UNSAFE.unpark (localQueue.thread);
+                break;
             }
             idleBitMask = idleBitMask >> 1;
         }

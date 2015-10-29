@@ -25,33 +25,8 @@ class WorkerThread extends Thread {
     }
 
     @Override public void run () {
-        _run ();
-    }
-
-    private void _runGlobalOnly () {
-        while (true) {
-            try {
-                AThreadPoolTask task;
-
-                if ((task = globalQueue.popFifo ()) != null) {
-                    task.execute ();
-                }
-            }
-            catch (Exception e) {
-                //TODO error handling
-                e.printStackTrace ();
-            }
-            catch (PoolShutdown e) {
-                return;
-            }
-        }
-
-    }
-
-    private void _run () {
         topLevelLoop:
         while (true) {
-
             try {
                 AThreadPoolTask task;
 
@@ -61,9 +36,8 @@ class WorkerThread extends Thread {
                 }
                 else {
                     // spin a little before parking
-                    for (int i=0; i<2_00; i++) {
+                    for (int i=0; i<200; i++) { //TODO make this configurable, optimize, benchmark, ...
                         if ((task = tryGetForeignWork ()) != null) {
-                            pool.markWorkerAsUnIdle (idleThreadMask);
                             task.execute ();
                             continue topLevelLoop;
                         }
@@ -79,7 +53,11 @@ class WorkerThread extends Thread {
                     }
 
                     UNSAFE.park (false, 0L);
-//                    pool.markWorkerAsUnIdle (idleThreadMask);
+
+                    if ((task = tryGetForeignWork ()) != null) {
+                        pool.onAvailableTask ();
+                        task.execute ();
+                    }
                 }
             }
             catch (Exception e) {

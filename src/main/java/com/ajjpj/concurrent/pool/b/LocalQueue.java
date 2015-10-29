@@ -67,7 +67,7 @@ class LocalQueue {
         //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
         //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
         if (_top - _base <= 1) { //TODO take a closer look at this
-            pool.onStealableTask ();
+            pool.onAvailableTask ();
         }
     }
 
@@ -121,7 +121,7 @@ class LocalQueue {
             // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
             //  gets the task, and allows GC when processing is finished
             if (result != null && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
-                UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1);
+                UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1); //TODO is 'putOrdered' sufficient?
                 return result;
             }
         }

@@ -27,11 +27,6 @@ class SharedQueue {
     long top = 0;
 
     /**
-     * This variable serves solely to provide memory barriers - with release of Java 9 more explicit solutions will hopefully be available
-     */
-    private volatile int v=0;
-
-    /**
      * This variable serves as a spin lock. All access goes through UNSAFE.
      */
     @SuppressWarnings ("UnusedDeclaration")
@@ -53,9 +48,11 @@ class SharedQueue {
     void push (AThreadPoolTask task) {
         lock ();
 
+        final long _base;
+        final long _top;
         try {
-            final long _base = base; // read base first (and only once)
-            final long _top = top;
+            _base = base; // read base first (and only once)
+            _top = top;
             if (_top == _base + mask) {
                 throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
             }
@@ -64,16 +61,38 @@ class SharedQueue {
             //  no concurrently reading thread sees the incremented 'top' without the task being present in the array, therefore the 'ordered' put.
             UNSAFE.putOrderedObject (tasks, taskOffset (_top), task);
             top = _top+1; // 'top' is published by 'unlock()' below.
-
-            // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
-            //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
-            //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
-            if (_top - _base <= 1) { //TODO take a closer look at this
-                pool.onStealableTask ();
-            }
         }
         finally {
             unlock ();
+        }
+
+        // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
+        //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
+        //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
+        if (_top - _base <= 1) { //TODO take a closer look at this
+            pool.onAvailableTask ();
+        }
+    }
+
+    //TODO this is a (more or less) lock free implementation --> benchmark this with several publishers
+    void push2 (AThreadPoolTask task) {
+        while (true) {
+            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
+            final long _top = top;
+
+            if (_top == _base + mask) {
+                throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
+            }
+
+            if (UNSAFE.compareAndSwapObject (tasks, taskOffset (_top), null, task)) {
+                // if the publishing thread is interrupted here, other publishers will effectively do a spin wait
+                UNSAFE.putOrderedLong (this, OFFS_TOP, _top+1); //TODO if we use CAS here, we can let other threads increment 'top' until they find a free slot
+
+                if (_top - _base <= 1) { //TODO take a closer look at this
+                    pool.onAvailableTask ();
+                }
+                break;
+            }
         }
     }
 
@@ -81,12 +100,9 @@ class SharedQueue {
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
     AThreadPoolTask popFifo () {
-        long _base, _top;
-
         while (true) {
-            int i = v; // issue a load barrier
-            _base = base;
-            _top = top;
+            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
+            final long _top = top;
 
             if (_base == _top) {
                 // Terminate the loop: the queue is empty.
@@ -99,8 +115,7 @@ class SharedQueue {
             // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
             //  gets the task, and allows GC when processing is finished
             if (result != null && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
-                base = _base + 1;
-                v = 0; // issue a store barrier
+                UNSAFE.putLongVolatile (this, OFFS_BASE, _base + 1);
                 return result;
             }
         }
@@ -134,6 +149,8 @@ class SharedQueue {
     private static final long SCALE_TASKS;
 
     private static final long OFFS_LOCK;
+    private static final long OFFS_BASE;
+    private static final long OFFS_TOP;
 
     static {
         try {
@@ -145,6 +162,8 @@ class SharedQueue {
             SCALE_TASKS = UNSAFE.arrayIndexScale (AThreadPoolTask[].class);
 
             OFFS_LOCK = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("lock"));
+            OFFS_BASE = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("base"));
+            OFFS_TOP  = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("top"));
         }
         catch (Exception e) {
             AUnchecker.throwUnchecked (e);
