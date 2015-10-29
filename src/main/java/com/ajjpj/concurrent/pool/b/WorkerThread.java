@@ -101,6 +101,7 @@ class WorkerThread extends Thread {
     private AThreadPoolTask tryStealWork () {
         AThreadPoolTask task;
         for (LocalQueue otherQueue: allLocalQueues) {
+            //TODO optimization: different starting points per thread
             if (otherQueue == localQueue) {
                 continue;
             }
