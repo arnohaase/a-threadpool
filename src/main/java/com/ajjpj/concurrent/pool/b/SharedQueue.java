@@ -4,6 +4,8 @@ import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -42,6 +44,8 @@ class SharedQueue {
         this.mask = size-1;
     }
 
+    final Map<Long, String> byTopValue = new ConcurrentHashMap<> ();
+
     /**
      * Add a new task to the top of the localQueue, incrementing 'top'.
      */
@@ -51,16 +55,17 @@ class SharedQueue {
         final long _base;
         final long _top;
         try {
-            _base = base; // read base first (and only once)
-            _top = top;
+            _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
+            _top = UNSAFE.getLongVolatile (this, OFFS_TOP);
+
             if (_top == _base + mask) {
                 throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
             }
 
             // We hold a lock here, so there can be no concurrent modifications of 'top', and there is no need for CAS. We must however ensure that
             //  no concurrently reading thread sees the incremented 'top' without the task being present in the array, therefore the 'ordered' put.
-            UNSAFE.putOrderedObject (tasks, taskOffset (_top), task);
-            top = _top+1; // 'top' is published by 'unlock()' below.
+            UNSAFE.putObjectVolatile (tasks, taskOffset (_top), task);
+            UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1); //TODO volatile should not be necessary 'top' is published by 'unlock()' below.
         }
         finally {
             unlock ();
@@ -75,34 +80,41 @@ class SharedQueue {
     }
 
     //TODO this is a (more or less) lock free implementation --> benchmark this with several publishers
-    void push2 (AThreadPoolTask task) {
-        while (true) {
-            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
-            final long _top = top;
+//    void push2 (AThreadPoolTask task) {
+//        while (true) {
+//            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
+//            final long _top = top;
+//
+//            if (_top == _base + mask) {
+//                throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
+//            }
+//
+//            if (UNSAFE.compareAndSwapObject (tasks, taskOffset (_top), null, task)) {
+//                // if the publishing thread is interrupted here, other publishers will effectively do a spin wait
+//                UNSAFE.putOrderedLong (this, OFFS_TOP, _top+1); //TODO if we use CAS here, we can let other threads increment 'top' until they find a free slot
+//
+//                if (_top - _base <= 1) { //TODO take a closer look at this
+//                    pool.onAvailableTask ();
+//                }
+//                break;
+//            }
+//        }
+//    }
 
-            if (_top == _base + mask) {
-                throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
-            }
-
-            if (UNSAFE.compareAndSwapObject (tasks, taskOffset (_top), null, task)) {
-                // if the publishing thread is interrupted here, other publishers will effectively do a spin wait
-                UNSAFE.putOrderedLong (this, OFFS_TOP, _top+1); //TODO if we use CAS here, we can let other threads increment 'top' until they find a free slot
-
-                if (_top - _base <= 1) { //TODO take a closer look at this
-                    pool.onAvailableTask ();
-                }
-                break;
-            }
-        }
-    }
+    final Map<Long, String> baseValues = new ConcurrentHashMap<> ();
+    final Map<Long, Long> offsets = new ConcurrentHashMap<> ();
 
     /**
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
     AThreadPoolTask popFifo () {
+        int counter = 0;
+
         while (true) {
             final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
-            final long _top = top;
+            final long _top = UNSAFE.getLongVolatile (this, OFFS_TOP);
+
+            counter += 1;
 
             if (_base == _top) {
                 // Terminate the loop: the queue is empty.
@@ -112,11 +124,9 @@ class SharedQueue {
 
             final AThreadPoolTask result = tasks[asArrayIndex (_base)];
 
-            // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
-            //  gets the task, and allows GC when processing is finished
-            if (result != null && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
-                UNSAFE.putLongVolatile (this, OFFS_BASE, _base + 1);
-                return result;
+
+            if (_top > _base && UNSAFE.compareAndSwapLong (this, OFFS_BASE, _base, _base+1)) {
+                return (AThreadPoolTask) UNSAFE.getAndSetObject (tasks, taskOffset (_base), null);
             }
         }
     }

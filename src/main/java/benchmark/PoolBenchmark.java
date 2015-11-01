@@ -12,8 +12,8 @@ import java.util.concurrent.*;
  * @author arno
  */
 //@Fork (2)
-//@Fork (0)
-@Fork (1)
+@Fork (0)
+//@Fork (1)
 @Threads (1)
 @Warmup (iterations = 3, time = 1)
 @Measurement (iterations = 3, time = 3)
@@ -123,7 +123,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (8)
-    public void __testFactorialMulti8() throws ExecutionException, InterruptedException {
+    public void testFactorialMulti8() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
