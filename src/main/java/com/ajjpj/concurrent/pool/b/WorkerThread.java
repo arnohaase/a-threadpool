@@ -97,7 +97,7 @@ class WorkerThread extends Thread {
         return null;
     }
 
-    private AThreadPoolTask tryGetForeignWork() {
+    private AThreadPoolTask tryGetForeignWork () {
         AThreadPoolTask task;
 
         if ((task = tryGetSharedWork ()) != null) {

@@ -114,6 +114,8 @@ class LocalQueue {
                 return null;
             }
 
+            //TODO check for wrap-around race
+
             // a regular read is OK here: 'push()' emits a store barrier after storing the task, 'popLifo()' modifies it with CAS, and 'popFifo()' does
             //  a volatile read of 'base' before reading the task
             final AThreadPoolTask result = tasks[asArrayindex (_base)];
