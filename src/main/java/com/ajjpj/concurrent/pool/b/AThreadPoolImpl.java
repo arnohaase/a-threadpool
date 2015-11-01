@@ -4,7 +4,13 @@ import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -24,18 +30,34 @@ public class AThreadPoolImpl {
     @SuppressWarnings ("FieldCanBeLocal")
     private volatile long idleThreads = 0;
 
-    private final SharedQueue globalQueue;
+    private final SharedQueue[] globalQueues;
     final LocalQueue[] localQueues;
+
+    private final Map<Integer, Integer> producerToQueueAffinity = new ConcurrentHashMap<> ();
+
+    /**
+     * this is a long rather than an int to be on the safe side - 2 billion different producer threads during the lifetime of a thread pool, but still...
+     */
+    private final AtomicLong nextSharedQueue = new AtomicLong (0);
 
     volatile boolean shutdown;
 
     public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize) {
-        globalQueue = new SharedQueue (this, globalQueueSize);
+        this (numThreads, localQueueSize, globalQueueSize, Runtime.getRuntime ().availableProcessors ());
+    }
+
+    public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize, int numSharedQueues) {
+        globalQueues = new SharedQueue[numSharedQueues];
+        for (int i=0; i<numSharedQueues; i++) {
+            globalQueues[i] = new SharedQueue (this, globalQueueSize);
+        }
+
+        final Set<Integer> sharedQueuePrimes = primeFactors (numSharedQueues);
 
         localQueues = new LocalQueue[numThreads];
         for (int i=0; i<numThreads; i++) {
             localQueues[i] = new LocalQueue (this, localQueueSize);
-            final WorkerThread thread = new WorkerThread (localQueues[i], globalQueue, this, i);
+            final WorkerThread thread = new WorkerThread (localQueues[i], globalQueues, this, i, prime (i, sharedQueuePrimes));
             localQueues[i].init (thread);
         }
 
@@ -43,6 +65,39 @@ public class AThreadPoolImpl {
             //noinspection ConstantConditions
             queue.thread.start ();
         }
+    }
+
+    static Set<Integer> primeFactors (int n) {
+        final Set<Integer> result = new HashSet<> ();
+
+        for (int i=2; i<=n; i++) {
+            if (isPrime (i) && n%i == 0) {
+                result.add (i);
+            }
+        }
+
+        return result;
+    }
+
+    static int prime (int number, Set<Integer> exceptions) {
+        int numPrevPrimes = 0;
+
+        for (int candidate=1; candidate<Integer.MAX_VALUE; candidate++) {
+            if (isPrime (candidate) && !exceptions.contains (candidate)) {
+                if (numPrevPrimes >= number) {
+                    return candidate;
+                }
+                numPrevPrimes += 1;
+            }
+        }
+        throw new IllegalStateException (); //TODO
+    }
+
+    static boolean isPrime (int n) {
+        for (int i=2; i<=n/2; i++) {
+            if (n%i == 0) return false;
+        }
+        return true;
     }
 
     public <T> Future<T> submit (Callable<T> code) {
@@ -57,10 +112,27 @@ public class AThreadPoolImpl {
             wt.localQueue.push (task);
         }
         else {
-            globalQueue.push (task);
+            globalQueues[getSharedQueueForCurrentThread ()].push (task);
         }
 
         return task.future;
+    }
+
+    private int getSharedQueueForCurrentThread() {
+        final int key = System.identityHashCode (Thread.currentThread ());
+
+        Integer result = producerToQueueAffinity.get (key);
+        if (result == null) {
+            if (producerToQueueAffinity.size () > 10_000) { //TODO make this number configurable
+                // in the unusual situation that producers are transient, discard affinity data if the map gets too large
+                producerToQueueAffinity.clear ();
+            }
+
+            result = (int) nextSharedQueue.getAndIncrement () % globalQueues.length;
+            producerToQueueAffinity.put (key, result);
+        }
+
+        return result;
     }
 
     public void shutdown() {
@@ -72,9 +144,12 @@ public class AThreadPoolImpl {
         //TODO clean completion of submitted and cancelled tasks
 
         shutdown = true;
-        //noinspection StatementWithEmptyBody
-        while (globalQueue.popFifo () != null) {
-            // do nothing, just drain the queue
+
+        for (SharedQueue globalQueue: globalQueues) {
+            //noinspection StatementWithEmptyBody
+            while (globalQueue.popFifo () != null) {
+                // do nothing, just drain the queue
+            }
         }
 
         for (LocalQueue queue: localQueues) {
@@ -85,7 +160,7 @@ public class AThreadPoolImpl {
         }
 
         for (LocalQueue localQueue : localQueues) {
-            globalQueue.push (new AThreadPoolTask<> (() -> {
+            globalQueues[0].push (new AThreadPoolTask<> (() -> {
                 throw new PoolShutdown ();
             }));
             UNSAFE.unpark (localQueue.thread);

@@ -11,17 +11,24 @@ import java.lang.reflect.Field;
  */
 class WorkerThread extends Thread {
     final LocalQueue localQueue;
-    final SharedQueue globalQueue;
+    final SharedQueue[] globalQueues;
     final LocalQueue[] allLocalQueues;
     final AThreadPoolImpl pool;
     final long idleThreadMask;
+    final int queueTraversalIncrement;
 
-    WorkerThread (LocalQueue localQueue, SharedQueue globalQueue, AThreadPoolImpl pool, int threadIdx) {
+    /**
+     * This is the index of the shared queue that this thread currently feeds from.
+     */
+    private int currentSharedQueue = 0;
+
+    WorkerThread (LocalQueue localQueue, SharedQueue[] globalQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
         this.localQueue = localQueue;
-        this.globalQueue = globalQueue;
+        this.globalQueues = globalQueues;
         this.pool = pool;
         this.allLocalQueues = pool.localQueues;
         idleThreadMask = 1L << threadIdx;
+        this.queueTraversalIncrement = queueTraversalIncrement;
     }
 
     @Override public void run () {
@@ -77,7 +84,7 @@ class WorkerThread extends Thread {
         if ((task = localQueue.popLifo ()) != null) {
             return task;
         }
-        else if ((task = globalQueue.popFifo ()) != null) {
+        else if ((task = tryGetSharedWork ()) != null) {
             return task;
         }
         else if ((task = tryStealWork ()) != null) {
@@ -89,12 +96,29 @@ class WorkerThread extends Thread {
     private AThreadPoolTask tryGetForeignWork() {
         AThreadPoolTask task;
 
-        if ((task = globalQueue.popFifo ()) != null) {
+        if ((task = tryGetSharedWork ()) != null) {
             return task;
         }
         else if ((task = tryStealWork ()) != null) {
             return task;
         }
+        return null;
+    }
+
+    private AThreadPoolTask tryGetSharedWork() {
+        AThreadPoolTask task;
+
+        //TODO optimization: different starting points per thread
+        //TODO go forward once in a while to avoid starvation
+
+        //noinspection ForLoopReplaceableByForEach
+        for (int i=0; i<globalQueues.length; i++) {
+            if ((task = globalQueues[currentSharedQueue].popFifo ()) != null) {
+                return task;
+            }
+            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length;
+        }
+
         return null;
     }
 
