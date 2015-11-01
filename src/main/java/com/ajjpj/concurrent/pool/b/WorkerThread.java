@@ -20,7 +20,7 @@ class WorkerThread extends Thread {
     /**
      * This is the index of the shared queue that this thread currently feeds from.
      */
-    private int currentSharedQueue = 0;
+    private int currentSharedQueue = 0; //TODO spread initial value across the range?
 
     WorkerThread (LocalQueue localQueue, SharedQueue[] globalQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
         this.localQueue = localQueue;
@@ -43,7 +43,7 @@ class WorkerThread extends Thread {
                 }
                 else {
                     // spin a little before parking
-                    for (int i=0; i<200; i++) { //TODO make this configurable, optimize, benchmark, ...
+                    for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
                         if ((task = tryGetForeignWork ()) != null) {
                             task.execute ();
                             continue topLevelLoop;
@@ -59,7 +59,11 @@ class WorkerThread extends Thread {
                         continue;
                     }
 
+//                    System.err.println ("parking " + getName ());
+
                     UNSAFE.park (false, 0L);
+
+//                    System.err.println ("unparked " + getName ());
 
                     if ((task = tryGetForeignWork ()) != null) {
                         pool.onAvailableTask ();
@@ -111,13 +115,20 @@ class WorkerThread extends Thread {
         //TODO optimization: different starting points per thread
         //TODO go forward once in a while to avoid starvation
 
+        final int prevQueue = currentSharedQueue;
+
         //noinspection ForLoopReplaceableByForEach
         for (int i=0; i<globalQueues.length; i++) {
             if ((task = globalQueues[currentSharedQueue].popFifo ()) != null) {
+//                if (prevQueue != currentSharedQueue) System.err.println ("fetched work from (new) shared queue: " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
                 return task;
             }
+//            int oldQueue = currentSharedQueue;
             currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length;
+//            System.err.println ("Switching Global Queue: from: "+oldQueue+" to: "+currentSharedQueue+" Worker "+Thread.currentThread ().getName ());
         }
+
+//        if (prevQueue != currentSharedQueue) System.err.println ("ASSERT FAILED: no work found but changed shared queue to " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
 
         return null;
     }

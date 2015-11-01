@@ -32,8 +32,8 @@ public class PoolBenchmark {
 //            "ForkJoinLifo",
 //            "ForkJoinFifo",
 //            "J9FjSharedQueues",
-//            "J9FjLifo",
-            "J9FjFifo"
+            "J9FjLifo",
+//            "J9FjFifo"
     })
     public String strategy;
 
@@ -76,7 +76,23 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void _testSimpleScheduling() throws InterruptedException {
+    public void _testSimpleScheduling01() throws InterruptedException {
+        final int num = 10_000;
+        final CountDownLatch latch = new CountDownLatch (num);
+
+        for (int i=0; i<num; i++) {
+            pool.submit (() -> {
+                latch.countDown ();
+                return null;});
+        }
+//        System.err.println ("### finished submitting");
+        latch.await ();
+//        System.err.println ("---");
+    }
+
+    @Benchmark
+    @Threads (7)
+    public void __testSimpleScheduling07() throws InterruptedException {
         final int num = 10_000;
         final CountDownLatch latch = new CountDownLatch (num);
 
@@ -107,7 +123,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (8)
-    public void testFactorialMulti8() throws ExecutionException, InterruptedException {
+    public void __testFactorialMulti8() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();

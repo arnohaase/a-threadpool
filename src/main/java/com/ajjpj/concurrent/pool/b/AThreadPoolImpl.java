@@ -176,7 +176,7 @@ public class AThreadPoolImpl {
 
 
     void onAvailableTask () {
-        long idleBitMask = UNSAFE.getAndSetLong (this, OFFS_IDLE_THREADS, 0L);
+        long idleBitMask = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
 
         if (idleBitMask == 0) {
             return;
@@ -190,6 +190,7 @@ public class AThreadPoolImpl {
             if ((idleBitMask & 1L) != 0) {
                 //noinspection ConstantConditions
                 markWorkerAsUnIdle (localQueue.thread.idleThreadMask);
+//                System.err.println ("unparking " + localQueue.thread.getName ());
                 UNSAFE.unpark (localQueue.thread);
                 break;
             }
@@ -198,19 +199,27 @@ public class AThreadPoolImpl {
     }
 
     void markWorkerAsIdle (long mask) {
-        long prev;
+        long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            after = prev | mask;
+//            System.err.println ("setting idle " + mask + " on " + prev);
         }
-        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev | mask));
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
+
+//        System.err.println ("mark as idle: " + prev + " -> " + after + " @ " + mask);
     }
 
     void markWorkerAsUnIdle (long mask) {
-        long prev;
+        long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            after = prev & ~mask;
+//            System.err.println ("setting unidle " + mask + " on " + prev);
         }
-        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, prev & ~mask));
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
+
+//        System.err.println ("mark as unidle: " + prev + " -> " + after + " @ " + mask);
     }
 
     //------------------ Unsafe stuff
