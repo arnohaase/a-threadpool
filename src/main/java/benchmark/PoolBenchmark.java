@@ -2,6 +2,7 @@ package benchmark;
 
 import com.ajjpj.concurrent.pool.a.*;
 import com.ajjpj.concurrent.pool.b.AThreadPoolImpl;
+import com.ajjpj.concurrent.pool.b.WorkerThreadStatistics;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -73,6 +74,15 @@ public class PoolBenchmark {
     @TearDown
     public void tearDown() throws InterruptedException {
         pool.shutdown ();
+
+        if (pool instanceof NewPoolAdapter_B) {
+            System.out.println ();
+            System.out.println ("---- Thread Pool Statistics ----");
+            for (WorkerThreadStatistics stat: ((NewPoolAdapter_B) pool).inner.getStatistics ()) {
+                System.out.println (stat);
+            }
+            System.out.println ("--------------------------------");
+        }
     }
 
     @Benchmark

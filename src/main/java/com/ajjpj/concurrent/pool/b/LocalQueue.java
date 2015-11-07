@@ -47,6 +47,16 @@ class LocalQueue {
     }
 
     /**
+     * @return an approximation of the queue's current size, useful only for statistics purposes.
+     */
+    int approximateSize() {
+        return (int) (
+                UNSAFE.getLongVolatile (this, OFFS_TOP) -
+                UNSAFE.getLongVolatile (this, OFFS_BASE)
+        );
+    }
+
+    /**
      * Add a new task to the top of the localQueue, incrementing 'top'. This is only ever called from the owning thread.
      */
     void push (AThreadPoolTask task) {

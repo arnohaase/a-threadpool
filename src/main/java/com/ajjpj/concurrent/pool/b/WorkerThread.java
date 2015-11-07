@@ -17,6 +17,20 @@ class WorkerThread extends Thread {
     final long idleThreadMask;
     final int queueTraversalIncrement;
 
+    //---------------------------------------------------
+    //-- statistics data, written only from this thread
+    //---------------------------------------------------
+
+    long stat_numTasksExecuted = 0;
+    long stat_numSharedTasksExecuted = 0;
+    long stat_numSteals = 0;
+    long stat_numExceptions = 0;
+
+    long stat_numParks = 0;
+    long stat_numSharedQueueSwitches = 0;
+
+    long stat_numLocalSubmits = 0;
+
     /**
      * This is the index of the shared queue that this thread currently feeds from.
      */
@@ -31,6 +45,15 @@ class WorkerThread extends Thread {
         this.queueTraversalIncrement = queueTraversalIncrement;
     }
 
+    /**
+     * This method returns an approximation of this thread's execution statistics for the entire period since the thread was started. Writes are done without memory barriers
+     *  to minimize the performance impact of statistics gathering, so some or all returned data may be arbitrarily stale, and some fields may be far staler than others. For
+     *  long-running pools however even approximate data may provide useful insights. Your mileage may vary however, you have been warned ;-)
+     */
+    WorkerThreadStatistics getStatistics() {
+        return new WorkerThreadStatistics (stat_numTasksExecuted, stat_numSharedTasksExecuted, stat_numSteals, stat_numExceptions, stat_numParks, stat_numSharedQueueSwitches, stat_numLocalSubmits, localQueue.approximateSize ());
+    }
+
     @Override public void run () {
         topLevelLoop:
         while (true) {
@@ -39,12 +62,14 @@ class WorkerThread extends Thread {
 
                 //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
                 if ((task = tryGetWork ()) != null) {
+                    if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                     task.execute ();
                 }
                 else {
                     // spin a little before parking
                     for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
                         if ((task = tryGetForeignWork ()) != null) {
+                            if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                             task.execute ();
                             continue topLevelLoop;
                         }
@@ -55,23 +80,27 @@ class WorkerThread extends Thread {
                     // re-check availability of work after marking the thread as idle --> avoid races
                     if ((task = tryGetForeignWork ()) != null) {
                         pool.markWorkerAsUnIdle (idleThreadMask);
+                        if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                         task.execute ();
                         continue;
                     }
 
 //                    System.err.println ("parking " + getName ());
 
+                    if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numParks += 1;
                     UNSAFE.park (false, 0L);
 
 //                    System.err.println ("unparked " + getName ());
 
                     if ((task = tryGetForeignWork ()) != null) {
                         pool.onAvailableTask ();
+                        if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                         task.execute ();
                     }
                 }
             }
             catch (Exception e) {
+                if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numExceptions += 1;
                 //TODO error handling
                 e.printStackTrace ();
             }
@@ -120,6 +149,9 @@ class WorkerThread extends Thread {
         //noinspection ForLoopReplaceableByForEach
         for (int i=0; i<globalQueues.length; i++) {
             if ((task = globalQueues[currentSharedQueue].popFifo ()) != null) {
+                if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSharedTasksExecuted += 1;
+                //noinspection PointlessBooleanExpression,ConstantConditions
+                if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS && prevQueue != currentSharedQueue) stat_numSharedQueueSwitches += 1;
 //                if (prevQueue != currentSharedQueue) System.err.println ("fetched work from (new) shared queue: " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
                 return task;
             }
@@ -141,6 +173,7 @@ class WorkerThread extends Thread {
                 continue;
             }
             if ((task = otherQueue.popFifo ()) != null) {
+                if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSteals += 1;
                 return task;
             }
         }

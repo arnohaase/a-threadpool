@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author arno
  */
 public class AThreadPoolImpl {
+    public static final boolean SHOULD_GATHER_STATISTICS = true; // compile-time switch to enable / disable statistics gathering
+
 
     /**
      * This long is a bit set with the indexes of threads that are currently idling. All idling threads are guaranteed to be in this set,
@@ -67,6 +69,20 @@ public class AThreadPoolImpl {
         }
     }
 
+    /**
+     * This method returns an approximation of statistical data for all worker threads since the pool was started. Updates of the statistical data is done without synchronization,
+     *  so some or all of the data may be stale, and some numbers may be pretty outdated while others are very current, even for the same thread. For long-running pools however
+     *  the data may be useful in analyzing behavior in general and performance anomalies in particular. Your mileage may vary, you have been warned! ;-)
+     */
+    public WorkerThreadStatistics[] getStatistics() {
+        final WorkerThreadStatistics[] result = new WorkerThreadStatistics[localQueues.length];
+        for (int i=0; i<localQueues.length; i++) {
+            //noinspection ConstantConditions
+            result[i] = localQueues[i].thread.getStatistics ();
+        }
+        return result;
+    }
+
     static Set<Integer> primeFactors (int n) {
         final Set<Integer> result = new HashSet<> ();
 
@@ -109,6 +125,7 @@ public class AThreadPoolImpl {
 
         WorkerThread wt;
         if (Thread.currentThread () instanceof WorkerThread && (wt = (WorkerThread) Thread.currentThread ()).pool == this) {
+            if (SHOULD_GATHER_STATISTICS) wt.stat_numLocalSubmits += 1;
             wt.localQueue.push (task);
         }
         else {
