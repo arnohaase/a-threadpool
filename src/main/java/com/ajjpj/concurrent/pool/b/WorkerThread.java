@@ -27,6 +27,7 @@ class WorkerThread extends Thread {
     long stat_numExceptions = 0;
 
     long stat_numParks = 0;
+    long stat_numFalseAlarmUnparks = 0;
     long stat_numSharedQueueSwitches = 0;
 
     long stat_numLocalSubmits = 0;
@@ -51,10 +52,12 @@ class WorkerThread extends Thread {
      *  long-running pools however even approximate data may provide useful insights. Your mileage may vary however, you have been warned ;-)
      */
     AWorkerThreadStatistics getStatistics() {
-        return new AWorkerThreadStatistics (stat_numTasksExecuted, stat_numSharedTasksExecuted, stat_numSteals, stat_numExceptions, stat_numParks, stat_numSharedQueueSwitches, stat_numLocalSubmits, localQueue.approximateSize ());
+        return new AWorkerThreadStatistics (stat_numTasksExecuted, stat_numSharedTasksExecuted, stat_numSteals, stat_numExceptions, stat_numParks, stat_numFalseAlarmUnparks, stat_numSharedQueueSwitches, stat_numLocalSubmits, localQueue.approximateSize ());
     }
 
     @Override public void run () {
+        long tasksAtPark = -1;
+
         topLevelLoop:
         while (true) {
             try {
@@ -88,6 +91,14 @@ class WorkerThread extends Thread {
 //                    System.err.println ("parking " + getName ());
 
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numParks += 1;
+                    if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) {
+                        if (tasksAtPark == stat_numTasksExecuted) {
+                            stat_numFalseAlarmUnparks += 1;
+                        }
+                        else {
+                            tasksAtPark = stat_numTasksExecuted;
+                        }
+                    }
                     UNSAFE.park (false, 0L);
 
 //                    System.err.println ("unparked " + getName ());
