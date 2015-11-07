@@ -47,6 +47,17 @@ class SharedQueue {
     final Map<Long, String> byTopValue = new ConcurrentHashMap<> ();
 
     /**
+     * @return an approximation of the queue's current size. The value may be stale and is not synchronized in any way, and it is intended for debugging and statistics
+     *  purposes only.
+     */
+    int approximateSize () {
+        return (int) (
+                UNSAFE.getLongVolatile (this, OFFS_TOP) -
+                UNSAFE.getLongVolatile (this, OFFS_BASE)
+        );
+    }
+
+    /**
      * Add a new task to the top of the localQueue, incrementing 'top'.
      */
     void push (AThreadPoolTask task) {

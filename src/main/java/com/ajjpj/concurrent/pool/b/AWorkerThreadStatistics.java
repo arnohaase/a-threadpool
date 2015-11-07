@@ -6,7 +6,7 @@ import java.text.NumberFormat;
 /**
  * @author arno
  */
-public class WorkerThreadStatistics {
+public class AWorkerThreadStatistics {
     public final long numTasksExecuted;
     public final long numSharedTasksExecuted;
     public final long numSteals;
@@ -19,8 +19,8 @@ public class WorkerThreadStatistics {
 
     public final int approximateLocalQueueSize;
 
-    public WorkerThreadStatistics (long numTasksExecuted, long numSharedTasksExecuted, long numSteals, long numExceptions, long numParks, long numSharedQueueSwitches, long numLocalSubmits,
-                                   int approximateLocalQueueSize) {
+    public AWorkerThreadStatistics (long numTasksExecuted, long numSharedTasksExecuted, long numSteals, long numExceptions, long numParks, long numSharedQueueSwitches, long numLocalSubmits,
+                                    int approximateLocalQueueSize) {
         this.numTasksExecuted = numTasksExecuted;
         this.numSharedTasksExecuted = numSharedTasksExecuted;
         this.numSteals = numSteals;

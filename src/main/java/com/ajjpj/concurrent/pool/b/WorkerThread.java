@@ -50,8 +50,8 @@ class WorkerThread extends Thread {
      *  to minimize the performance impact of statistics gathering, so some or all returned data may be arbitrarily stale, and some fields may be far staler than others. For
      *  long-running pools however even approximate data may provide useful insights. Your mileage may vary however, you have been warned ;-)
      */
-    WorkerThreadStatistics getStatistics() {
-        return new WorkerThreadStatistics (stat_numTasksExecuted, stat_numSharedTasksExecuted, stat_numSteals, stat_numExceptions, stat_numParks, stat_numSharedQueueSwitches, stat_numLocalSubmits, localQueue.approximateSize ());
+    AWorkerThreadStatistics getStatistics() {
+        return new AWorkerThreadStatistics (stat_numTasksExecuted, stat_numSharedTasksExecuted, stat_numSteals, stat_numExceptions, stat_numParks, stat_numSharedQueueSwitches, stat_numLocalSubmits, localQueue.approximateSize ());
     }
 
     @Override public void run () {

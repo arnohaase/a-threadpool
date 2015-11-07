@@ -1,8 +1,10 @@
 package benchmark;
 
 import com.ajjpj.concurrent.pool.a.*;
+import com.ajjpj.concurrent.pool.b.ASharedQueueStatistics;
 import com.ajjpj.concurrent.pool.b.AThreadPoolImpl;
-import com.ajjpj.concurrent.pool.b.WorkerThreadStatistics;
+import com.ajjpj.concurrent.pool.b.AThreadPoolStatistics;
+import com.ajjpj.concurrent.pool.b.AWorkerThreadStatistics;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -78,8 +80,13 @@ public class PoolBenchmark {
         if (pool instanceof NewPoolAdapter_B) {
             System.out.println ();
             System.out.println ("---- Thread Pool Statistics ----");
-            for (WorkerThreadStatistics stat: ((NewPoolAdapter_B) pool).inner.getStatistics ()) {
-                System.out.println (stat);
+
+            final AThreadPoolStatistics stats = ((NewPoolAdapter_B) pool).inner.getStatistics ();
+            for (ASharedQueueStatistics s: stats.sharedQueueStatisticses) {
+                System.out.println (s);
+            }
+            for (AWorkerThreadStatistics s: stats.workerThreadStatistics) {
+                System.out.println (s);
             }
             System.out.println ("--------------------------------");
         }

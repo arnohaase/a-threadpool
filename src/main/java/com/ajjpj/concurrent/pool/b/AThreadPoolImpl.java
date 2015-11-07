@@ -32,7 +32,7 @@ public class AThreadPoolImpl {
     @SuppressWarnings ("FieldCanBeLocal")
     private volatile long idleThreads = 0;
 
-    private final SharedQueue[] globalQueues;
+    private final SharedQueue[] sharedQueues;
     final LocalQueue[] localQueues;
 
     private final Map<Integer, Integer> producerToQueueAffinity = new ConcurrentHashMap<> ();
@@ -49,9 +49,9 @@ public class AThreadPoolImpl {
     }
 
     public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize, int numSharedQueues) {
-        globalQueues = new SharedQueue[numSharedQueues];
+        sharedQueues = new SharedQueue[numSharedQueues];
         for (int i=0; i<numSharedQueues; i++) {
-            globalQueues[i] = new SharedQueue (this, globalQueueSize);
+            sharedQueues[i] = new SharedQueue (this, globalQueueSize);
         }
 
         final Set<Integer> sharedQueuePrimes = primeFactors (numSharedQueues);
@@ -59,7 +59,7 @@ public class AThreadPoolImpl {
         localQueues = new LocalQueue[numThreads];
         for (int i=0; i<numThreads; i++) {
             localQueues[i] = new LocalQueue (this, localQueueSize);
-            final WorkerThread thread = new WorkerThread (localQueues[i], globalQueues, this, i, prime (i, sharedQueuePrimes));
+            final WorkerThread thread = new WorkerThread (localQueues[i], sharedQueues, this, i, prime (i, sharedQueuePrimes));
             localQueues[i].init (thread);
         }
 
@@ -74,13 +74,19 @@ public class AThreadPoolImpl {
      *  so some or all of the data may be stale, and some numbers may be pretty outdated while others are very current, even for the same thread. For long-running pools however
      *  the data may be useful in analyzing behavior in general and performance anomalies in particular. Your mileage may vary, you have been warned! ;-)
      */
-    public WorkerThreadStatistics[] getStatistics() {
-        final WorkerThreadStatistics[] result = new WorkerThreadStatistics[localQueues.length];
+    public AThreadPoolStatistics getStatistics() {
+        final AWorkerThreadStatistics[] workerStats = new AWorkerThreadStatistics[localQueues.length];
         for (int i=0; i<localQueues.length; i++) {
             //noinspection ConstantConditions
-            result[i] = localQueues[i].thread.getStatistics ();
+            workerStats[i] = localQueues[i].thread.getStatistics ();
         }
-        return result;
+
+        final ASharedQueueStatistics[] sharedQueueStats = new ASharedQueueStatistics[sharedQueues.length];
+        for (int i=0; i<sharedQueues.length; i++) {
+            sharedQueueStats[i] = new ASharedQueueStatistics (sharedQueues[i].approximateSize());
+        }
+
+        return new AThreadPoolStatistics (workerStats, sharedQueueStats);
     }
 
     static Set<Integer> primeFactors (int n) {
@@ -129,7 +135,7 @@ public class AThreadPoolImpl {
             wt.localQueue.push (task);
         }
         else {
-            globalQueues[getSharedQueueForCurrentThread ()].push (task);
+            sharedQueues[getSharedQueueForCurrentThread ()].push (task);
         }
 
         return task.future;
@@ -145,7 +151,7 @@ public class AThreadPoolImpl {
                 producerToQueueAffinity.clear ();
             }
 
-            result = (int) nextSharedQueue.getAndIncrement () % globalQueues.length;
+            result = (int) nextSharedQueue.getAndIncrement () % sharedQueues.length;
             producerToQueueAffinity.put (key, result);
         }
 
@@ -162,7 +168,7 @@ public class AThreadPoolImpl {
 
         shutdown = true;
 
-        for (SharedQueue globalQueue: globalQueues) {
+        for (SharedQueue globalQueue: sharedQueues) {
             //noinspection StatementWithEmptyBody
             while (globalQueue.popFifo () != null) {
                 // do nothing, just drain the queue
@@ -177,7 +183,7 @@ public class AThreadPoolImpl {
         }
 
         for (LocalQueue localQueue : localQueues) {
-            globalQueues[0].push (new AThreadPoolTask<> (() -> {
+            sharedQueues[0].push (new AThreadPoolTask<> (() -> {
                 throw new PoolShutdown ();
             }));
             UNSAFE.unpark (localQueue.thread);
