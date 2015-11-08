@@ -109,7 +109,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void __testSimpleScheduling07() throws InterruptedException {
+    public void _testSimpleScheduling07() throws InterruptedException {
         final int num = 10_000;
         final CountDownLatch latch = new CountDownLatch (num);
 
@@ -201,7 +201,7 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void _testStealExpensive() throws InterruptedException {
+    public void __testStealExpensive() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch (10_000);
 
         pool.submit (() -> {

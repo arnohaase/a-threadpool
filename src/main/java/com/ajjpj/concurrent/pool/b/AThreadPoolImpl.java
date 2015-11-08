@@ -32,6 +32,8 @@ public class AThreadPoolImpl {
     @SuppressWarnings ("FieldCanBeLocal")
     private volatile long idleThreads = 0;
 
+    static final long MASK_IDLE_THREAD_SCANNING = Long.MIN_VALUE; // top-most bit reserved to signify 'scanning'
+
     private final SharedQueue[] sharedQueues;
     final LocalQueue[] localQueues;
 
@@ -201,20 +203,22 @@ public class AThreadPoolImpl {
     void onAvailableTask () {
         long idleBitMask = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
 
-        if (idleBitMask == 0) {
+        if ((idleBitMask & MASK_IDLE_THREAD_SCANNING) != 0L) {
+            // some other thread is scanning, so there is no need to wake another thread
             return;
         }
-
-//        if (idleBitMask != 0) {
-//            System.err.println ("unparking: " + idleBitMask);
-//        }
+        if ((idleBitMask & ~MASK_IDLE_THREAD_SCANNING) == 0L) {
+            // all threads are busy already
+            return;
+        }
 
         for (LocalQueue localQueue : localQueues) {
             if ((idleBitMask & 1L) != 0) {
                 //noinspection ConstantConditions
-                markWorkerAsUnIdle (localQueue.thread.idleThreadMask);
-//                System.err.println ("unparking " + localQueue.thread.getName ());
-                UNSAFE.unpark (localQueue.thread);
+                if (markWorkerAsBusyAndScanning (localQueue.thread.idleThreadMask)) {
+                    // wake up the worker only if no-one else woke up the thread in the meantime
+                    UNSAFE.unpark (localQueue.thread);
+                }
                 break;
             }
             idleBitMask = idleBitMask >> 1;
@@ -226,23 +230,45 @@ public class AThreadPoolImpl {
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
             after = prev | mask;
-//            System.err.println ("setting idle " + mask + " on " + prev);
+
+            // A 'scanning' thread (i.e. a thread that was triggered by 'onAvailableTask') going to sleep means that scanning is finished, so we
+            //  can clear the flag. A thread going to sleep after doing some work also triggers the flag to be cleared, but that is safe and
+            //  incurs little additional overhead - clearing the flag in this place is basically for free.
+            after = after & ~MASK_IDLE_THREAD_SCANNING;
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
-
-//        System.err.println ("mark as idle: " + prev + " -> " + after + " @ " + mask);
     }
 
-    void markWorkerAsUnIdle (long mask) {
+    boolean markWorkerAsBusy (long mask) {
         long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            if ((prev & mask) == 0) {
+                // someone else woke up the thread in the meantime
+                return false;
+            }
+
             after = prev & ~mask;
-//            System.err.println ("setting unidle " + mask + " on " + prev);
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
 
-//        System.err.println ("mark as unidle: " + prev + " -> " + after + " @ " + mask);
+        return true;
+    }
+
+    boolean markWorkerAsBusyAndScanning (long mask) {
+        long prev, after;
+        do {
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            if ((prev & mask) == 0L) {
+                // someone else woke up the thread concurrently --> it is scanning now, and there is no need to wake it up or change the 'idle' mask
+                return false;
+            }
+
+            after = prev & ~mask;
+            after = after | MASK_IDLE_THREAD_SCANNING;
+        }
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
+        return true;
     }
 
     //------------------ Unsafe stuff

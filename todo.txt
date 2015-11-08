@@ -92,3 +92,952 @@ Bugs (?) / problems in FJ
 * dynamic growth
 * tie-in to Fork/Join support
 * GPL (?)
+
+
+----------------------------------------
+before introducing 'scanning' state:
+
+/opt/jdk1.8/bin/java -Didea.launcher.port=7532 -Didea.launcher.bin.path=/home/arno/eclipse/idea-IU-139.659.2/bin -Dfile.encoding=UTF-8 -classpath /opt/jdk1.8/jre/lib/jfr.jar:/opt/jdk1.8/jre/lib/jce.jar:/opt/jdk1.8/jre/lib/deploy.jar:/opt/jdk1.8/jre/lib/management-agent.jar:/opt/jdk1.8/jre/lib/charsets.jar:/opt/jdk1.8/jre/lib/jfxswt.jar:/opt/jdk1.8/jre/lib/resources.jar:/opt/jdk1.8/jre/lib/javaws.jar:/opt/jdk1.8/jre/lib/jsse.jar:/opt/jdk1.8/jre/lib/plugin.jar:/opt/jdk1.8/jre/lib/rt.jar:/opt/jdk1.8/jre/lib/ext/sunjce_provider.jar:/opt/jdk1.8/jre/lib/ext/dnsns.jar:/opt/jdk1.8/jre/lib/ext/localedata.jar:/opt/jdk1.8/jre/lib/ext/zipfs.jar:/opt/jdk1.8/jre/lib/ext/cldrdata.jar:/opt/jdk1.8/jre/lib/ext/jfxrt.jar:/opt/jdk1.8/jre/lib/ext/sunec.jar:/opt/jdk1.8/jre/lib/ext/nashorn.jar:/opt/jdk1.8/jre/lib/ext/sunpkcs11.jar:/home/arno/ws/a-threadpool/target/classes:/home/arno/.m2/repository/org/openjdk/jmh/jmh-core/1.0/jmh-core-1.0.jar:/home/arno/.m2/repository/net/sf/jopt-simple/jopt-simple/4.6/jopt-simple-4.6.jar:/home/arno/.m2/repository/org/apache/commons/commons-math3/3.2/commons-math3-3.2.jar:/home/arno/.m2/repository/com/ajjpj/a-foundation/a-foundation/1.0-pre16/a-foundation-1.0-pre16.jar:/home/arno/eclipse/idea-IU-139.659.2/lib/idea_rt.jar com.intellij.rt.execution.application.AppMain org.openjdk.jmh.Main
+# Run progress: 0,00% complete, ETA 00:06:36
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.__testSimpleScheduling07
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 1847,856 ops/s
+# Warmup Iteration   2: 2334,693 ops/s
+# Warmup Iteration   3: 2465,286 ops/s
+Iteration   1: 2700,790 ops/s
+Iteration   2: 2493,688 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=40.466.678, numSharedTasksExecuted=40.466.678, numSteals=0, numExceptions=0, numParks=1.763, numFalseAlarmUnparks=400, numSharedQueueSwitches=14.219, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=35.139.550, numSharedTasksExecuted=35.139.550, numSteals=0, numExceptions=0, numParks=1.667, numFalseAlarmUnparks=497, numSharedQueueSwitches=10.746, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=38.851.149, numSharedTasksExecuted=38.851.149, numSteals=0, numExceptions=0, numParks=1.689, numFalseAlarmUnparks=536, numSharedQueueSwitches=10.998, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=41.934.993, numSharedTasksExecuted=41.934.993, numSteals=0, numExceptions=0, numParks=1.275, numFalseAlarmUnparks=324, numSharedQueueSwitches=11.531, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=35.967.658, numSharedTasksExecuted=35.967.658, numSteals=0, numExceptions=0, numParks=698, numFalseAlarmUnparks=220, numSharedQueueSwitches=9.862, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=39.513.687, numSharedTasksExecuted=39.513.687, numSteals=0, numExceptions=0, numParks=1.835, numFalseAlarmUnparks=533, numSharedQueueSwitches=11.154, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=38.299.839, numSharedTasksExecuted=38.299.839, numSteals=0, numExceptions=0, numParks=671, numFalseAlarmUnparks=116, numSharedQueueSwitches=12.157, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=39.306.454, numSharedTasksExecuted=39.306.454, numSteals=0, numExceptions=0, numParks=896, numFalseAlarmUnparks=241, numSharedQueueSwitches=10.835, numLocalSubmits=0, approximateLocalQueueSize=0}
+--------------------------------
+2450,733 ops/s
+
+Result: 2548,404 ±(99.9%) 2439,311 ops/s [Average]
+  Statistics: (min, avg, max) = (2450,733, 2548,404, 2700,790), stdev = 133,707
+  Confidence interval (99.9%): [109,093, 4987,715]
+
+
+# Run progress: 3,03% complete, ETA 00:07:03
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.__testSimpleScheduling07
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 443,747 ops/s
+# Warmup Iteration   2: 481,183 ops/s
+# Warmup Iteration   3: 479,759 ops/s
+Iteration   1: 469,840 ops/s
+Iteration   2: 465,950 ops/s
+Iteration   3: 477,855 ops/s
+
+Result: 471,215 ±(99.9%) 110,748 ops/s [Average]
+  Statistics: (min, avg, max) = (465,950, 471,215, 477,855), stdev = 6,070
+  Confidence interval (99.9%): [360,467, 581,963]
+
+
+# Run progress: 6,06% complete, ETA 00:06:50
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.__testSimpleScheduling07
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 1993,702 ops/s
+# Warmup Iteration   2: 1788,303 ops/s
+# Warmup Iteration   3: 1677,115 ops/s
+Iteration   1: 1658,471 ops/s
+Iteration   2: 1678,845 ops/s
+Iteration   3: 1636,285 ops/s
+
+Result: 1657,867 ±(99.9%) 388,346 ops/s [Average]
+  Statistics: (min, avg, max) = (1636,285, 1657,867, 1678,845), stdev = 21,287
+  Confidence interval (99.9%): [1269,521, 2046,213]
+
+
+# Run progress: 9,09% complete, ETA 00:06:36
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling01
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 61,401 ops/s
+# Warmup Iteration   2: 61,097 ops/s
+# Warmup Iteration   3: 60,260 ops/s
+Iteration   1: 60,373 ops/s
+Iteration   2: 60,621 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=2.219.334, numSharedTasksExecuted=2.219.334, numSteals=0, numExceptions=0, numParks=2.164.556, numFalseAlarmUnparks=814.694, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.731.230, numSharedTasksExecuted=1.731.230, numSteals=0, numExceptions=0, numParks=2.079.019, numFalseAlarmUnparks=952.753, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.160.287, numSharedTasksExecuted=1.160.287, numSteals=0, numExceptions=0, numParks=1.837.046, numFalseAlarmUnparks=1.049.508, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=948.991, numSharedTasksExecuted=948.991, numSteals=0, numExceptions=0, numParks=1.630.493, numFalseAlarmUnparks=1.003.437, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=702.789, numSharedTasksExecuted=702.789, numSteals=0, numExceptions=0, numParks=1.348.790, numFalseAlarmUnparks=853.256, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=467.784, numSharedTasksExecuted=467.784, numSteals=0, numExceptions=0, numParks=972.308, numFalseAlarmUnparks=630.211, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=312.650, numSharedTasksExecuted=312.650, numSteals=0, numExceptions=0, numParks=584.689, numFalseAlarmUnparks=356.550, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=146.943, numSharedTasksExecuted=146.943, numSteals=0, numExceptions=0, numParks=230.035, numFalseAlarmUnparks=134.566, numSharedQueueSwitches=0, numLocalSubmits=0, approximateLocalQueueSize=0}
+--------------------------------
+61,108 ops/s
+
+Result: 60,701 ±(99.9%) 6,826 ops/s [Average]
+  Statistics: (min, avg, max) = (60,373, 60,701, 61,108), stdev = 0,374
+  Confidence interval (99.9%): [53,875, 67,526]
+
+
+# Run progress: 12,12% complete, ETA 00:06:23
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling01
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 463,117 ops/s
+# Warmup Iteration   2: 472,640 ops/s
+# Warmup Iteration   3: 467,518 ops/s
+Iteration   1: 469,258 ops/s
+Iteration   2: 468,189 ops/s
+Iteration   3: 466,106 ops/s
+
+Result: 467,851 ±(99.9%) 29,247 ops/s [Average]
+  Statistics: (min, avg, max) = (466,106, 467,851, 469,258), stdev = 1,603
+  Confidence interval (99.9%): [438,604, 497,098]
+
+
+# Run progress: 15,15% complete, ETA 00:06:10
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testSimpleScheduling01
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 537,218 ops/s
+# Warmup Iteration   2: 548,325 ops/s
+# Warmup Iteration   3: 535,503 ops/s
+Iteration   1: 534,473 ops/s
+Iteration   2: 542,708 ops/s
+Iteration   3: 540,880 ops/s
+
+Result: 539,354 ±(99.9%) 78,898 ops/s [Average]
+  Statistics: (min, avg, max) = (534,473, 539,354, 542,708), stdev = 4,325
+  Confidence interval (99.9%): [460,456, 618,252]
+
+
+# Run progress: 18,18% complete, ETA 00:05:56
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 296,705 ops/s
+# Warmup Iteration   2: 230,493 ops/s
+# Warmup Iteration   3: 211,722 ops/s
+Iteration   1: 225,984 ops/s
+Iteration   2: 200,248 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=415.391, numSharedTasksExecuted=2.812, numSteals=57.175, numExceptions=0, numParks=17.790, numFalseAlarmUnparks=6.263, numSharedQueueSwitches=0, numLocalSubmits=28.110.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=5.096.387, numSharedTasksExecuted=7, numSteals=5.093.064, numExceptions=0, numParks=1.598.960, numFalseAlarmUnparks=535.011, numSharedQueueSwitches=0, numLocalSubmits=60.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=4.696.693, numSharedTasksExecuted=4, numSteals=4.696.115, numExceptions=0, numParks=1.600.614, numFalseAlarmUnparks=693.064, numSharedQueueSwitches=0, numLocalSubmits=30.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=4.242.904, numSharedTasksExecuted=6, numSteals=4.240.892, numExceptions=0, numParks=1.407.533, numFalseAlarmUnparks=693.921, numSharedQueueSwitches=0, numLocalSubmits=50.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=3.913.019, numSharedTasksExecuted=3, numSteals=3.911.794, numExceptions=0, numParks=1.225.907, numFalseAlarmUnparks=649.225, numSharedQueueSwitches=0, numLocalSubmits=20.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=3.743.469, numSharedTasksExecuted=4, numSteals=3.742.338, numExceptions=0, numParks=1.075.149, numFalseAlarmUnparks=592.759, numSharedQueueSwitches=0, numLocalSubmits=30.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=3.408.075, numSharedTasksExecuted=7, numSteals=3.405.325, numExceptions=0, numParks=882.336, numFalseAlarmUnparks=506.145, numSharedQueueSwitches=0, numLocalSubmits=60.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=2.936.915, numSharedTasksExecuted=10, numSteals=2.931.383, numExceptions=0, numParks=701.229, numFalseAlarmUnparks=369.546, numSharedQueueSwitches=0, numLocalSubmits=90.000, approximateLocalQueueSize=0}
+--------------------------------
+228,181 ops/s
+
+Result: 218,138 ±(99.9%) 283,357 ops/s [Average]
+  Statistics: (min, avg, max) = (200,248, 218,138, 228,181), stdev = 15,532
+  Confidence interval (99.9%): [-65,219, 501,495]
+
+
+# Run progress: 21,21% complete, ETA 00:05:43
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 219,815 ops/s
+# Warmup Iteration   2: 215,216 ops/s
+# Warmup Iteration   3: 214,353 ops/s
+Iteration   1: 215,525 ops/s
+Iteration   2: 216,210 ops/s
+Iteration   3: 214,743 ops/s
+
+Result: 215,493 ±(99.9%) 13,385 ops/s [Average]
+  Statistics: (min, avg, max) = (214,743, 215,493, 216,210), stdev = 0,734
+  Confidence interval (99.9%): [202,108, 228,877]
+
+
+# Run progress: 24,24% complete, ETA 00:05:30
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealExpensive
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 732,853 ops/s
+# Warmup Iteration   2: 764,766 ops/s
+# Warmup Iteration   3: 757,149 ops/s
+Iteration   1: 758,558 ops/s
+Iteration   2: 757,774 ops/s
+Iteration   3: 754,554 ops/s
+
+Result: 756,962 ±(99.9%) 38,710 ops/s [Average]
+  Statistics: (min, avg, max) = (754,554, 756,962, 758,558), stdev = 2,122
+  Confidence interval (99.9%): [718,252, 795,672]
+
+
+# Run progress: 27,27% complete, ETA 00:05:17
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 262,584 ops/s
+# Warmup Iteration   2: 328,605 ops/s
+# Warmup Iteration   3: 333,541 ops/s
+Iteration   1: 294,743 ops/s
+Iteration   2: 326,547 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=2.237.688, numSharedTasksExecuted=3.859, numSteals=52.476, numExceptions=0, numParks=14.200, numFalseAlarmUnparks=4.201, numSharedQueueSwitches=0, numLocalSubmits=38.580.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=6.150.843, numSharedTasksExecuted=8, numSteals=6.143.502, numExceptions=0, numParks=1.228.926, numFalseAlarmUnparks=483.667, numSharedQueueSwitches=0, numLocalSubmits=70.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=5.725.200, numSharedTasksExecuted=4, numSteals=5.723.227, numExceptions=0, numParks=1.146.509, numFalseAlarmUnparks=521.476, numSharedQueueSwitches=0, numLocalSubmits=30.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=5.237.163, numSharedTasksExecuted=2, numSteals=5.236.332, numExceptions=0, numParks=1.006.106, numFalseAlarmUnparks=512.590, numSharedQueueSwitches=0, numLocalSubmits=10.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=5.807.664, numSharedTasksExecuted=4, numSteals=5.805.565, numExceptions=0, numParks=896.597, numFalseAlarmUnparks=497.723, numSharedQueueSwitches=0, numLocalSubmits=30.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=5.175.771, numSharedTasksExecuted=4, numSteals=5.174.202, numExceptions=0, numParks=786.908, numFalseAlarmUnparks=460.657, numSharedQueueSwitches=0, numLocalSubmits=30.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=4.979.489, numSharedTasksExecuted=12, numSteals=4.973.620, numExceptions=0, numParks=585.638, numFalseAlarmUnparks=327.181, numSharedQueueSwitches=0, numLocalSubmits=110.000, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=3.620.083, numSharedTasksExecuted=8, numSteals=3.615.932, numExceptions=0, numParks=445.568, numFalseAlarmUnparks=278.935, numSharedQueueSwitches=0, numLocalSubmits=70.000, approximateLocalQueueSize=0}
+--------------------------------
+305,080 ops/s
+
+Result: 308,790 ±(99.9%) 295,970 ops/s [Average]
+  Statistics: (min, avg, max) = (294,743, 308,790, 326,547), stdev = 16,223
+  Confidence interval (99.9%): [12,820, 604,760]
+
+
+# Run progress: 30,30% complete, ETA 00:05:03
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 459,655 ops/s
+# Warmup Iteration   2: 467,993 ops/s
+# Warmup Iteration   3: 468,123 ops/s
+Iteration   1: 463,526 ops/s
+Iteration   2: 464,967 ops/s
+Iteration   3: 464,785 ops/s
+
+Result: 464,426 ±(99.9%) 14,321 ops/s [Average]
+  Statistics: (min, avg, max) = (463,526, 464,426, 464,967), stdev = 0,785
+  Confidence interval (99.9%): [450,104, 478,747]
+
+
+# Run progress: 33,33% complete, ETA 00:04:50
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark._testStealVeryCheap
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 704,793 ops/s
+# Warmup Iteration   2: 701,457 ops/s
+# Warmup Iteration   3: 696,399 ops/s
+Iteration   1: 692,342 ops/s
+Iteration   2: 678,623 ops/s
+Iteration   3: 679,557 ops/s
+
+Result: 683,508 ±(99.9%) 139,842 ops/s [Average]
+  Statistics: (min, avg, max) = (678,623, 683,508, 692,342), stdev = 7,665
+  Confidence interval (99.9%): [543,665, 823,350]
+
+
+# Run progress: 36,36% complete, ETA 00:04:37
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 665610,141 ops/s
+# Warmup Iteration   2: 749208,029 ops/s
+# Warmup Iteration   3: 760428,532 ops/s
+Iteration   1: 796746,012 ops/s
+Iteration   2: 769674,323 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=15.553.450, numSharedTasksExecuted=1.427.032, numSteals=1.290.748, numExceptions=0, numParks=712.512, numFalseAlarmUnparks=192.760, numSharedQueueSwitches=1.299.944, numLocalSubmits=14.156.030, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=14.956.306, numSharedTasksExecuted=1.366.344, numSteals=1.300.914, numExceptions=0, numParks=651.833, numFalseAlarmUnparks=175.674, numSharedQueueSwitches=1.246.121, numLocalSubmits=13.602.320, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=14.336.024, numSharedTasksExecuted=1.306.401, numSteals=1.219.100, numExceptions=0, numParks=624.530, numFalseAlarmUnparks=167.822, numSharedQueueSwitches=1.188.334, numLocalSubmits=13.033.589, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=12.672.168, numSharedTasksExecuted=1.159.692, numSteals=1.110.662, numExceptions=0, numParks=562.668, numFalseAlarmUnparks=147.539, numSharedQueueSwitches=1.053.516, numLocalSubmits=11.522.256, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=12.718.103, numSharedTasksExecuted=1.148.250, numSteals=1.076.584, numExceptions=0, numParks=574.465, numFalseAlarmUnparks=151.024, numSharedQueueSwitches=1.043.475, numLocalSubmits=11.559.824, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=12.181.456, numSharedTasksExecuted=1.117.314, numSteals=1.073.285, numExceptions=0, numParks=546.908, numFalseAlarmUnparks=144.305, numSharedQueueSwitches=1.018.119, numLocalSubmits=11.073.996, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=12.231.449, numSharedTasksExecuted=1.107.840, numSteals=1.012.782, numExceptions=0, numParks=548.738, numFalseAlarmUnparks=144.839, numSharedQueueSwitches=1.011.521, numLocalSubmits=11.115.452, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=12.373.363, numSharedTasksExecuted=1.096.436, numSteals=967.364, numExceptions=0, numParks=524.833, numFalseAlarmUnparks=138.911, numSharedQueueSwitches=1.000.980, numLocalSubmits=11.229.543, approximateLocalQueueSize=0}
+--------------------------------
+801061,188 ops/s
+
+Result: 789160,508 ±(99.9%) 310378,613 ops/s [Average]
+  Statistics: (min, avg, max) = (769674,323, 789160,508, 801061,188), stdev = 17012,899
+  Confidence interval (99.9%): [478781,894, 1099539,121]
+
+
+# Run progress: 39,39% complete, ETA 00:04:24
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 302354,283 ops/s
+# Warmup Iteration   2: 306579,274 ops/s
+# Warmup Iteration   3: 309157,241 ops/s
+Iteration   1: 307650,205 ops/s
+Iteration   2: 306000,931 ops/s
+Iteration   3: 305839,187 ops/s
+
+Result: 306496,774 ±(99.9%) 18283,281 ops/s [Average]
+  Statistics: (min, avg, max) = (305839,187, 306496,774, 307650,205), stdev = 1002,168
+  Confidence interval (99.9%): [288213,494, 324780,055]
+
+
+# Run progress: 42,42% complete, ETA 00:04:11
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 7 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti7
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 704373,024 ops/s
+# Warmup Iteration   2: 724425,150 ops/s
+# Warmup Iteration   3: 718743,889 ops/s
+Iteration   1: 721723,389 ops/s
+Iteration   2: 722413,261 ops/s
+Iteration   3: 712451,671 ops/s
+
+Result: 718862,773 ±(99.9%) 101487,683 ops/s [Average]
+  Statistics: (min, avg, max) = (712451,671, 718862,773, 722413,261), stdev = 5562,882
+  Confidence interval (99.9%): [617375,091, 820350,456]
+
+
+# Run progress: 45,45% complete, ETA 00:03:57
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 827643,837 ops/s
+# Warmup Iteration   2: 874650,346 ops/s
+# Warmup Iteration   3: 853128,857 ops/s
+Iteration   1: 857071,348 ops/s
+Iteration   2: 859229,885 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=16.306.634, numSharedTasksExecuted=1.510.549, numSteals=979.573, numExceptions=0, numParks=399.212, numFalseAlarmUnparks=95.965, numSharedQueueSwitches=1.421.191, numLocalSubmits=14.840.763, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=16.042.604, numSharedTasksExecuted=1.476.625, numSteals=934.910, numExceptions=0, numParks=391.309, numFalseAlarmUnparks=91.767, numSharedQueueSwitches=1.388.790, numLocalSubmits=14.594.476, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=14.979.984, numSharedTasksExecuted=1.365.369, numSteals=878.727, numExceptions=0, numParks=363.768, numFalseAlarmUnparks=86.909, numSharedQueueSwitches=1.282.528, numLocalSubmits=13.618.904, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=15.596.334, numSharedTasksExecuted=1.408.525, numSteals=800.979, numExceptions=0, numParks=365.146, numFalseAlarmUnparks=78.564, numSharedQueueSwitches=1.323.479, numLocalSubmits=14.190.877, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=13.856.769, numSharedTasksExecuted=1.281.856, numSteals=823.377, numExceptions=0, numParks=349.166, numFalseAlarmUnparks=83.110, numSharedQueueSwitches=1.204.738, numLocalSubmits=12.606.105, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=13.986.591, numSharedTasksExecuted=1.261.756, numSteals=776.242, numExceptions=0, numParks=334.023, numFalseAlarmUnparks=78.962, numSharedQueueSwitches=1.185.767, numLocalSubmits=12.704.586, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=14.097.762, numSharedTasksExecuted=1.265.883, numSteals=737.641, numExceptions=0, numParks=317.518, numFalseAlarmUnparks=73.362, numSharedQueueSwitches=1.192.219, numLocalSubmits=12.803.682, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=13.759.299, numSharedTasksExecuted=1.213.624, numSteals=712.736, numExceptions=0, numParks=302.245, numFalseAlarmUnparks=70.141, numSharedQueueSwitches=1.140.081, numLocalSubmits=12.482.397, approximateLocalQueueSize=0}
+--------------------------------
+855758,727 ops/s
+
+Result: 857353,320 ±(99.9%) 31975,304 ops/s [Average]
+  Statistics: (min, avg, max) = (855758,727, 857353,320, 859229,885), stdev = 1752,674
+  Confidence interval (99.9%): [825378,016, 889328,624]
+
+
+# Run progress: 48,48% complete, ETA 00:03:44
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 308432,740 ops/s
+# Warmup Iteration   2: 309314,084 ops/s
+# Warmup Iteration   3: 308567,339 ops/s
+Iteration   1: 304234,888 ops/s
+Iteration   2: 305910,784 ops/s
+Iteration   3: 306070,436 ops/s
+
+Result: 305405,369 ±(99.9%) 18550,303 ops/s [Average]
+  Statistics: (min, avg, max) = (304234,888, 305405,369, 306070,436), stdev = 1016,805
+  Confidence interval (99.9%): [286855,066, 323955,672]
+
+
+# Run progress: 51,52% complete, ETA 00:03:31
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 8 threads, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialMulti8
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 875210,864 ops/s
+# Warmup Iteration   2: 894859,332 ops/s
+# Warmup Iteration   3: 882766,760 ops/s
+Iteration   1: 893786,041 ops/s
+Iteration   2: 892082,761 ops/s
+Iteration   3: 896413,183 ops/s
+
+Result: 894093,995 ±(99.9%) 39800,029 ops/s [Average]
+  Statistics: (min, avg, max) = (892082,761, 894093,995, 896413,183), stdev = 2181,574
+  Confidence interval (99.9%): [854293,966, 933894,024]
+
+
+# Run progress: 54,55% complete, ETA 00:03:18
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 32668,637 ops/s
+# Warmup Iteration   2: 32309,380 ops/s
+# Warmup Iteration   3: 31013,688 ops/s
+Iteration   1: 32394,266 ops/s
+Iteration   2: 33109,961 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.550.282, numSharedTasksExecuted=370.443, numSteals=789.666, numExceptions=0, numParks=1.411.471, numFalseAlarmUnparks=401.686, numSharedQueueSwitches=0, numLocalSubmits=1.430.899, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.125.403, numSharedTasksExecuted=6.631, numSteals=1.013.152, numExceptions=0, numParks=1.269.987, numFalseAlarmUnparks=400.518, numSharedQueueSwitches=0, numLocalSubmits=1.042.770, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=665.450, numSharedTasksExecuted=6.444, numSteals=599.348, numExceptions=0, numParks=1.321.910, numFalseAlarmUnparks=801.922, numSharedQueueSwitches=0, numLocalSubmits=592.722, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=556.152, numSharedTasksExecuted=4.264, numSteals=501.751, numExceptions=0, numParks=1.122.133, numFalseAlarmUnparks=673.316, numSharedQueueSwitches=0, numLocalSubmits=508.884, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=374.262, numSharedTasksExecuted=5.279, numSteals=329.851, numExceptions=0, numParks=1.134.066, numFalseAlarmUnparks=844.897, numSharedQueueSwitches=0, numLocalSubmits=323.670, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=161.538, numSharedTasksExecuted=6.541, numSteals=128.648, numExceptions=0, numParks=467.753, numFalseAlarmUnparks=350.544, numSharedQueueSwitches=0, numLocalSubmits=137.476, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=68.218, numSharedTasksExecuted=7.714, numSteals=51.048, numExceptions=0, numParks=321.970, numFalseAlarmUnparks=269.792, numSharedQueueSwitches=0, numLocalSubmits=57.211, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=19.439, numSharedTasksExecuted=3.668, numSteals=12.076, numExceptions=0, numParks=162.548, numFalseAlarmUnparks=148.485, numSharedQueueSwitches=0, numLocalSubmits=16.128, approximateLocalQueueSize=0}
+--------------------------------
+33010,873 ops/s
+
+Result: 32838,366 ±(99.9%) 7074,563 ops/s [Average]
+  Statistics: (min, avg, max) = (32394,266, 32838,366, 33109,961), stdev = 387,781
+  Confidence interval (99.9%): [25763,804, 39912,929]
+
+
+# Run progress: 57,58% complete, ETA 00:03:04
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 86303,136 ops/s
+# Warmup Iteration   2: 88508,482 ops/s
+# Warmup Iteration   3: 87403,773 ops/s
+Iteration   1: 87160,109 ops/s
+Iteration   2: 86608,504 ops/s
+Iteration   3: 86962,776 ops/s
+
+Result: 86910,463 ±(99.9%) 5099,097 ops/s [Average]
+  Statistics: (min, avg, max) = (86608,504, 86910,463, 87160,109), stdev = 279,499
+  Confidence interval (99.9%): [81811,366, 92009,560]
+
+
+# Run progress: 60,61% complete, ETA 00:02:51
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testFactorialSingle
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 63973,203 ops/s
+# Warmup Iteration   2: 64509,669 ops/s
+# Warmup Iteration   3: 64314,000 ops/s
+Iteration   1: 64179,016 ops/s
+Iteration   2: 64411,381 ops/s
+Iteration   3: 64418,100 ops/s
+
+Result: 64336,166 ±(99.9%) 2483,648 ops/s [Average]
+  Statistics: (min, avg, max) = (64179,016, 64336,166, 64418,100), stdev = 136,137
+  Confidence interval (99.9%): [61852,518, 66819,813]
+
+
+# Run progress: 63,64% complete, ETA 00:02:38
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 81,628 ops/s
+# Warmup Iteration   2: 85,055 ops/s
+# Warmup Iteration   3: 76,254 ops/s
+Iteration   1: 80,299 ops/s
+Iteration   2: 82,898 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=2.203.814, numSharedTasksExecuted=1.044, numSteals=1.815.325, numExceptions=0, numParks=1.958.846, numFalseAlarmUnparks=684.915, numSharedQueueSwitches=0, numLocalSubmits=2.203.595, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.983.634, numSharedTasksExecuted=7, numSteals=1.619.729, numExceptions=0, numParks=1.929.688, numFalseAlarmUnparks=819.737, numSharedQueueSwitches=0, numLocalSubmits=1.983.426, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.746.256, numSharedTasksExecuted=2, numSteals=1.431.846, numExceptions=0, numParks=1.869.457, numFalseAlarmUnparks=874.456, numSharedQueueSwitches=0, numLocalSubmits=1.746.094, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.444.008, numSharedTasksExecuted=2, numSteals=1.146.232, numExceptions=0, numParks=1.833.127, numFalseAlarmUnparks=1.086.977, numSharedQueueSwitches=0, numLocalSubmits=1.443.865, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=1.270.661, numSharedTasksExecuted=2, numSteals=1.009.242, numExceptions=0, numParks=1.693.150, numFalseAlarmUnparks=1.040.136, numSharedQueueSwitches=0, numLocalSubmits=1.270.522, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=848.296, numSharedTasksExecuted=1, numSteals=661.154, numExceptions=0, numParks=1.018.098, numFalseAlarmUnparks=598.458, numSharedQueueSwitches=0, numLocalSubmits=848.209, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=601.089, numSharedTasksExecuted=2, numSteals=461.288, numExceptions=0, numParks=776.875, numFalseAlarmUnparks=492.168, numSharedQueueSwitches=0, numLocalSubmits=601.031, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=452.250, numSharedTasksExecuted=3, numSteals=343.557, numExceptions=0, numParks=530.389, numFalseAlarmUnparks=329.141, numSharedQueueSwitches=0, numLocalSubmits=452.203, approximateLocalQueueSize=0}
+--------------------------------
+90,021 ops/s
+
+Result: 84,406 ±(99.9%) 91,825 ops/s [Average]
+  Statistics: (min, avg, max) = (80,299, 84,406, 90,021), stdev = 5,033
+  Confidence interval (99.9%): [-7,419, 176,231]
+
+
+# Run progress: 66,67% complete, ETA 00:02:25
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 343,366 ops/s
+# Warmup Iteration   2: 344,888 ops/s
+# Warmup Iteration   3: 343,849 ops/s
+Iteration   1: 343,369 ops/s
+Iteration   2: 343,748 ops/s
+Iteration   3: 343,277 ops/s
+
+Result: 343,465 ±(99.9%) 4,555 ops/s [Average]
+  Statistics: (min, avg, max) = (343,277, 343,465, 343,748), stdev = 0,250
+  Confidence interval (99.9%): [338,910, 348,019]
+
+
+# Run progress: 69,70% complete, ETA 00:02:12
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong01
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 416,508 ops/s
+# Warmup Iteration   2: 420,728 ops/s
+# Warmup Iteration   3: 418,114 ops/s
+Iteration   1: 418,103 ops/s
+Iteration   2: 418,219 ops/s
+Iteration   3: 418,025 ops/s
+
+Result: 418,116 ±(99.9%) 1,785 ops/s [Average]
+  Statistics: (min, avg, max) = (418,025, 418,116, 418,219), stdev = 0,098
+  Confidence interval (99.9%): [416,331, 419,900]
+
+
+# Run progress: 72,73% complete, ETA 00:01:58
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 227,532 ops/s
+# Warmup Iteration   2: 232,214 ops/s
+# Warmup Iteration   3: 233,705 ops/s
+Iteration   1: 231,720 ops/s
+Iteration   2: 230,437 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=8.003.752, numSharedTasksExecuted=2.881, numSteals=5.439.981, numExceptions=0, numParks=2.720.846, numFalseAlarmUnparks=780.810, numSharedQueueSwitches=0, numLocalSubmits=8.002.693, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=7.493.555, numSharedTasksExecuted=2.822, numSteals=5.112.849, numExceptions=0, numParks=2.723.379, numFalseAlarmUnparks=821.932, numSharedQueueSwitches=0, numLocalSubmits=7.492.628, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=7.516.768, numSharedTasksExecuted=53, numSteals=4.970.161, numExceptions=0, numParks=2.669.369, numFalseAlarmUnparks=812.926, numSharedQueueSwitches=0, numLocalSubmits=7.515.955, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=7.005.812, numSharedTasksExecuted=19, numSteals=4.670.689, numExceptions=0, numParks=2.573.680, numFalseAlarmUnparks=809.912, numSharedQueueSwitches=0, numLocalSubmits=7.005.091, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=7.367.332, numSharedTasksExecuted=10, numSteals=4.668.812, numExceptions=0, numParks=2.504.589, numFalseAlarmUnparks=776.073, numSharedQueueSwitches=0, numLocalSubmits=7.366.640, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=7.277.125, numSharedTasksExecuted=16, numSteals=4.450.900, numExceptions=0, numParks=2.390.976, numFalseAlarmUnparks=729.407, numSharedQueueSwitches=0, numLocalSubmits=7.276.497, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=7.101.174, numSharedTasksExecuted=18, numSteals=4.329.978, numExceptions=0, numParks=2.311.515, numFalseAlarmUnparks=706.781, numSharedQueueSwitches=0, numLocalSubmits=7.100.625, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=6.574.490, numSharedTasksExecuted=23, numSteals=4.043.921, numExceptions=0, numParks=2.242.152, numFalseAlarmUnparks=706.687, numSharedQueueSwitches=0, numLocalSubmits=6.574.037, approximateLocalQueueSize=0}
+--------------------------------
+231,460 ops/s
+
+Result: 231,205 ±(99.9%) 12,371 ops/s [Average]
+  Statistics: (min, avg, max) = (230,437, 231,205, 231,720), stdev = 0,678
+  Confidence interval (99.9%): [218,835, 243,576]
+
+
+# Run progress: 75,76% complete, ETA 00:01:45
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 201,291 ops/s
+# Warmup Iteration   2: 202,946 ops/s
+# Warmup Iteration   3: 201,995 ops/s
+Iteration   1: 203,205 ops/s
+Iteration   2: 202,067 ops/s
+Iteration   3: 203,191 ops/s
+
+Result: 202,821 ±(99.9%) 11,917 ops/s [Average]
+  Statistics: (min, avg, max) = (202,067, 202,821, 203,205), stdev = 0,653
+  Confidence interval (99.9%): [190,904, 214,738]
+
+
+# Run progress: 78,79% complete, ETA 00:01:32
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong02
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 526,211 ops/s
+# Warmup Iteration   2: 524,521 ops/s
+# Warmup Iteration   3: 523,570 ops/s
+Iteration   1: 520,176 ops/s
+Iteration   2: 520,764 ops/s
+Iteration   3: 519,887 ops/s
+
+Result: 520,275 ±(99.9%) 8,152 ops/s [Average]
+  Statistics: (min, avg, max) = (519,887, 520,275, 520,764), stdev = 0,447
+  Confidence interval (99.9%): [512,123, 528,428]
+
+
+# Run progress: 81,82% complete, ETA 00:01:19
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 337,932 ops/s
+# Warmup Iteration   2: 378,536 ops/s
+# Warmup Iteration   3: 382,193 ops/s
+Iteration   1: 388,524 ops/s
+Iteration   2: 380,084 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=53.908.067, numSharedTasksExecuted=4.833, numSteals=2.794.554, numExceptions=0, numParks=621.351, numFalseAlarmUnparks=181.583, numSharedQueueSwitches=0, numLocalSubmits=53.902.763, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=53.576.902, numSharedTasksExecuted=4.834, numSteals=2.271.827, numExceptions=0, numParks=608.692, numFalseAlarmUnparks=197.802, numSharedQueueSwitches=0, numLocalSubmits=53.571.712, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=34.809.328, numSharedTasksExecuted=4.804, numSteals=1.981.386, numExceptions=0, numParks=592.917, numFalseAlarmUnparks=223.918, numSharedQueueSwitches=0, numLocalSubmits=34.805.360, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=30.565.459, numSharedTasksExecuted=4.788, numSteals=1.776.146, numExceptions=0, numParks=569.116, numFalseAlarmUnparks=256.105, numSharedQueueSwitches=0, numLocalSubmits=30.561.808, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=56.290.099, numSharedTasksExecuted=4.723, numSteals=1.480.712, numExceptions=0, numParks=544.075, numFalseAlarmUnparks=247.164, numSharedQueueSwitches=0, numLocalSubmits=56.285.098, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=27.918.667, numSharedTasksExecuted=4.454, numSteals=1.332.147, numExceptions=0, numParks=383.265, numFalseAlarmUnparks=149.662, numSharedQueueSwitches=0, numLocalSubmits=27.915.503, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=39.994.976, numSharedTasksExecuted=3.708, numSteals=1.190.591, numExceptions=0, numParks=325.497, numFalseAlarmUnparks=122.443, numSharedQueueSwitches=0, numLocalSubmits=39.991.176, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=39.846.510, numSharedTasksExecuted=1.555, numSteals=1.058.610, numExceptions=0, numParks=270.516, numFalseAlarmUnparks=92.479, numSharedQueueSwitches=0, numLocalSubmits=39.842.889, approximateLocalQueueSize=0}
+--------------------------------
+392,389 ops/s
+
+Result: 386,999 ±(99.9%) 114,799 ops/s [Average]
+  Statistics: (min, avg, max) = (380,084, 386,999, 392,389), stdev = 6,293
+  Confidence interval (99.9%): [272,200, 501,798]
+
+
+# Run progress: 84,85% complete, ETA 00:01:06
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 55,650 ops/s
+# Warmup Iteration   2: 57,439 ops/s
+# Warmup Iteration   3: 55,725 ops/s
+Iteration   1: 55,412 ops/s
+Iteration   2: 55,218 ops/s
+Iteration   3: 55,221 ops/s
+
+Result: 55,284 ±(99.9%) 2,030 ops/s [Average]
+  Statistics: (min, avg, max) = (55,218, 55,284, 55,412), stdev = 0,111
+  Confidence interval (99.9%): [53,253, 57,314]
+
+
+# Run progress: 87,88% complete, ETA 00:00:52
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong07
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 724,515 ops/s
+# Warmup Iteration   2: 745,962 ops/s
+# Warmup Iteration   3: 749,529 ops/s
+Iteration   1: 751,311 ops/s
+Iteration   2: 748,086 ops/s
+Iteration   3: 741,397 ops/s
+
+Result: 746,932 ±(99.9%) 92,260 ops/s [Average]
+  Statistics: (min, avg, max) = (741,397, 746,932, 751,311), stdev = 5,057
+  Confidence interval (99.9%): [654,672, 839,191]
+
+
+# Run progress: 90,91% complete, ETA 00:00:39
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = b)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 103,512 ops/s
+# Warmup Iteration   2: 95,326 ops/s
+# Warmup Iteration   3: 93,915 ops/s
+Iteration   1: 93,440 ops/s
+Iteration   2: 94,317 ops/s
+Iteration   3:
+---- Thread Pool Statistics ----
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+ASharedQueueStatistics{approximateSize=0}
+WorkerThreadStatistics{numTasksExecuted=49.167.040, numSharedTasksExecuted=4.914, numSteals=1.298.901, numExceptions=0, numParks=454.940, numFalseAlarmUnparks=123.743, numSharedQueueSwitches=0, numLocalSubmits=49.162.132, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=59.468.690, numSharedTasksExecuted=5.987, numSteals=1.151.381, numExceptions=0, numParks=447.277, numFalseAlarmUnparks=148.906, numSharedQueueSwitches=0, numLocalSubmits=59.462.641, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=32.346.900, numSharedTasksExecuted=3.530, numSteals=1.092.142, numExceptions=0, numParks=464.570, numFalseAlarmUnparks=176.919, numSharedQueueSwitches=0, numLocalSubmits=32.343.515, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=35.315.150, numSharedTasksExecuted=3.617, numSteals=1.012.742, numExceptions=0, numParks=438.834, numFalseAlarmUnparks=200.892, numSharedQueueSwitches=0, numLocalSubmits=35.311.746, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=58.902.237, numSharedTasksExecuted=5.874, numSteals=950.758, numExceptions=0, numParks=412.414, numFalseAlarmUnparks=175.356, numSharedQueueSwitches=0, numLocalSubmits=58.896.326, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=38.605.210, numSharedTasksExecuted=3.720, numSteals=847.403, numExceptions=0, numParks=292.724, numFalseAlarmUnparks=110.417, numSharedQueueSwitches=0, numLocalSubmits=38.601.534, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=53.790.244, numSharedTasksExecuted=5.316, numSteals=729.978, numExceptions=0, numParks=256.970, numFalseAlarmUnparks=96.915, numSharedQueueSwitches=0, numLocalSubmits=53.784.824, approximateLocalQueueSize=0}
+WorkerThreadStatistics{numTasksExecuted=52.884.537, numSharedTasksExecuted=5.098, numSteals=700.484, numExceptions=0, numParks=212.300, numFalseAlarmUnparks=69.950, numSharedQueueSwitches=0, numLocalSubmits=52.879.234, approximateLocalQueueSize=0}
+--------------------------------
+90,866 ops/s
+
+Result: 92,874 ±(99.9%) 32,722 ops/s [Average]
+  Statistics: (min, avg, max) = (90,866, 92,874, 94,317), stdev = 1,794
+  Confidence interval (99.9%): [60,153, 125,596]
+
+
+# Run progress: 93,94% complete, ETA 00:00:26
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = naive)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 11,795 ops/s
+# Warmup Iteration   2: 11,521 ops/s
+# Warmup Iteration   3: 11,642 ops/s
+Iteration   1: 11,624 ops/s
+Iteration   2: 11,713 ops/s
+Iteration   3: 11,690 ops/s
+
+Result: 11,676 ±(99.9%) 0,839 ops/s [Average]
+  Statistics: (min, avg, max) = (11,624, 11,676, 11,713), stdev = 0,046
+  Confidence interval (99.9%): [10,837, 12,515]
+
+
+# Run progress: 96,97% complete, ETA 00:00:13
+# Warmup: 3 iterations, 1 s each
+# Measurement: 3 iterations, 3 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: benchmark.PoolBenchmark.testPingPong32
+# Parameters: (strategy = J9FjLifo)
+# Fork: N/A, test runs in the existing VM
+# Warmup Iteration   1: 220,756 ops/s
+# Warmup Iteration   2: 223,767 ops/s
+# Warmup Iteration   3: 228,943 ops/s
+Iteration   1: 224,804 ops/s
+Iteration   2: 223,349 ops/s
+Iteration   3: 217,206 ops/s
+
+Result: 221,786 ±(99.9%) 73,582 ops/s [Average]
+  Statistics: (min, avg, max) = (217,206, 221,786, 224,804), stdev = 4,033
+  Confidence interval (99.9%): [148,205, 295,368]
+
+
+# Run complete. Total time: 00:07:15
+
+Benchmark                                   (strategy)   Mode  Samples       Score  Score error  Units
+b.PoolBenchmark.__testSimpleScheduling07             b  thrpt        3    2548,404     2439,311  ops/s
+b.PoolBenchmark.__testSimpleScheduling07         naive  thrpt        3     471,215      110,748  ops/s
+b.PoolBenchmark.__testSimpleScheduling07      J9FjLifo  thrpt        3    1657,867      388,346  ops/s
+b.PoolBenchmark._testSimpleScheduling01              b  thrpt        3      60,701        6,826  ops/s
+b.PoolBenchmark._testSimpleScheduling01          naive  thrpt        3     467,851       29,247  ops/s
+b.PoolBenchmark._testSimpleScheduling01       J9FjLifo  thrpt        3     539,354       78,898  ops/s
+b.PoolBenchmark._testStealExpensive                  b  thrpt        3     218,138      283,357  ops/s
+b.PoolBenchmark._testStealExpensive              naive  thrpt        3     215,493       13,385  ops/s
+b.PoolBenchmark._testStealExpensive           J9FjLifo  thrpt        3     756,962       38,710  ops/s
+b.PoolBenchmark._testStealVeryCheap                  b  thrpt        3     308,790      295,970  ops/s
+b.PoolBenchmark._testStealVeryCheap              naive  thrpt        3     464,426       14,321  ops/s
+b.PoolBenchmark._testStealVeryCheap           J9FjLifo  thrpt        3     683,508      139,842  ops/s
+b.PoolBenchmark.testFactorialMulti7                  b  thrpt        3  789160,508   310378,613  ops/s
+b.PoolBenchmark.testFactorialMulti7              naive  thrpt        3  306496,774    18283,281  ops/s
+b.PoolBenchmark.testFactorialMulti7           J9FjLifo  thrpt        3  718862,773   101487,683  ops/s
+b.PoolBenchmark.testFactorialMulti8                  b  thrpt        3  857353,320    31975,304  ops/s
+b.PoolBenchmark.testFactorialMulti8              naive  thrpt        3  305405,369    18550,303  ops/s
+b.PoolBenchmark.testFactorialMulti8           J9FjLifo  thrpt        3  894093,995    39800,029  ops/s
+b.PoolBenchmark.testFactorialSingle                  b  thrpt        3   32838,366     7074,563  ops/s
+b.PoolBenchmark.testFactorialSingle              naive  thrpt        3   86910,463     5099,097  ops/s
+b.PoolBenchmark.testFactorialSingle           J9FjLifo  thrpt        3   64336,166     2483,648  ops/s
+b.PoolBenchmark.testPingPong01                       b  thrpt        3      84,406       91,825  ops/s
+b.PoolBenchmark.testPingPong01                   naive  thrpt        3     343,465        4,555  ops/s
+b.PoolBenchmark.testPingPong01                J9FjLifo  thrpt        3     418,116        1,785  ops/s
+b.PoolBenchmark.testPingPong02                       b  thrpt        3     231,205       12,371  ops/s
+b.PoolBenchmark.testPingPong02                   naive  thrpt        3     202,821       11,917  ops/s
+b.PoolBenchmark.testPingPong02                J9FjLifo  thrpt        3     520,275        8,152  ops/s
+b.PoolBenchmark.testPingPong07                       b  thrpt        3     386,999      114,799  ops/s
+b.PoolBenchmark.testPingPong07                   naive  thrpt        3      55,284        2,030  ops/s
+b.PoolBenchmark.testPingPong07                J9FjLifo  thrpt        3     746,932       92,260  ops/s
+b.PoolBenchmark.testPingPong32                       b  thrpt        3      92,874       32,722  ops/s
+b.PoolBenchmark.testPingPong32                   naive  thrpt        3      11,676        0,839  ops/s
+b.PoolBenchmark.testPingPong32                J9FjLifo  thrpt        3     221,786       73,582  ops/s
+
+-------------------------------------------------------------------------
+// after introducing 'scanning' flag
+
+Benchmark                                   (strategy)   Mode  Samples       Score  Score error  Units
+b.PoolBenchmark.__testSimpleScheduling07             b  thrpt        3    2298,845     1346,144  ops/s
+b.PoolBenchmark.__testSimpleScheduling07         naive  thrpt        3     469,169      137,506  ops/s
+b.PoolBenchmark.__testSimpleScheduling07      J9FjLifo  thrpt        3    1825,971      241,977  ops/s
+b.PoolBenchmark._testSimpleScheduling01              b  thrpt        3     683,093       99,879  ops/s
+b.PoolBenchmark._testSimpleScheduling01          naive  thrpt        3     453,739       16,273  ops/s
+b.PoolBenchmark._testSimpleScheduling01       J9FjLifo  thrpt        3     533,940       44,688  ops/s
+b.PoolBenchmark._testStealExpensive                  b  thrpt        3     338,884        2,531  ops/s
+b.PoolBenchmark._testStealExpensive              naive  thrpt        3     213,649       14,160  ops/s
+b.PoolBenchmark._testStealExpensive           J9FjLifo  thrpt        3     746,104       61,990  ops/s
+b.PoolBenchmark._testStealVeryCheap                  b  thrpt        3    1555,248       32,658  ops/s
+b.PoolBenchmark._testStealVeryCheap              naive  thrpt        3     450,563        3,703  ops/s
+b.PoolBenchmark._testStealVeryCheap           J9FjLifo  thrpt        3     712,412       52,727  ops/s
+b.PoolBenchmark.testFactorialMulti7                  b  thrpt        3  467352,585   281943,537  ops/s
+b.PoolBenchmark.testFactorialMulti7              naive  thrpt        3  299602,261    31976,950  ops/s
+b.PoolBenchmark.testFactorialMulti7           J9FjLifo  thrpt        3  713947,149    51000,381  ops/s
+b.PoolBenchmark.testFactorialMulti8                  b  thrpt        3  451594,804   121240,543  ops/s
+b.PoolBenchmark.testFactorialMulti8              naive  thrpt        3  293012,007    54816,922  ops/s
+b.PoolBenchmark.testFactorialMulti8           J9FjLifo  thrpt        3  972625,456    75400,958  ops/s
+b.PoolBenchmark.testFactorialSingle                  b  thrpt        3  125343,436     6172,042  ops/s
+b.PoolBenchmark.testFactorialSingle              naive  thrpt        3   93716,694    24869,348  ops/s
+b.PoolBenchmark.testFactorialSingle           J9FjLifo  thrpt        3   63583,371      587,556  ops/s
+b.PoolBenchmark.testPingPong01                       b  thrpt        3    1710,783      110,538  ops/s
+b.PoolBenchmark.testPingPong01                   naive  thrpt        3     332,321        7,730  ops/s
+b.PoolBenchmark.testPingPong01                J9FjLifo  thrpt        3     409,405        4,610  ops/s
+b.PoolBenchmark.testPingPong02                       b  thrpt        3     822,137       48,784  ops/s
+b.PoolBenchmark.testPingPong02                   naive  thrpt        3     180,252        8,944  ops/s
+b.PoolBenchmark.testPingPong02                J9FjLifo  thrpt        3     515,883      105,680  ops/s
+b.PoolBenchmark.testPingPong07                       b  thrpt        3     238,325        2,244  ops/s
+b.PoolBenchmark.testPingPong07                   naive  thrpt        3      55,694        4,745  ops/s
+b.PoolBenchmark.testPingPong07                J9FjLifo  thrpt        3     730,661       29,503  ops/s
+b.PoolBenchmark.testPingPong32                       b  thrpt        3      52,259        3,746  ops/s
+b.PoolBenchmark.testPingPong32                   naive  thrpt        3      10,892        0,825  ops/s
+b.PoolBenchmark.testPingPong32                J9FjLifo  thrpt        3     189,304       29,100  ops/s

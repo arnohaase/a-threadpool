@@ -82,7 +82,10 @@ class WorkerThread extends Thread {
 
                     // re-check availability of work after marking the thread as idle --> avoid races
                     if ((task = tryGetForeignWork ()) != null) {
-                        pool.markWorkerAsUnIdle (idleThreadMask);
+                        if (pool.markWorkerAsBusy (idleThreadMask)) {
+                            // thread was 'woken up' because of available work --> cause some other thread to be notified instead
+                            pool.onAvailableTask ();
+                        }
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                         task.execute ();
                         continue;
