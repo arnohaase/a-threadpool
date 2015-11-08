@@ -202,11 +202,19 @@ public class AThreadPoolImpl {
 
     void onAvailableTask () {
         long idleBitMask = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
-
         if ((idleBitMask & MASK_IDLE_THREAD_SCANNING) != 0L) {
             // some other thread is scanning, so there is no need to wake another thread
             return;
         }
+        doWakeUpWorker (idleBitMask);
+    }
+
+    void wakeUpWorker () {
+        long idleBitMask = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+        doWakeUpWorker (idleBitMask);
+    }
+
+    private void doWakeUpWorker (long idleBitMask) {
         if ((idleBitMask & ~MASK_IDLE_THREAD_SCANNING) == 0L) {
             // all threads are busy already
             return;

@@ -107,7 +107,7 @@ class WorkerThread extends Thread {
 //                    System.err.println ("unparked " + getName ());
 
                     if ((task = tryGetForeignWork ()) != null) {
-                        pool.onAvailableTask ();
+                        pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                         task.execute ();
                     }
