@@ -1041,3 +1041,40 @@ b.PoolBenchmark.testPingPong07                J9FjLifo  thrpt        3     730,6
 b.PoolBenchmark.testPingPong32                       b  thrpt        3      52,259        3,746  ops/s
 b.PoolBenchmark.testPingPong32                   naive  thrpt        3      10,892        0,825  ops/s
 b.PoolBenchmark.testPingPong32                J9FjLifo  thrpt        3     189,304       29,100  ops/s
+
+------------------
+// after bugfix for cascading wake-up
+
+b.PoolBenchmark.__testStealExpensive                b  thrpt        3     887,095       88,613  ops/s
+b.PoolBenchmark.__testStealExpensive            naive  thrpt        3     209,063       16,103  ops/s
+b.PoolBenchmark.__testStealExpensive         J9FjLifo  thrpt        3     750,682       29,821  ops/s
+b.PoolBenchmark._testSimpleScheduling01             b  thrpt        3     325,131       17,700  ops/s
+b.PoolBenchmark._testSimpleScheduling01         naive  thrpt        3     448,666        6,083  ops/s
+b.PoolBenchmark._testSimpleScheduling01      J9FjLifo  thrpt        3     508,403      254,112  ops/s
+b.PoolBenchmark._testSimpleScheduling07             b  thrpt        3    2781,514     1678,072  ops/s
+b.PoolBenchmark._testSimpleScheduling07         naive  thrpt        3     423,694       67,076  ops/s
+b.PoolBenchmark._testSimpleScheduling07      J9FjLifo  thrpt        3    1711,567      262,957  ops/s
+b.PoolBenchmark._testStealVeryCheap                 b  thrpt        3     679,323      127,821  ops/s
+b.PoolBenchmark._testStealVeryCheap             naive  thrpt        3     455,450       31,235  ops/s
+b.PoolBenchmark._testStealVeryCheap          J9FjLifo  thrpt        3     706,540       52,017  ops/s
+b.PoolBenchmark.testFactorialMulti7                 b  thrpt        3  608328,112  1462845,505  ops/s
+b.PoolBenchmark.testFactorialMulti7             naive  thrpt        3  313618,245    13285,917  ops/s
+b.PoolBenchmark.testFactorialMulti7          J9FjLifo  thrpt        3  712289,224    68624,882  ops/s
+b.PoolBenchmark.testFactorialMulti8                 b  thrpt        3  691450,457  2594229,929  ops/s
+b.PoolBenchmark.testFactorialMulti8             naive  thrpt        3  297151,817    37564,641  ops/s
+b.PoolBenchmark.testFactorialMulti8          J9FjLifo  thrpt        3  970362,451   168583,958  ops/s
+b.PoolBenchmark.testFactorialSingle                 b  thrpt        3  104824,724    24766,129  ops/s
+b.PoolBenchmark.testFactorialSingle             naive  thrpt        3   98165,781    20079,555  ops/s
+b.PoolBenchmark.testFactorialSingle          J9FjLifo  thrpt        3   63173,528    17144,968  ops/s
+b.PoolBenchmark.testPingPong01                      b  thrpt        3     362,501      335,805  ops/s
+b.PoolBenchmark.testPingPong01                  naive  thrpt        3     356,127       10,980  ops/s
+b.PoolBenchmark.testPingPong01               J9FjLifo  thrpt        3     385,089       28,297  ops/s
+b.PoolBenchmark.testPingPong02                      b  thrpt        3     379,736       37,379  ops/s
+b.PoolBenchmark.testPingPong02                  naive  thrpt        3     200,578        2,200  ops/s
+b.PoolBenchmark.testPingPong02               J9FjLifo  thrpt        3     496,424        6,342  ops/s
+b.PoolBenchmark.testPingPong07                      b  thrpt        3     622,251       53,157  ops/s
+b.PoolBenchmark.testPingPong07                  naive  thrpt        3      56,285        1,568  ops/s
+b.PoolBenchmark.testPingPong07               J9FjLifo  thrpt        3     944,169      164,922  ops/s
+b.PoolBenchmark.testPingPong32                      b  thrpt        3     172,513       35,157  ops/s
+b.PoolBenchmark.testPingPong32                  naive  thrpt        3      11,552        1,493  ops/s
+b.PoolBenchmark.testPingPong32               J9FjLifo  thrpt        3     203,885       44,542  ops/s

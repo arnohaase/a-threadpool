@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool.b;
+package com.ajjpj.concurrent.pool._01_initial;
 
 /**
  * @author arno

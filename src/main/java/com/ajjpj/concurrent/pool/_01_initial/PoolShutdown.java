@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool.b;
+package com.ajjpj.concurrent.pool._01_initial;
 
 /**
  * This Throwable is thrown by a special 'shutdown' task to signal worker threads to

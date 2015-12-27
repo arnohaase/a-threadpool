@@ -1,8 +1,8 @@
 package benchmark;
 
+import com.ajjpj.concurrent.pool.AThreadPool;
 import com.ajjpj.concurrent.pool.a.AFutureOld;
 import com.ajjpj.concurrent.pool.a.APoolOld;
-import com.ajjpj.concurrent.pool.b.AThreadPoolImpl;
 
 import java.util.concurrent.Callable;
 
@@ -11,9 +11,9 @@ import java.util.concurrent.Callable;
  * @author arno
  */
 class NewPoolAdapter_B implements APoolOld {
-    final AThreadPoolImpl inner;
+    final AThreadPool inner;
 
-    public NewPoolAdapter_B (AThreadPoolImpl inner) {
+    public NewPoolAdapter_B (AThreadPool inner) {
         this.inner = inner;
     }
 

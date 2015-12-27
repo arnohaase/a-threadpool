@@ -1,10 +1,9 @@
 package benchmark;
 
+import com.ajjpj.concurrent.pool.ASharedQueueStatistics;
+import com.ajjpj.concurrent.pool.AThreadPoolStatistics;
+import com.ajjpj.concurrent.pool.AWorkerThreadStatistics;
 import com.ajjpj.concurrent.pool.a.*;
-import com.ajjpj.concurrent.pool.b.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.b.AThreadPoolImpl;
-import com.ajjpj.concurrent.pool.b.AThreadPoolStatistics;
-import com.ajjpj.concurrent.pool.b.AWorkerThreadStatistics;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -25,8 +24,9 @@ public class PoolBenchmark {
     APoolOld pool;
 
     @Param ({
-            "b",
-            "naive",
+            "b-initial",
+            "b-scanning-counter",
+//            "naive",
 //            "a-global-queue",
 //            "work-stealing",
 //            "a-strict-own",
@@ -43,7 +43,8 @@ public class PoolBenchmark {
     @Setup
     public void setUp() {
         switch (strategy) {
-            case "b":              pool = new NewPoolAdapter_B (new AThreadPoolImpl (8, 16384, 16384)); break;
+            case "b-initial":          pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_initial.AThreadPoolImpl(8, 16384, 16384)); break;
+            case "b-scanning-counter": pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(8, 16384, 16384)); break;
             case "naive":          pool = new NaivePool (8); break;
             case "a-global-queue": pool = new APoolImpl (8, ASchedulingStrategy.SingleQueue ()).start (); break;
             case "a-strict-own":   pool = new APoolImpl (32, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
@@ -55,9 +56,9 @@ public class PoolBenchmark {
             case "ForkJoinLifo":         pool = new ForkJoinForkingPool (createForkJoin (false)); break;
             case "ForkJoinFifo":         pool = new ForkJoinForkingPool (createForkJoin (true)); break;
 
-            case "J9FjSharedQueues": pool = new DelegatingPool (createJ9ForkJoin (false)); break;
-            case "J9FjLifo":         pool = new J9NewForkingPool (createJ9ForkJoin (false)); break;
-            case "J9FjFifo":         pool = new J9NewForkingPool (createJ9ForkJoin (true)); break;
+            case "J9FjSharedQueues": pool = new DelegatingPool (createJ9ForkJoin (8, false)); break;
+            case "J9FjLifo":         pool = new J9NewForkingPool (createJ9ForkJoin (8, false)); break;
+            case "J9FjFifo":         pool = new J9NewForkingPool (createJ9ForkJoin (8, true)); break;
 
             default: throw new IllegalStateException ();
         }
@@ -68,9 +69,8 @@ public class PoolBenchmark {
         return new ForkJoinPool (p.getParallelism (), p.getFactory (), p.getUncaughtExceptionHandler (), fifo);
     }
 
-    private static jdk.j9new.ForkJoinPool createJ9ForkJoin (boolean fifo) {
-        final jdk.j9new.ForkJoinPool p = new jdk.j9new.ForkJoinPool ();
-        return new jdk.j9new.ForkJoinPool (p.getParallelism (), p.getFactory (), p.getUncaughtExceptionHandler (), fifo);
+    private static jdk.j9new.ForkJoinPool createJ9ForkJoin (int numThreads, boolean fifo) {
+        return new jdk.j9new.ForkJoinPool (numThreads, new J9LimitingForkJoinThreadFactory(numThreads), null, fifo);
     }
 
     @TearDown

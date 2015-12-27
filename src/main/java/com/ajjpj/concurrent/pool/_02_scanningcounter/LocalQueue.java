@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool.b;
+package com.ajjpj.concurrent.pool._02_scanningcounter;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;
@@ -78,7 +78,7 @@ class LocalQueue {
         //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
 
         if (_top - _base <= 1) { //TODO take a closer look at this
-            pool.onAvailableTask ();
+            pool.onAvailableTask();
         }
     }
 
