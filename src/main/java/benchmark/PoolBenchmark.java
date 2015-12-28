@@ -24,8 +24,9 @@ public class PoolBenchmark {
     APoolOld pool;
 
     @Param ({
-            "b-scan-till-quiet",
-            "b-scanning-counter",
+            "b-steal-only-stable",
+//            "b-scan-till-quiet",
+//            "b-scanning-counter",
             "b-initial",
 //            "naive",
 //            "a-global-queue",
@@ -44,9 +45,10 @@ public class PoolBenchmark {
     @Setup
     public void setUp() {
         switch (strategy) {
-            case "b-initial":          pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_initial.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "b-scanning-counter": pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "b-scan-till-quiet":  pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(8, 16384, 16384)); break;
+            case "b-initial":           pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_initial.AThreadPoolImpl(8, 16384, 16384)); break;
+            case "b-scanning-counter":  pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(8, 16384, 16384)); break;
+            case "b-scan-till-quiet":   pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(8, 16384, 16384)); break;
+            case "b-steal-only-stable": pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._04_steal_only_stable.AThreadPoolImpl(8, 16384, 16384)); break;
             case "naive":          pool = new NaivePool (8); break;
             case "a-global-queue": pool = new APoolImpl (8, ASchedulingStrategy.SingleQueue ()).start (); break;
             case "a-strict-own":   pool = new APoolImpl (32, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
