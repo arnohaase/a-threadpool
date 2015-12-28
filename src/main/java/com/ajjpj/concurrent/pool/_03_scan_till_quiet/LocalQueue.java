@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._02_scanningcounter;
+package com.ajjpj.concurrent.pool._03_scan_till_quiet;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;
@@ -13,7 +13,7 @@ class LocalQueue {
     /**
      * an array holding all currently submitted tasks.
      */
-    private final AThreadPoolTask[] tasks;
+    final AThreadPoolTask[] tasks;
     final WorkerThread thread = null;
 
     //TODO here and elsewhere: memory layout
@@ -26,7 +26,7 @@ class LocalQueue {
 
     @SuppressWarnings ("FieldCanBeLocal")
     private long base = 0;
-    private long top = 0;
+    long top = 0;
 
     LocalQueue (AThreadPoolImpl pool, int size) {
         this.pool = pool;
@@ -112,18 +112,18 @@ class LocalQueue {
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
     AThreadPoolTask popFifo () {
-        long _base, _top;
-
         while (true) {
             // reading 'base' with volatile semantics emits the necessary barriers to ensure visibility of 'top'
-            _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
-            _top = top;
+            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
+            final long _top = top;
 
             if (_base == _top) {
                 // Terminate the loop: the queue is empty.
                 //TODO verify that Hotspot optimizes this kind of return-from-the-middle well
                 return null;
             }
+
+            //TODO check for wrap-around race
 
             // a regular read is OK here: 'push()' emits a store barrier after storing the task, 'popLifo()' modifies it with CAS, and 'popFifo()' does
             //  a volatile read of 'base' before reading the task
@@ -139,11 +139,11 @@ class LocalQueue {
         }
     }
 
-    private long taskOffset (long l) {
+    long taskOffset (long l) {
         return OFFS_TASKS + SCALE_TASKS * (l & mask);
     }
 
-    private int asArrayindex (long l) {
+    int asArrayindex (long l) {
         return (int) (l & mask);
     }
 
@@ -153,7 +153,7 @@ class LocalQueue {
     private static final long OFFS_TASKS;
     private static final long SCALE_TASKS;
 
-    private static final long OFFS_BASE;
+    static final long OFFS_BASE;
     private static final long OFFS_TOP;
 
     static {

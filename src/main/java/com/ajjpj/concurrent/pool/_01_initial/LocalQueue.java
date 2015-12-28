@@ -63,6 +63,7 @@ class LocalQueue {
         final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE); // read base first (and only once)
         final long _top = top;
         if (_top == _base + mask) {
+            System.out.println("************************************************************** overflow");
             //TODO handle overflow
             throw new ArrayIndexOutOfBoundsException ("local localQueue overflow");
         }
@@ -125,15 +126,14 @@ class LocalQueue {
                 return null;
             }
 
-            //TODO check for wrap-around race
-
             // a regular read is OK here: 'push()' emits a store barrier after storing the task, 'popLifo()' modifies it with CAS, and 'popFifo()' does
             //  a volatile read of 'base' before reading the task
             final AThreadPoolTask result = tasks[asArrayindex (_base)];
 
             // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
             //  gets the task, and allows GC when processing is finished
-            if (result != null && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
+            if (result != null && _base == UNSAFE.getLongVolatile(this, OFFS_BASE) && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
+                //TODO Why does re-reading and comparing 'base' avoid the wrap-around race? Apparently it does (idea gleaned from FJ)
                 UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1); //TODO is 'putOrdered' sufficient?
                 return result;
             }

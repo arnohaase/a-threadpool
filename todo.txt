@@ -1,6 +1,82 @@
 todo
 ----
-* M Michael: *single* consumer
+
+    private AThreadPoolTask tryScanForWork() { //TODO check for 'quiescence'
+        long prevSumOfTops = -1;
+        long sumOfTops = 0;
+        for (int pass=0; pass<5 || prevSumOfTops!=sumOfTops; pass++) { //TODO make this configurable, optimize, benchmark, ...
+            System.err.println(Thread.currentThread().getName() + "@" + pass + " --> " + prevSumOfTops + " / " + sumOfTops);
+            prevSumOfTops = sumOfTops;
+            sumOfTops = 0; //TODO statistics: typical duration until quiescent
+
+            final int prevQueue = currentSharedQueue;
+
+            //noinspection ForLoopReplaceableByForEach
+            for (int i=0; i<globalQueues.length; i++) {
+                final SharedQueue sharedQueue = globalQueues[currentSharedQueue];
+
+                while (true) {
+                    final long _base = UNSAFE.getLongVolatile (sharedQueue, SharedQueue.OFFS_BASE);
+                    final long _top = UNSAFE.getLongVolatile (sharedQueue, SharedQueue.OFFS_TOP);
+
+                    if (_base == _top) {
+                        // Terminate the loop: the queue is empty.
+                        //TODO verify that Hotspot optimizes this kind of return-from-the-middle well
+                        sumOfTops += _top;
+                        break;
+                    }
+
+                    if (_top > _base && UNSAFE.compareAndSwapLong (sharedQueue, SharedQueue.OFFS_BASE, _base, _base+1)) {
+                        if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSharedTasksExecuted += 1;
+                        //noinspection PointlessBooleanExpression,ConstantConditions
+                        if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS && prevQueue != currentSharedQueue) stat_numSharedQueueSwitches += 1;
+                        return (AThreadPoolTask) UNSAFE.getAndSetObject (sharedQueue.tasks, sharedQueue.taskOffset (_base), null);
+                    }
+                }
+                currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length;
+            }
+
+            for (LocalQueue otherQueue: allLocalQueues) {
+                //TODO optimization: different starting points per thread
+                if (otherQueue == localQueue) {
+                    continue;
+                }
+
+                while (true) {
+                    // reading 'base' with volatile semantics emits the necessary barriers to ensure visibility of 'top'
+                    final long _base = UNSAFE.getLongVolatile (otherQueue, LocalQueue.OFFS_BASE);
+                    final long _top = otherQueue.top;
+
+                    if (_base == _top) {
+                        // Terminate the loop: the queue is empty.
+                        sumOfTops += _top;
+                        //TODO verify that Hotspot optimizes this kind of return-from-the-middle well
+                        break;
+                    }
+
+                    //TODO check for wrap-around race
+
+                    // a regular read is OK here: 'push()' emits a store barrier after storing the task, 'popLifo()' modifies it with CAS, and 'popFifo()' does
+                    //  a volatile read of 'base' before reading the task
+                    final AThreadPoolTask result = otherQueue.tasks[otherQueue.asArrayindex (_base)];
+
+                    // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
+                    //  gets the task, and allows GC when processing is finished
+                    if (result != null && UNSAFE.compareAndSwapObject (otherQueue.tasks, otherQueue.taskOffset (_base), result, null)) {
+                        UNSAFE.putLongVolatile (otherQueue, LocalQueue.OFFS_BASE, _base+1); //TODO is 'putOrdered' sufficient?
+                        if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSteals += 1;
+                        return result;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+
+
 
 * explicit trade-offs:
   * low latency

@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._02_scanningcounter;
+package com.ajjpj.concurrent.pool._03_scan_till_quiet;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.ASharedQueueStatistics;
