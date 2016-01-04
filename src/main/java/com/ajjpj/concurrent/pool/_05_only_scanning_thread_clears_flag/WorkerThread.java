@@ -104,7 +104,7 @@ class WorkerThread extends Thread {
                     UNSAFE.park (false, 0L);
 
                     if ((task = tryGetForeignWork ()) != null) {
-                        pool.unmarkScanning(); //TODO why is this even necessary?
+                        pool.unmarkScanning(); //TODO why exactly is this necessary?
                         pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                         task.execute ();
@@ -128,7 +128,7 @@ class WorkerThread extends Thread {
     private AThreadPoolTask tryGetWork() {
         AThreadPoolTask task;
 
-        //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
+        //TODO intermittently read from global SharedQueue(s) and FIFO end of local localQueue
         if ((task = localQueue.popLifo ()) != null) {
             return task;
         }
@@ -167,15 +167,10 @@ class WorkerThread extends Thread {
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSharedTasksExecuted += 1;
                 //noinspection PointlessBooleanExpression,ConstantConditions
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS && prevQueue != currentSharedQueue) stat_numSharedQueueSwitches += 1;
-//                if (prevQueue != currentSharedQueue) System.err.println ("fetched work from (new) shared queue: " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
                 return task;
             }
-//            int oldQueue = currentSharedQueue;
             currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length;
-//            System.err.println ("Switching Global Queue: from: "+oldQueue+" to: "+currentSharedQueue+" Worker "+Thread.currentThread ().getName ());
         }
-
-//        if (prevQueue != currentSharedQueue) System.err.println ("ASSERT FAILED: no work found but changed shared queue to " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
 
         return null;
     }
@@ -210,5 +205,4 @@ class WorkerThread extends Thread {
             throw new RuntimeException(); // for the compiler
         }
     }
-
 }

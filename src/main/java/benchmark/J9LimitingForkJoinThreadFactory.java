@@ -15,8 +15,11 @@ public class J9LimitingForkJoinThreadFactory implements ForkJoinPool.ForkJoinWor
     }
 
     @Override public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-        if (created.getAndIncrement() < totalNumThreads)
+        if (created.getAndIncrement() < totalNumThreads) {
+            System.err.println("newThread: +");
             return new FJThread(pool);
+        }
+        System.err.println("newThread: -");
         return null;
     }
 
