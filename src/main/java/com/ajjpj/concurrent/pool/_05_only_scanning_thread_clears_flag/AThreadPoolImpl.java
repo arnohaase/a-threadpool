@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._01_initial;
+package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.ASharedQueueStatistics;
@@ -231,6 +231,7 @@ public class AThreadPoolImpl implements AThreadPool {
                     // wake up the worker only if no-one else woke up the thread in the meantime
                     UNSAFE.unpark (localQueue.thread);
                 }
+                // even if someone else woke up the thread in the meantime, at least one thread is scanning --> we can safely abort here
                 break;
             }
             idleBitMask = idleBitMask >> 1;
@@ -246,7 +247,7 @@ public class AThreadPoolImpl implements AThreadPool {
             // A 'scanning' thread (i.e. a thread that was triggered by 'onAvailableTask') going to sleep means that scanning is finished, so we
             //  can clear the flag. A thread going to sleep after doing some work also triggers the flag to be cleared, but that is safe and
             //  incurs little additional overhead - clearing the flag in this place is basically for free.
-            after = after & ~MASK_IDLE_THREAD_SCANNING;
+//            after = after & ~MASK_IDLE_THREAD_SCANNING;
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
     }
@@ -270,7 +271,7 @@ public class AThreadPoolImpl implements AThreadPool {
     boolean markWorkerAsBusyAndScanning (long mask) {
         long prev, after;
         do {
-            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS); //TODO is a regular read more efficient here?
             if ((prev & mask) == 0L) {
                 // someone else woke up the thread concurrently --> it is scanning now, and there is no need to wake it up or change the 'idle' mask
                 return false;
@@ -281,6 +282,18 @@ public class AThreadPoolImpl implements AThreadPool {
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
         return true;
+    }
+
+    void unmarkScanning() {
+        long prev, after;
+        do {
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            after = prev & ~MASK_IDLE_THREAD_SCANNING;
+            if (prev == after) {
+                return;
+            }
+        }
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
     }
 
     //------------------ Unsafe stuff

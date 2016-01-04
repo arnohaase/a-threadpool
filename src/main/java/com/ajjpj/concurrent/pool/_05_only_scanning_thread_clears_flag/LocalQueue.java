@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._01_initial;
+package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import sun.misc.Unsafe;

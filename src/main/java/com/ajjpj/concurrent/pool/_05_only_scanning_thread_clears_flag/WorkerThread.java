@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._04_steal_only_stable;
+package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.AWorkerThreadStatistics;
@@ -37,14 +37,13 @@ class WorkerThread extends Thread {
      * This is the index of the shared queue that this thread currently feeds from.
      */
     private int currentSharedQueue = 0; //TODO spread initial value across the range?
-    long prevSumOfOtherTops = 0;
 
     WorkerThread (LocalQueue localQueue, SharedQueue[] globalQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
         this.localQueue = localQueue;
         this.globalQueues = globalQueues;
         this.pool = pool;
         this.allLocalQueues = pool.localQueues;
-        idleThreadMask = 1L << (AThreadPoolImpl.NUM_SCANNING_BITS + threadIdx);
+        idleThreadMask = 1L << threadIdx;
         this.queueTraversalIncrement = queueTraversalIncrement;
     }
 
@@ -72,12 +71,9 @@ class WorkerThread extends Thread {
                 }
                 else {
                     // spin a little before parking
-                    pool.registerScanningThread();
-                    for (int i=0; i<0; i++) { //TODO make this configurable, optimize, benchmark, ...
+                    for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
                         if ((task = tryGetForeignWork ()) != null) {
                             if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                            pool.unregisterScanningThread();
-                            pool.onAvailableTask(); // wake up some other thread (TODO is this necessary?)
                             task.execute ();
                             continue topLevelLoop;
                         }
@@ -107,15 +103,14 @@ class WorkerThread extends Thread {
                     }
                     UNSAFE.park (false, 0L);
 
-                    pool.registerScanningThread();
                     if ((task = tryGetForeignWork ()) != null) {
-                        pool.unregisterScanningThread();
+                        pool.unmarkScanning(); //TODO why is this even necessary?
                         pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
                         task.execute ();
                     }
                     else {
-                        pool.unregisterScanningThread();
+                        pool.unmarkScanning();
                     }
                 }
             }
@@ -187,18 +182,6 @@ class WorkerThread extends Thread {
 
     private AThreadPoolTask tryStealWork () {
         AThreadPoolTask task;
-
-        final long newSumOfTops1 = sumOfOtherLocalTops();
-        if (newSumOfTops1 == prevSumOfOtherTops) {
-            return null;
-        }
-        final long newSumOfTops2 = sumOfOtherLocalTops();
-        prevSumOfOtherTops = newSumOfTops2;
-        if (newSumOfTops1 == newSumOfTops2) {
-            // steal work only if there is a minimum of stability in other local work queues
-            return null;
-        }
-
         for (LocalQueue otherQueue: allLocalQueues) {
             //TODO optimization: different starting points per thread
             if (otherQueue == localQueue) {
@@ -211,17 +194,6 @@ class WorkerThread extends Thread {
         }
 
         return null;
-    }
-
-    private long sumOfOtherLocalTops() {
-        long result = 0;
-        for (LocalQueue otherQueue: allLocalQueues) {
-            if (otherQueue == localQueue) {
-                continue;
-            }
-            result += UNSAFE.getLongVolatile(otherQueue, LocalQueue.OFFS_TOP);
-        }
-        return result;
     }
 
     //-------------------- Unsafe stuff

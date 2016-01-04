@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._01_initial;
+package com.ajjpj.concurrent.pool._01_scanning_flag;
 
 import benchmark.PoolBenchmark;
 
