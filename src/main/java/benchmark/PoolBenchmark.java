@@ -13,14 +13,18 @@ import java.util.concurrent.*;
 /**
  * @author arno
  */
-//@Fork (2)
-@Fork (0)
+@Fork (2)
+//@Fork (0)
 //@Fork (1)
 @Threads (1)
-@Warmup (iterations = 3, time = 1)
-@Measurement (iterations = 3, time = 3)
+@Warmup (iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
+@Timeout (time=5, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
+    public static final int TIMEOUT_SECONDS = 40;
+    public static final int POOL_SIZE = 16;
+
     APoolOld pool;
 
     @Param ({
@@ -29,10 +33,11 @@ public class PoolBenchmark {
 //            "b-scan-till-quiet",
 //            "b-scanning-counter",
             "b-scanning-flag",
-//            "naive",
+            "no-conc",
+            "naive",
 //            "a-global-queue",
 //            "work-stealing",
-//            "a-strict-own",
+            "a-strict-own",
 //            "Fixed",
 //            "ForkJoinSharedQueues",
 //            "ForkJoinLifo",
@@ -43,31 +48,48 @@ public class PoolBenchmark {
     })
     public String strategy;
 
+    public volatile Thread timeoutThread;
+
     @Setup
     public void setUp() {
         switch (strategy) {
-            case "b-scanning-flag":       pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_scanning_flag.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "b-scanning-counter":    pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "b-scan-till-quiet":     pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "b-steal-only-stable":   pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._04_steal_only_stable.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "b-only-scanner-clears": pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.AThreadPoolImpl(8, 16384, 16384)); break;
-            case "naive":          pool = new NaivePool (8); break;
-            case "a-global-queue": pool = new APoolImpl (8, ASchedulingStrategy.SingleQueue ()).start (); break;
+            case "b-scanning-flag":       pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_scanning_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+            case "b-scanning-counter":    pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+            case "b-scan-till-quiet":     pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+            case "b-steal-only-stable":   pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._04_steal_only_stable.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+            case "b-only-scanner-clears": pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+            case "no-conc":        pool = new NoConcPool (); break;
+            case "naive":          pool = new NaivePool (POOL_SIZE); break;
+            case "a-global-queue": pool = new APoolImpl (POOL_SIZE, ASchedulingStrategy.SingleQueue ()).start (); break;
             case "a-strict-own":   pool = new APoolImpl (32, ASchedulingStrategy.OWN_FIRST_NO_STEALING).start (); break;
 //            case "work-stealing":  pool = new WorkStealingPoolImpl (1).start (); break;
-            case "work-stealing":  pool = new WorkStealingPoolImpl (8).start (); break;
-            case "Fixed":          pool = new DelegatingPool (Executors.newFixedThreadPool (8)); break;
+            case "work-stealing":  pool = new WorkStealingPoolImpl (POOL_SIZE).start (); break;
+            case "Fixed":          pool = new DelegatingPool (Executors.newFixedThreadPool (POOL_SIZE)); break;
 
             case "ForkJoinSharedQueues": pool = new DelegatingPool (ForkJoinPool.commonPool ()); break;
             case "ForkJoinLifo":         pool = new ForkJoinForkingPool (createForkJoin (false)); break;
             case "ForkJoinFifo":         pool = new ForkJoinForkingPool (createForkJoin (true)); break;
 
-            case "J9FjSharedQueues": pool = new DelegatingPool (createJ9ForkJoin (8, false)); break;
-            case "J9FjLifo":         pool = new J9NewForkingPool (createJ9ForkJoin (8, false)); break;
-            case "J9FjFifo":         pool = new J9NewForkingPool (createJ9ForkJoin (8, true)); break;
+            case "J9FjSharedQueues": pool = new DelegatingPool (createJ9ForkJoin (POOL_SIZE, false)); break;
+            case "J9FjLifo":         pool = new J9NewForkingPool (createJ9ForkJoin (POOL_SIZE, false)); break;
+            case "J9FjFifo":         pool = new J9NewForkingPool (createJ9ForkJoin (POOL_SIZE, true)); break;
 
             default: throw new IllegalStateException ();
         }
+
+        timeoutThread = new Thread() {
+            @Override public void run () {
+                try {
+                    Thread.sleep (1000 * TIMEOUT_SECONDS);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace ();
+                }
+                System.out.println ("*** timeout ***");
+                System.exit (1);
+            }
+        };
+        timeoutThread.start ();
     }
 
     private static ForkJoinPool createForkJoin (boolean fifo) {
@@ -96,10 +118,16 @@ public class PoolBenchmark {
             }
             System.out.println ("--------------------------------");
         }
+
+        timeoutThread.stop ();
     }
 
     @Benchmark
     public void _testSimpleScheduling01() throws InterruptedException {
+        doSimpleScheduling ();
+    }
+
+    private void doSimpleScheduling() throws InterruptedException {
         final int num = 10_000;
         final CountDownLatch latch = new CountDownLatch (num);
 
@@ -108,25 +136,31 @@ public class PoolBenchmark {
                 latch.countDown ();
                 return null;});
         }
-//        System.err.println ("### finished submitting");
         latch.await ();
-//        System.err.println ("---");
     }
 
     @Benchmark
     @Threads (7)
     public void _testSimpleScheduling07() throws InterruptedException {
-        final int num = 10_000;
-        final CountDownLatch latch = new CountDownLatch (num);
+        doSimpleScheduling ();
+    }
 
-        for (int i=0; i<num; i++) {
-            pool.submit (() -> {
-                latch.countDown ();
-                return null;});
-        }
-//        System.err.println ("### finished submitting");
-        latch.await ();
-//        System.err.println ("---");
+    @Benchmark
+    @Threads (8)
+    public void _testSimpleScheduling08() throws InterruptedException {
+        doSimpleScheduling ();
+    }
+
+    @Benchmark
+    @Threads (15)
+    public void _testSimpleScheduling15() throws InterruptedException {
+        doSimpleScheduling ();
+    }
+
+    @Benchmark
+    @Threads (16)
+    public void _testSimpleScheduling16() throws InterruptedException {
+        doSimpleScheduling ();
     }
 
     @Benchmark
@@ -147,6 +181,22 @@ public class PoolBenchmark {
     @Benchmark
     @Threads (8)
     public void testFactorialMulti8() throws ExecutionException, InterruptedException {
+        final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
+        fact (1, 12, fact);
+        fact.get ();
+    }
+
+    @Benchmark
+    @Threads (15)
+    public void testFactorialMulti15() throws ExecutionException, InterruptedException {
+        final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
+        fact (1, 12, fact);
+        fact.get ();
+    }
+
+    @Benchmark
+    @Threads (16)
+    public void testFactorialMulti16() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -178,9 +228,15 @@ public class PoolBenchmark {
         }
     }
 
-//    @Benchmark
+    @Benchmark
     public void testRecursiveFibo() throws ExecutionException, InterruptedException {
-        fibo (8);
+        try {
+            fibo (8);
+        }
+        catch (Throwable e) {
+            e.printStackTrace ();
+            System.exit (0);
+        }
     }
 
     long fibo (long n) throws ExecutionException, InterruptedException {
@@ -221,7 +277,6 @@ public class PoolBenchmark {
             return null;
         });
         latch.await ();
-//        System.out.println ("--");
     }
 
     @Benchmark
@@ -237,6 +292,21 @@ public class PoolBenchmark {
     @Benchmark
     public void testPingPong07() throws InterruptedException {
         testPingPong (7);
+    }
+
+    @Benchmark
+    public void testPingPong08() throws InterruptedException {
+        testPingPong (8);
+    }
+
+    @Benchmark
+    public void testPingPong15() throws InterruptedException {
+        testPingPong (15);
+    }
+
+    @Benchmark
+    public void testPingPong16() throws InterruptedException {
+        testPingPong (16);
     }
 
     @Benchmark
