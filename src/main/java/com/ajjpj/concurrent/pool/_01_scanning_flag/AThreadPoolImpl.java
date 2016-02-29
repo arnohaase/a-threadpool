@@ -1,10 +1,10 @@
 package com.ajjpj.concurrent.pool._01_scanning_flag;
 
 import com.ajjpj.afoundation.util.AUnchecker;
-import com.ajjpj.concurrent.pool.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.AThreadPool;
-import com.ajjpj.concurrent.pool.AThreadPoolStatistics;
-import com.ajjpj.concurrent.pool.AWorkerThreadStatistics;
+import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
+import com.ajjpj.concurrent.pool.AThreadPool___;
+import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
+import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author arno
  */
-public class AThreadPoolImpl implements AThreadPool {
+public class AThreadPoolImpl implements AThreadPool___ {
     public static final boolean SHOULD_GATHER_STATISTICS = true; // compile-time switch to enable / disable statistics gathering
 
 

@@ -1,7 +1,7 @@
 package com.ajjpj.concurrent.pool._02_scanningcounter;
 
 import com.ajjpj.afoundation.util.AUnchecker;
-import com.ajjpj.concurrent.pool.AWorkerThreadStatistics;
+import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;

@@ -1,8 +1,8 @@
 package benchmark;
 
-import com.ajjpj.concurrent.pool.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.AThreadPoolStatistics;
-import com.ajjpj.concurrent.pool.AWorkerThreadStatistics;
+import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
+import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
+import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
 import com.ajjpj.concurrent.pool.a.*;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;

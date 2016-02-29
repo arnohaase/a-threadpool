@@ -54,7 +54,7 @@ questions.
         <dependency>
             <groupId>com.ajjpj.a-foundation</groupId>
             <artifactId>a-foundation</artifactId>
-            <version>1.0-pre16</version>
+            <version>1.0-pre19</version>
         </dependency>
 
         <dependency>
