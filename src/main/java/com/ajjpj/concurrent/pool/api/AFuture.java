@@ -7,7 +7,6 @@ import com.ajjpj.concurrent.pool.api.other.APartialStatement;
 import com.ajjpj.concurrent.pool.api.other.ATry;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 
 //TODO this AFuture's thread pool as default thread pool
@@ -64,28 +63,29 @@ public interface AFuture<T> {
         return StaticFutureMethods.submit (tp, f);
     }
 
-    static <T> AFuture<List<T>> lift (Iterable<AFuture<T>> futures) {
-        return null; //TODO
+    static <T> AFuture<List<T>> lift (AThreadPool tp, Iterable<AFuture<T>> futures) {
+        return StaticFutureMethods.lift (tp, futures);
     }
 
-    static <T> AFuture<T> firstCompletedOf (Iterable<AFuture<T>> futures) {
-        return null; //TODO
+    static <T> AFuture<T> firstCompleted (AThreadPool tp, Iterable<AFuture<T>> futures) {
+        return StaticFutureMethods.firstCompleted (tp, futures);
     }
 
-    static <T> AFuture<AOption<T>> find (Iterable<AFuture<T>> futures, APredicate<T,?> f) {
-        return null; //TODO
+    static <T> AFuture<AOption<T>> find (AThreadPool tp, Iterable<AFuture<T>> futures, APredicate<T,?> f) {
+        return StaticFutureMethods.find (tp, futures, f);
     }
 
-    static <T,R> AFuture<R> fold (R start, Iterable<AFuture<T>> futures, AFunction2<R, T, R, ?> f) {
-        return null; //TODO
+    static <T,R> AFuture<R> fold (AThreadPool tp, R start, Iterable<AFuture<T>> futures, AFunction2<R, T, R, ?> f) {
+        return StaticFutureMethods.fold (tp, start, futures, f);
     }
 
-    static <T> AFuture<T> reduce (Iterable<AFuture<T>> futures, AFunction2<T, T, T, ?> f) {
-        return null; //TODO
-    }
+    //TODO
+//    static <T> AFuture<T> reduce (AThreadPool tp, Iterable<AFuture<T>> futures, AFunction2<T, T, T, ?> f) {
+//        return StaticFutureMethods.reduce (tp, futures, f);
+//    }
 
-    static <T, R> AFuture<List<R>> traverse (AThreadPool tp, Iterable<T> values, AFunction1<T, R, ?> f) {
-        return null; //TODO
+    static <T, R, E extends Throwable> AFuture<List<R>> traverse (AThreadPool tp, Iterable<T> values, AFunction1<T, AFuture<R>, E> f) throws E {
+        return StaticFutureMethods.traverse (tp, values, f);
     }
 }
 

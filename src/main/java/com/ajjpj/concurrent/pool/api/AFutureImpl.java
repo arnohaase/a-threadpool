@@ -58,22 +58,7 @@ public class AFutureImpl<T> implements AFuture<T> {
     //TODO move this to ASettableFuture?!
 
     public void complete (ATry<T> o) {
-        State<T> before, after;
-
-        do {
-            before = state.get ();
-            if (before.isComplete ()) throw new IllegalStateException ("trying to complete an already completed future");
-
-            // set the result, and remove all listeners at the same time
-            after = new State<> (o, AList.nil ());
-        }
-        while (! state.compareAndSet (before, after));
-
-        // fire all listeners registered *before* the call to complete
-        before.listeners.foreach (l -> fireListener (l._1, l._2, o));
-
-        // ... and fire all listeners registered concurrently. After this call, new listeners will be executed immediately rather than stored, so this is sufficient
-        state.get().listeners.foreach (l -> fireListener (l._1, l._2, o));
+        if (!tryComplete (o)) throw new IllegalStateException ("trying to complete an already completed future");
     }
 
     private void fireListener (AThreadPool tp, AStatement1<ATry<T>, ?> f, ATry<T> value) {
@@ -94,6 +79,29 @@ public class AFutureImpl<T> implements AFuture<T> {
     public void completeAsFailure (Throwable th) {
         complete (ATry.failure (th));
     }
+
+    public boolean tryComplete (ATry<T> o) {
+        State<T> before, after;
+
+        do {
+            before = state.get ();
+            if (before.isComplete ()) return false;
+
+            // set the result, and remove all listeners at the same time
+            after = new State<> (o, AList.nil ());
+        }
+        while (! state.compareAndSet (before, after));
+
+        // fire all listeners registered *before* the call to complete
+        before.listeners.foreach (l -> fireListener (l._1, l._2, o));
+
+        // ... and fire all listeners registered concurrently. After this call, new listeners will be executed immediately rather than stored, so this is sufficient
+        state.get().listeners.foreach (l -> fireListener (l._1, l._2, o));
+
+        return true;
+    }
+
+    //TODO completeWith, tryCompleteWith
 
 //    @Override public <S> AFuture<S> transform (AThreadPool tp, AFunction1<T, S, ?> s, AFunction1<Throwable, Throwable, ?> t) {
 //        final AFutureImpl<S> result = new AFutureImpl<> ();
