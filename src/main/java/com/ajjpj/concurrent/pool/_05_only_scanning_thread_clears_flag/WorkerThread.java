@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  */
 class WorkerThread extends Thread {
     final LocalQueue localQueue;
-    final SharedQueue[] globalQueues;
+    final SharedQueue[] sharedQueues;
     final LocalQueue[] allLocalQueues;
     final AThreadPoolImpl pool;
     final long idleThreadMask;
@@ -36,17 +36,19 @@ class WorkerThread extends Thread {
     /**
      * This is the index of the shared queue that this thread currently feeds from.
      */
-    private int currentSharedQueue = 0; //TODO spread initial value across the range?
+    private int currentSharedQueue = 0;
 
-    WorkerThread (LocalQueue localQueue, SharedQueue[] globalQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
+    WorkerThread (LocalQueue localQueue, SharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
         super("TODO-Thread-" + threadIdx); //TODO thread names
 
         this.localQueue = localQueue;
-        this.globalQueues = globalQueues;
+        this.sharedQueues = sharedQueues;
         this.pool = pool;
         this.allLocalQueues = pool.localQueues;
         idleThreadMask = 1L << threadIdx;
         this.queueTraversalIncrement = queueTraversalIncrement;
+
+        currentSharedQueue = threadIdx % sharedQueues.length;
     }
 
     /**
@@ -166,14 +168,14 @@ class WorkerThread extends Thread {
         final int prevQueue = currentSharedQueue;
 
         //noinspection ForLoopReplaceableByForEach
-        for (int i=0; i<globalQueues.length; i++) {
-            if ((task = globalQueues[currentSharedQueue].popFifo ()) != null) {
+        for (int i=0; i < sharedQueues.length; i++) {
+            if ((task = sharedQueues[currentSharedQueue].popFifo ()) != null) {
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSharedTasksExecuted += 1;
                 //noinspection PointlessBooleanExpression,ConstantConditions
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS && prevQueue != currentSharedQueue) stat_numSharedQueueSwitches += 1;
                 return task;
             }
-            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length; //TODO bit mask instead of division?
+            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % sharedQueues.length; //TODO bit mask instead of division?
         }
 
 //        System.err.println ("Thread " + idleThreadMask + " --> no shared work");
