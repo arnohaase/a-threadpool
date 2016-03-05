@@ -13,17 +13,17 @@ import java.util.concurrent.*;
 /**
  * @author arno
  */
-@Fork (2)
+//@Fork (2)
 //@Fork (0)
-//@Fork (1)
+@Fork (1)
 @Threads (1)
-@Warmup (iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+@Warmup (iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
 @Timeout (time=5, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
     public static final int TIMEOUT_SECONDS = 40;
-    public static final int POOL_SIZE = 16;
+    public static final int POOL_SIZE = 8;
 
     APoolOld pool;
 
@@ -32,12 +32,12 @@ public class PoolBenchmark {
 //            "b-steal-only-stable",
 //            "b-scan-till-quiet",
 //            "b-scanning-counter",
-            "b-scanning-flag",
-            "no-conc",
-            "naive",
+//            "b-scanning-flag",
+//            "no-conc",
+//            "naive",
 //            "a-global-queue",
 //            "work-stealing",
-            "a-strict-own",
+//            "a-strict-own",
 //            "Fixed",
 //            "ForkJoinSharedQueues",
 //            "ForkJoinLifo",
@@ -57,7 +57,7 @@ public class PoolBenchmark {
             case "b-scanning-counter":    pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
             case "b-scan-till-quiet":     pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
             case "b-steal-only-stable":   pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._04_steal_only_stable.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
-            case "b-only-scanner-clears": pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+            case "b-only-scanner-clears": pool = new AThreadPoolAdapter (new com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
             case "no-conc":        pool = new NoConcPool (); break;
             case "naive":          pool = new NaivePool (POOL_SIZE); break;
             case "a-global-queue": pool = new APoolImpl (POOL_SIZE, ASchedulingStrategy.SingleQueue ()).start (); break;
@@ -128,13 +128,11 @@ public class PoolBenchmark {
     }
 
     private void doSimpleScheduling() throws InterruptedException {
-        final int num = 10_000;
+        final int num = 1_000;
         final CountDownLatch latch = new CountDownLatch (num);
 
         for (int i=0; i<num; i++) {
-            pool.submit (() -> {
-                latch.countDown ();
-                return null;});
+            pool.submit (latch::countDown);
         }
         latch.await ();
     }
@@ -151,20 +149,20 @@ public class PoolBenchmark {
         doSimpleScheduling ();
     }
 
-    @Benchmark
+//    @Benchmark
     @Threads (15)
-    public void _testSimpleScheduling15() throws InterruptedException {
+    public void testSimpleScheduling15() throws InterruptedException {
         doSimpleScheduling ();
     }
 
-    @Benchmark
+//    @Benchmark
     @Threads (16)
     public void _testSimpleScheduling16() throws InterruptedException {
         doSimpleScheduling ();
     }
 
     @Benchmark
-    public void testFactorialSingle() throws ExecutionException, InterruptedException {
+    public void testFactorial01() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -172,7 +170,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void testFactorialMulti7() throws ExecutionException, InterruptedException {
+    public void testFactorialMulti07() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -180,7 +178,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (8)
-    public void testFactorialMulti8() throws ExecutionException, InterruptedException {
+    public void testFactorialMulti08() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -209,26 +207,11 @@ public class PoolBenchmark {
         else {
             pool.submit (() -> {
                 fact (collect * n, n-1, result);
-                return null;
             });
         }
     }
 
-    public static class SettableFutureTask<T> extends FutureTask<T> {
-        public SettableFutureTask (Callable<T> callable) {
-            super (callable);
-        }
-
-        @Override public void set (T t) {
-            super.set (t);
-        }
-
-        @Override public void setException (Throwable t) {
-            super.setException (t);
-        }
-    }
-
-    @Benchmark
+//    @Benchmark
     public void testRecursiveFibo() throws ExecutionException, InterruptedException {
         try {
             fibo (8);
@@ -252,12 +235,8 @@ public class PoolBenchmark {
 
         pool.submit (() -> {
            for (int i=0; i<10_000; i++) {
-               pool.submit (() -> {
-                   latch.countDown();
-                   return null;
-               });
+               pool.submit (latch::countDown);
            }
-            return null;
         });
         latch.await ();
     }
@@ -271,10 +250,8 @@ public class PoolBenchmark {
                pool.submit (() -> {
                    Blackhole.consumeCPU (100);
                    latch.countDown();
-                   return null;
                });
            }
-            return null;
         });
         latch.await ();
     }
@@ -333,7 +310,7 @@ public class PoolBenchmark {
                 onFinished.run ();
             }
             else {
-                pool.submit (() -> {sender.receive (PingPongActor.this, remaining-1, onFinished); return null;});
+                pool.submit (() -> {sender.receive (PingPongActor.this, remaining-1, onFinished);});
             }
         }
     }

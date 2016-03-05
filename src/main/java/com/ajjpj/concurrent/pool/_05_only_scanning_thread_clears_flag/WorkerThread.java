@@ -62,19 +62,19 @@ class WorkerThread extends Thread {
         topLevelLoop:
         while (true) {
             try {
-                AThreadPoolTask task;
+                Runnable task;
 
                 //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
                 if ((task = tryGetWork ()) != null) {
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                    task.execute ();
+                    task.run ();
                 }
                 else {
                     // spin a little before parking
                     for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
                         if ((task = tryGetForeignWork ()) != null) {
                             if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                            task.execute ();
+                            task.run ();
                             continue topLevelLoop;
                         }
                     }
@@ -88,7 +88,7 @@ class WorkerThread extends Thread {
                             pool.onAvailableTask ();
                         }
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                        task.execute ();
+                        task.run ();
                         continue;
                     }
 
@@ -107,26 +107,26 @@ class WorkerThread extends Thread {
                         pool.unmarkScanning(); //TODO why exactly is this necessary?
                         pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                        task.execute ();
+                        task.run ();
                     }
                     else {
                         pool.unmarkScanning();
                     }
                 }
             }
-            catch (Exception e) {
+            catch (PoolShutdown e) {
+                return;
+            }
+            catch (Throwable e) {
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numExceptions += 1;
                 //TODO error handling
                 e.printStackTrace ();
             }
-            catch (PoolShutdown e) {
-                return;
-            }
         }
     }
 
-    private AThreadPoolTask tryGetWork() {
-        AThreadPoolTask task;
+    private Runnable tryGetWork() {
+        Runnable task;
 
         //TODO intermittently read from global SharedQueue(s) and FIFO end of local localQueue
         if ((task = localQueue.popLifo ()) != null) {
@@ -141,8 +141,8 @@ class WorkerThread extends Thread {
         return null;
     }
 
-    private AThreadPoolTask tryGetForeignWork () {
-        AThreadPoolTask task;
+    private Runnable tryGetForeignWork () {
+        Runnable task;
 
         if ((task = tryGetSharedWork ()) != null) {
             return task;
@@ -153,8 +153,8 @@ class WorkerThread extends Thread {
         return null;
     }
 
-    private AThreadPoolTask tryGetSharedWork() {
-        AThreadPoolTask task;
+    private Runnable tryGetSharedWork() {
+        Runnable task;
 
         //TODO optimization: different starting points per thread
         //TODO go forward once in a while to avoid starvation
@@ -175,8 +175,8 @@ class WorkerThread extends Thread {
         return null;
     }
 
-    private AThreadPoolTask tryStealWork () {
-        AThreadPoolTask task;
+    private Runnable tryStealWork () {
+        Runnable task;
         for (LocalQueue otherQueue: allLocalQueues) {
             //TODO optimization: different starting points per thread
             if (otherQueue == localQueue) {

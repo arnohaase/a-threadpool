@@ -1,26 +1,21 @@
 package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
 
 import com.ajjpj.afoundation.util.AUnchecker;
-import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.AThreadPool___;
-import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
-import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
+import com.ajjpj.concurrent.pool.api.*;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
  * @author arno
  */
-public class AThreadPoolImpl implements AThreadPool___ {
+public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     public static final boolean SHOULD_GATHER_STATISTICS = true; // compile-time switch to enable / disable statistics gathering
 
 
@@ -80,7 +75,7 @@ public class AThreadPoolImpl implements AThreadPool___ {
      *  so some or all of the data may be stale, and some numbers may be pretty outdated while others are very current, even for the same thread. For long-running pools however
      *  the data may be useful in analyzing behavior in general and performance anomalies in particular. Your mileage may vary, you have been warned! ;-)
      */
-    public AThreadPoolStatistics getStatistics() {
+    @Override public AThreadPoolStatistics getStatistics() {
         final AWorkerThreadStatistics[] workerStats = new AWorkerThreadStatistics[localQueues.length];
         for (int i=0; i<localQueues.length; i++) {
             //noinspection ConstantConditions
@@ -128,23 +123,19 @@ public class AThreadPoolImpl implements AThreadPool___ {
         return true;
     }
 
-    public <T> Future<T> submit (Callable<T> code) {
+    @Override public void submit (Runnable code) {
         if (shutdown) {
             throw new IllegalStateException ("pool is already shut down");
         }
 
-        final AThreadPoolTask<T> task = new AThreadPoolTask<> (code);
-
         WorkerThread wt;
         if (Thread.currentThread () instanceof WorkerThread && (wt = (WorkerThread) Thread.currentThread ()).pool == this) {
             if (SHOULD_GATHER_STATISTICS) wt.stat_numLocalSubmits += 1;
-            wt.localQueue.push (task);
+            wt.localQueue.push (code);
         }
         else {
-            sharedQueues[getSharedQueueForCurrentThread ()].push (task);
+            sharedQueues[getSharedQueueForCurrentThread ()].push (code);
         }
-
-        return task.future;
     }
 
     private int getSharedQueueForCurrentThread() {
@@ -164,7 +155,11 @@ public class AThreadPoolImpl implements AThreadPool___ {
         return result;
     }
 
-    public void shutdown() {
+    @Override public boolean isShutdown () {
+        return shutdown;
+    }
+
+    @Override public void shutdown() {
         if (shutdown) {
             return;
         }
@@ -189,9 +184,9 @@ public class AThreadPoolImpl implements AThreadPool___ {
         }
 
         for (LocalQueue localQueue : localQueues) {
-            sharedQueues[0].push (new AThreadPoolTask<> (() -> {
+            sharedQueues[0].push (() -> {
                 throw new PoolShutdown ();
-            }));
+            });
             UNSAFE.unpark (localQueue.thread);
         }
     }

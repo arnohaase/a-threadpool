@@ -13,7 +13,7 @@ class LocalQueue {
     /**
      * an array holding all currently submitted tasks.
      */
-    private final AThreadPoolTask[] tasks;
+    private final Runnable[] tasks;
     final WorkerThread thread = null;
 
     //TODO here and elsewhere: memory layout
@@ -34,7 +34,7 @@ class LocalQueue {
         if (1 != Integer.bitCount (size)) throw new IllegalArgumentException ("size must be a power of 2");
         if (size < 8 || size > 1024*1024) throw new IllegalArgumentException ("size must be in the range from 8 to " + (1024*1024));
 
-        this.tasks = new AThreadPoolTask[size];
+        this.tasks = new Runnable[size];
         this.mask = size-1;
     }
 
@@ -59,7 +59,7 @@ class LocalQueue {
     /**
      * Add a new task to the top of the localQueue, incrementing 'top'. This is only ever called from the owning thread.
      */
-    void push (AThreadPoolTask task) {
+    void push (Runnable task) {
         final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE); // read base first (and only once)
         final long _top = top;
         if (_top == _base + mask) {
@@ -87,9 +87,9 @@ class LocalQueue {
      * Fetch (and remove) a task from the top of the queue, i.e. LIFO semantics. This is only ever called from the owning thread, removing (or
      *  at least reducing) contention at the top of the queue: No other thread operates there.
      */
-    AThreadPoolTask popLifo () {
+    Runnable popLifo () {
         final long _top = top;
-        final AThreadPoolTask result = tasks[asArrayindex (_top-1)];
+        final Runnable result = tasks[asArrayindex (_top-1)];
         if (result == null) {
             // The queue is empty. It is possible for the queue to be empty even if the previous unprotected read does not return null, but
             //  it will only ever return null if the queue really is empty: New entries are only added by the owning thread, and this method
@@ -112,7 +112,7 @@ class LocalQueue {
     /**
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
-    AThreadPoolTask popFifo () {
+    Runnable popFifo () {
         long _base, _top;
 
         while (true) {
@@ -128,7 +128,7 @@ class LocalQueue {
 
             // a regular read is OK here: 'push()' emits a store barrier after storing the task, 'popLifo()' modifies it with CAS, and 'popFifo()' does
             //  a volatile read of 'base' before reading the task
-            final AThreadPoolTask result = tasks[asArrayindex (_base)];
+            final Runnable result = tasks[asArrayindex (_base)];
 
             // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
             //  gets the task, and allows GC when processing is finished
@@ -163,8 +163,8 @@ class LocalQueue {
             f.setAccessible (true);
             UNSAFE = (Unsafe) f.get (null);
 
-            OFFS_TASKS = UNSAFE.arrayBaseOffset (AThreadPoolTask[].class);
-            SCALE_TASKS = UNSAFE.arrayIndexScale (AThreadPoolTask[].class);
+            OFFS_TASKS = UNSAFE.arrayBaseOffset (Runnable[].class);
+            SCALE_TASKS = UNSAFE.arrayIndexScale (Runnable[].class);
 
             OFFS_BASE = UNSAFE.objectFieldOffset (LocalQueue.class.getDeclaredField ("base"));
             OFFS_TOP = UNSAFE.objectFieldOffset (LocalQueue.class.getDeclaredField ("top"));

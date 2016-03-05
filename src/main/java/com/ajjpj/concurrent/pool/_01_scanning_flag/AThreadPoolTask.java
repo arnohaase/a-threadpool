@@ -1,6 +1,7 @@
 package com.ajjpj.concurrent.pool._01_scanning_flag;
 
 import benchmark.PoolBenchmark;
+import benchmark.SettableFutureTask;
 
 import java.util.concurrent.Callable;
 
@@ -12,11 +13,11 @@ public class AThreadPoolTask<T> {
     final Callable<T> code;
 
     //TODO clean up this hack
-    public final PoolBenchmark.SettableFutureTask<T> future;
+    public final SettableFutureTask<T> future;
 
     public AThreadPoolTask (Callable<T> code) {
         this.code = code;
-        this.future = new PoolBenchmark.SettableFutureTask<T> (code);
+        this.future = new SettableFutureTask<T> (code);
     }
 
     void execute() {

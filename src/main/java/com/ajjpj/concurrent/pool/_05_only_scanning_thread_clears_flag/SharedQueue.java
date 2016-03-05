@@ -15,7 +15,7 @@ class SharedQueue {
     /**
      * an array holding all currently submitted tasks.
      */
-    private final AThreadPoolTask[] tasks;
+    private final Runnable[] tasks;
 
     //TODO here and elsewhere: memory layout
     /**
@@ -40,7 +40,7 @@ class SharedQueue {
         if (1 != Integer.bitCount (size)) throw new IllegalArgumentException ("size must be a power of 2");
         if (size < 8 || size > 1024*1024) throw new IllegalArgumentException ("size must be in the range from 8 to " + (1024*1024));
 
-        this.tasks = new AThreadPoolTask[size];
+        this.tasks = new Runnable[size];
         this.mask = size-1;
     }
 
@@ -60,7 +60,7 @@ class SharedQueue {
     /**
      * Add a new task to the top of the localQueue, incrementing 'top'.
      */
-    void push (AThreadPoolTask task) {
+    void push (Runnable task) {
         lock ();
 
         final long _base;
@@ -118,7 +118,7 @@ class SharedQueue {
     /**
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
-    AThreadPoolTask popFifo () {
+    Runnable popFifo () {
         int counter = 0;
 
         while (true) {
@@ -133,11 +133,11 @@ class SharedQueue {
                 return null;
             }
 
-            final AThreadPoolTask result = tasks[asArrayIndex (_base)];
+            final Runnable result = tasks[asArrayIndex (_base)];
 
 
             if (_top > _base && UNSAFE.compareAndSwapLong (this, OFFS_BASE, _base, _base+1)) {
-                return (AThreadPoolTask) UNSAFE.getAndSetObject (tasks, taskOffset (_base), null);
+                return (Runnable) UNSAFE.getAndSetObject (tasks, taskOffset (_base), null);
             }
         }
     }
@@ -179,8 +179,8 @@ class SharedQueue {
             f.setAccessible (true);
             UNSAFE = (Unsafe) f.get (null);
 
-            OFFS_TASKS = UNSAFE.arrayBaseOffset (AThreadPoolTask[].class);
-            SCALE_TASKS = UNSAFE.arrayIndexScale (AThreadPoolTask[].class);
+            OFFS_TASKS = UNSAFE.arrayBaseOffset (Runnable[].class);
+            SCALE_TASKS = UNSAFE.arrayIndexScale (Runnable[].class);
 
             OFFS_LOCK = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("lock"));
             OFFS_BASE = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("base"));
