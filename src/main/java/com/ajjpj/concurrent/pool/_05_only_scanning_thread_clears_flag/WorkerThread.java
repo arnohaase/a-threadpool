@@ -39,6 +39,8 @@ class WorkerThread extends Thread {
     private int currentSharedQueue = 0; //TODO spread initial value across the range?
 
     WorkerThread (LocalQueue localQueue, SharedQueue[] globalQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
+        super("TODO-Thread-" + threadIdx); //TODO thread names
+
         this.localQueue = localQueue;
         this.globalQueues = globalQueues;
         this.pool = pool;
@@ -71,13 +73,13 @@ class WorkerThread extends Thread {
                 }
                 else {
                     // spin a little before parking
-                    for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
-                        if ((task = tryGetForeignWork ()) != null) {
-                            if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                            task.run ();
-                            continue topLevelLoop;
-                        }
-                    }
+//                    for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
+//                        if ((task = tryGetForeignWork ()) != null) {
+//                            if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
+//                            task.run ();
+//                            continue topLevelLoop;
+//                        }
+//                    }
 
                     pool.markWorkerAsIdle (idleThreadMask);
 
@@ -91,6 +93,8 @@ class WorkerThread extends Thread {
                         task.run ();
                         continue;
                     }
+
+//                    System.err.println ("Thread " + idleThreadMask + " parking");
 
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numParks += 1;
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) {
@@ -169,8 +173,10 @@ class WorkerThread extends Thread {
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS && prevQueue != currentSharedQueue) stat_numSharedQueueSwitches += 1;
                 return task;
             }
-            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length;
+            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length; //TODO bit mask instead of division?
         }
+
+//        System.err.println ("Thread " + idleThreadMask + " --> no shared work");
 
         return null;
     }

@@ -2,6 +2,7 @@ package benchmark;
 
 import com.ajjpj.concurrent.pool.a.AFutureOld;
 import com.ajjpj.concurrent.pool.a.APoolOld;
+import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
 import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
 
 import java.util.concurrent.Callable;
@@ -17,6 +18,10 @@ public class AThreadPoolAdapter implements APoolOld {
 
     @Override public void submit (Runnable code) {
         inner.submit (code);
+    }
+
+    @Override public AThreadPoolStatistics getStatistics () {
+        return inner.getStatistics ();
     }
 
     @Override public <T> AFutureOld<T> submit (Callable<T> code) {

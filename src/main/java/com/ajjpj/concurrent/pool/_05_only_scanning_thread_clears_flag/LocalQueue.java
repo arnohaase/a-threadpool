@@ -130,10 +130,12 @@ class LocalQueue {
             //  a volatile read of 'base' before reading the task
             final Runnable result = tasks[asArrayindex (_base)];
 
-            // 'null' means that another thread concurrently fetched the task from under our nose. CAS ensures that only one thread
-            //  gets the task, and allows GC when processing is finished
+            // result == null means that another thread concurrently fetched the task from under our nose.
+            // checking _base against a re-read 'base' with volatile semantics avoids wrap-around race - 'base' could have incremented by a multiple of the queue's size between
+            //   our first reading it and fetching the task at that offset, which would cause the increment inside the following if block to significantly decrement it and
+            //   wreak havoc.
+            // CAS ensures that only one thread gets the task, and allows GC when processing is finished
             if (result != null && _base == UNSAFE.getLongVolatile(this, OFFS_BASE) && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
-                //TODO Why does re-reading and comparing 'base' avoid the wrap-around race? Apparently it does (idea gleaned from FJ)
                 UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1); //TODO is 'putOrdered' sufficient?
                 return result;
             }

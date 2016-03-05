@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 @State (Scope.Benchmark)
 @Timeout (time=5, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
-    public static final int TIMEOUT_SECONDS = 40;
+    public static final int TIMEOUT_SECONDS = 10;
     public static final int POOL_SIZE = 8;
 
     APoolOld pool;
@@ -94,7 +94,7 @@ public class PoolBenchmark {
 
     private static ForkJoinPool createForkJoin (boolean fifo) {
         final ForkJoinPool p = ForkJoinPool.commonPool ();
-        return new ForkJoinPool (p.getParallelism (), p.getFactory (), p.getUncaughtExceptionHandler (), fifo);
+        return new ForkJoinPool (p.getParallelism (), p.getFactory (), p.getUncaughtExceptionHandler (), fifo); //TODO use NUM_THREADS to actually limit the number of threads
     }
 
     private static jdk.j9new.ForkJoinPool createJ9ForkJoin (int numThreads, boolean fifo) {
@@ -105,25 +105,23 @@ public class PoolBenchmark {
     public void tearDown() throws InterruptedException {
         pool.shutdown ();
 
-        if (pool instanceof NewPoolAdapter_B) {
-            System.out.println ();
-            System.out.println ("---- Thread Pool Statistics ----");
+        System.out.println ();
+        System.out.println ("---- Thread Pool Statistics ----");
 
-            final AThreadPoolStatistics stats = ((NewPoolAdapter_B) pool).inner.getStatistics ();
-            for (ASharedQueueStatistics s: stats.sharedQueueStatisticses) {
-                System.out.println (s);
-            }
-            for (AWorkerThreadStatistics s: stats.workerThreadStatistics) {
-                System.out.println (s);
-            }
-            System.out.println ("--------------------------------");
+        final AThreadPoolStatistics stats = pool.getStatistics ();
+        for (ASharedQueueStatistics s: stats.sharedQueueStatisticses) {
+            System.out.println (s);
         }
+        for (AWorkerThreadStatistics s: stats.workerThreadStatistics) {
+            System.out.println (s);
+        }
+        System.out.println ("--------------------------------");
 
         timeoutThread.stop ();
     }
 
     @Benchmark
-    public void _testSimpleScheduling01() throws InterruptedException {
+    public void testSimpleScheduling01() throws InterruptedException {
         doSimpleScheduling ();
     }
 
@@ -139,26 +137,59 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void _testSimpleScheduling07() throws InterruptedException {
+    public void testSimpleScheduling07() throws InterruptedException {
         doSimpleScheduling ();
     }
 
     @Benchmark
     @Threads (8)
-    public void _testSimpleScheduling08() throws InterruptedException {
+    public void testSimpleScheduling08() throws InterruptedException {
         doSimpleScheduling ();
     }
 
-//    @Benchmark
+    @Benchmark
     @Threads (15)
     public void testSimpleScheduling15() throws InterruptedException {
         doSimpleScheduling ();
     }
 
-//    @Benchmark
+    @Benchmark
     @Threads (16)
-    public void _testSimpleScheduling16() throws InterruptedException {
+    public void testSimpleScheduling16() throws InterruptedException {
         doSimpleScheduling ();
+    }
+
+    @Benchmark
+    @Threads (7)
+    public void ___recPar_00010() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch (1);
+        doRec (10, latch);
+        latch.await ();
+    }
+
+    @Benchmark
+    @Threads (7)
+    public void ___recPar_01000() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch (1);
+        doRec (1_000, latch);
+        latch.await ();
+    }
+
+    @Benchmark
+    @Threads (7)
+    public void ___recPar_10000() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch (1);
+        doRec (10_000, latch);
+        latch.await ();
+    }
+
+    void doRec (int level, CountDownLatch latch) {
+        if (level == 0) {
+            latch.countDown ();
+        }
+        else {
+            pool.submit (() -> doRec (level-1, latch));
+        }
     }
 
     @Benchmark
@@ -170,7 +201,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void testFactorialMulti07() throws ExecutionException, InterruptedException {
+    public void testFactorial07() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -178,7 +209,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (8)
-    public void testFactorialMulti08() throws ExecutionException, InterruptedException {
+    public void testFactorial08() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -186,7 +217,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (15)
-    public void testFactorialMulti15() throws ExecutionException, InterruptedException {
+    public void testFactorial15() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -194,7 +225,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (16)
-    public void testFactorialMulti16() throws ExecutionException, InterruptedException {
+    public void testFactorial16() throws ExecutionException, InterruptedException {
         final SettableFutureTask<Long> fact = new SettableFutureTask<> (() -> null);
         fact (1, 12, fact);
         fact.get ();
@@ -205,13 +236,11 @@ public class PoolBenchmark {
             result.set (collect);
         }
         else {
-            pool.submit (() -> {
-                fact (collect * n, n-1, result);
-            });
+            pool.submit (() -> fact (collect * n, n-1, result));
         }
     }
 
-//    @Benchmark
+    @Benchmark
     public void testRecursiveFibo() throws ExecutionException, InterruptedException {
         try {
             fibo (8);
@@ -230,7 +259,7 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void _testStealVeryCheap() throws InterruptedException {
+    public void testStealVeryCheap() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch (10_000);
 
         pool.submit (() -> {
@@ -242,7 +271,7 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void __testStealExpensive() throws InterruptedException {
+    public void testStealExpensive() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch (10_000);
 
         pool.submit (() -> {
@@ -310,7 +339,7 @@ public class PoolBenchmark {
                 onFinished.run ();
             }
             else {
-                pool.submit (() -> {sender.receive (PingPongActor.this, remaining-1, onFinished);});
+                pool.submit (() -> sender.receive (PingPongActor.this, remaining-1, onFinished));
             }
         }
     }

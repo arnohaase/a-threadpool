@@ -58,7 +58,7 @@ class SharedQueue {
     }
 
     /**
-     * Add a new task to the top of the localQueue, incrementing 'top'.
+     * Add a new task to the top of the shared queue, incrementing 'top'.
      */
     void push (Runnable task) {
         lock ();
@@ -118,14 +118,10 @@ class SharedQueue {
     /**
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
-    Runnable popFifo () {
-        int counter = 0;
-
+     Runnable popFifo () {
         while (true) {
             final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
             final long _top = UNSAFE.getLongVolatile (this, OFFS_TOP);
-
-            counter += 1;
 
             if (_base == _top) {
                 // Terminate the loop: the queue is empty.
@@ -135,10 +131,19 @@ class SharedQueue {
 
             final Runnable result = tasks[asArrayIndex (_base)];
 
-
-            if (_top > _base && UNSAFE.compareAndSwapLong (this, OFFS_BASE, _base, _base+1)) {
-                return (Runnable) UNSAFE.getAndSetObject (tasks, taskOffset (_base), null);
+            // result == null means that another thread concurrently fetched the task from under our nose.
+            // checking _base against a re-read 'base' with volatile semantics avoids wrap-around race - 'base' could have incremented by a multiple of the queue's size between
+            //   our first reading it and fetching the task at that offset, which would cause the increment inside the following if block to significantly decrement it and
+            //   wreak havoc.
+            // CAS ensures that only one thread gets the task, and allows GC when processing is finished
+            if (result != null && _base == UNSAFE.getLongVolatile(this, OFFS_BASE) && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
+                UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1); //TODO is 'putOrdered' sufficient?
+                return result;
             }
+
+//            if (_top > _base && UNSAFE.compareAndSwapLong (this, OFFS_BASE, _base, _base+1)) {
+//                return (Runnable) UNSAFE.getAndSetObject (tasks, taskOffset (_base), null);
+//            }
         }
     }
 
