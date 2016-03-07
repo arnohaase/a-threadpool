@@ -73,9 +73,7 @@ class WorkerThread extends Thread {
                 //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
                 if ((task = tryGetWork ()) != null) {
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                    pool.log ("executing work (1)");
                     task.run ();
-                    pool.log ("finished work");
                 }
                 else {
                     // spin a little before parking
@@ -97,9 +95,7 @@ class WorkerThread extends Thread {
                             pool.onAvailableTask ();
                         }
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                        pool.log ("executing work (2)");
                         task.run ();
-                        pool.log ("finished work");
                         continue;
                     }
 
@@ -113,27 +109,20 @@ class WorkerThread extends Thread {
                         }
                     }
 
-                    pool.log ("going to sleep");
-
                     UNSAFE.park (false, 0L);
 
-                    pool.log ("woke up");
                     // This flag is usually set before the call unpark(), but some races cause a thread to be unparked redundantly, causing the flag to be out of sync.
                     // Setting the flag before unpark() is piggybacked on another CAS operation and therefore basically for free, so we leave it there, but we need it
                     //  here as well.
                     pool.markWorkerAsBusy (idleThreadMask);
 
                     if ((task = tryGetForeignWork ()) != null) {
-                        pool.log ("found work after wakeup");
                         pool.unmarkScanning();
                         pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                        pool.log ("executing work (3)");
                         task.run ();
-                        pool.log ("finished work");
                     }
                     else {
-                        pool.log ("found no work - unmarking for scan");
                         pool.unmarkScanning();
                     }
                 }

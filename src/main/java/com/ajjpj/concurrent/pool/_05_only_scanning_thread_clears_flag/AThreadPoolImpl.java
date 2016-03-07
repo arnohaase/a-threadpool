@@ -131,8 +131,6 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
             throw new IllegalStateException ("pool is already shut down");
         }
 
-        log ("submit");
-
         WorkerThread wt;
         if (Thread.currentThread () instanceof WorkerThread && (wt = (WorkerThread) Thread.currentThread ()).pool == this) {
             if (SHOULD_GATHER_STATISTICS) wt.stat_numLocalSubmits += 1;
@@ -206,9 +204,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
 
     void onAvailableTask () {
         long idleBitMask = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
-        log ("  --> onAvailableTask: ");
         if ((idleBitMask & MASK_IDLE_THREAD_SCANNING) != 0L) {
-            log (" *** other thread is scanning...");
             // some other thread is scanning, so there is no need to wake another thread
             return;
         }
@@ -218,10 +214,6 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     void wakeUpWorker () {
         long idleBitMask = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
         doWakeUpWorker (idleBitMask);
-    }
-
-    void log (String msg) {
-//        System.err.println (Thread.currentThread ().getName () + " " + msg + " " + Long.toBinaryString (UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS)));
     }
 
     private void doWakeUpWorker (long idleBitMask) {
@@ -234,7 +226,6 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
             if ((idleBitMask & 1L) != 0) {
                 //noinspection ConstantConditions
                 if (markWorkerAsBusyAndScanning (localQueue.thread)) {
-                    log ("unparking " + localQueue.thread.getName ());
                     // wake up the worker only if no-one else woke up the thread in the meantime
                     UNSAFE.unpark (localQueue.thread);
                 }
@@ -246,7 +237,6 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     }
 
     void markWorkerAsIdle (long mask) {
-        log ("marking as idle");
         long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
@@ -258,18 +248,14 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
 //            after = after & ~MASK_IDLE_THREAD_SCANNING;
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
-        log ("finished marking as idle");
     }
 
     boolean markWorkerAsBusy (long mask) {
-        log ("marking as busy");
-
         long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
             if ((prev & mask) == 0) {
                 // someone else woke up the thread in the meantime
-                log ("finished marking as busy (false)");
                 return false;
             }
 
@@ -277,19 +263,16 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
 
-        log ("finished marking as busy (true)");
         return true;
     }
 
     boolean markWorkerAsBusyAndScanning (WorkerThread worker) {
-        log ("marking as busy and scanning: " + Long.toBinaryString (worker.idleThreadMask));
         final long mask = worker.idleThreadMask;
 //        Log.log (" marking busy and scanning: " + (int)(Math.log (mask) / Math.log (2)));
         long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS); //TODO is a regular read more efficient here?
             if ((prev & mask) == 0L) {
-                log ("  shortcut marking busy");
                 // someone else woke up the thread concurrently --> it is scanning now, and there is no need to wake it up or change the 'idle' mask
                 return false;
             }
@@ -298,23 +281,19 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
             after = after | MASK_IDLE_THREAD_SCANNING;
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
-        log ("finished marking as busy and scanning");
         return true;
     }
 
     void unmarkScanning() {
-        log ("removing 'scanning' flag");
         long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
             after = prev & ~MASK_IDLE_THREAD_SCANNING;
             if (prev == after) {
-                log ("shortcut unmarking scanning");
                 return;
             }
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
-        log ("finished removing 'scanning' flag");
     }
 
     //------------------ Unsafe stuff
