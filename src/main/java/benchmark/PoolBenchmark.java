@@ -14,11 +14,11 @@ import java.util.concurrent.*;
  * @author arno
  */
 //@Fork (2)
-@Fork (0)
-//@Fork (1)
+//@Fork (0)
+@Fork (1)
 @Threads (1)
 @Warmup (iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
 @Timeout (time=10, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
