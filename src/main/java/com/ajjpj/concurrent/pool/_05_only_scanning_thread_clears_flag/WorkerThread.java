@@ -91,7 +91,7 @@ class WorkerThread extends Thread {
                     if ((task = tryGetForeignWork ()) != null) {
                         if (! pool.markWorkerAsBusy (idleThreadMask)) {
                             // thread was 'woken up' because of available work --> cause some other thread to be notified instead
-                            pool.unmarkScanning ();
+                            pool.unmarkScanning (); //TODO merge with 'markWorkerAsBusy'
                             pool.onAvailableTask ();
                         }
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
