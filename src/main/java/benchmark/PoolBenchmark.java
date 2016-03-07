@@ -14,15 +14,15 @@ import java.util.concurrent.*;
  * @author arno
  */
 //@Fork (2)
-//@Fork (0)
-@Fork (1)
+@Fork (0)
+//@Fork (1)
 @Threads (1)
 @Warmup (iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
-@Timeout (time=5, timeUnit=TimeUnit.SECONDS)
+@Timeout (time=10, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
-    public static final int TIMEOUT_SECONDS = 10;
+    public static final int TIMEOUT_SECONDS = 40;
     public static final int POOL_SIZE = 8;
 
     APoolOld pool;
@@ -104,6 +104,7 @@ public class PoolBenchmark {
     @TearDown
     public void tearDown() throws InterruptedException {
         pool.shutdown ();
+        Thread.sleep (500);
 
         System.out.println ();
         System.out.println ("---- Thread Pool Statistics ----");
@@ -161,7 +162,19 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void ___recPar_00010() throws InterruptedException {
+    public void recPar_00010a() throws InterruptedException {
+        // This simulates a saturating load, which is one of the typical modes in which a thread pool is operating in server side software
+        final CountDownLatch latch = new CountDownLatch (1000);
+        for (int i=0; i<1000; i++) {
+            doRec (10, latch);
+        }
+        latch.await ();
+    }
+
+    @Benchmark
+    @Threads (7)
+    public void recPar_00010b() throws InterruptedException {
+        // This simulates a 'worst case' load - infinitesimal below saturation, i.e. when one task is finished, no new work is available, but immediately thereafter work is added
         final CountDownLatch latch = new CountDownLatch (1);
         doRec (10, latch);
         latch.await ();
@@ -169,7 +182,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void ___recPar_01000() throws InterruptedException {
+    public void recPar_01000() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch (1);
         doRec (1_000, latch);
         latch.await ();
@@ -177,7 +190,7 @@ public class PoolBenchmark {
 
     @Benchmark
     @Threads (7)
-    public void ___recPar_10000() throws InterruptedException {
+    public void recPar_10000() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch (1);
         doRec (10_000, latch);
         latch.await ();
@@ -241,7 +254,7 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void testRecursiveFibo() throws ExecutionException, InterruptedException {
+    public void ___testRecursiveFibo() throws ExecutionException, InterruptedException {
         try {
             fibo (8);
         }
@@ -254,8 +267,9 @@ public class PoolBenchmark {
     long fibo (long n) throws ExecutionException, InterruptedException {
         if (n <= 1) return 1;
 
-        final AFutureOld<Long> f = pool.submit (() -> fibo(n-1));
-        return f.get() + pool.submit (() -> fibo(n-2)).get ();
+//        System.err.println (Thread.currentThread ().getName () + ":  calculating fibo " + n);
+
+        return pool.submit (() -> fibo(n-1)).get() + pool.submit (() -> fibo(n-2)).get ();
     }
 
     @Benchmark

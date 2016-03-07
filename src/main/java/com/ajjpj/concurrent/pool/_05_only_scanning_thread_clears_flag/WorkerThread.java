@@ -40,6 +40,8 @@ class WorkerThread extends Thread {
 
     WorkerThread (LocalQueue localQueue, SharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
         super("TODO-Thread-" + threadIdx); //TODO thread names
+        //TODO error handling
+        //TODO on finished listener (?)
 
         this.localQueue = localQueue;
         this.sharedQueues = sharedQueues;
@@ -71,7 +73,9 @@ class WorkerThread extends Thread {
                 //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
                 if ((task = tryGetWork ()) != null) {
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
+                    pool.log ("executing work (1)");
                     task.run ();
+                    pool.log ("finished work");
                 }
                 else {
                     // spin a little before parking
@@ -87,16 +91,17 @@ class WorkerThread extends Thread {
 
                     // re-check availability of work after marking the thread as idle --> avoid races
                     if ((task = tryGetForeignWork ()) != null) {
-                        if (pool.markWorkerAsBusy (idleThreadMask)) {
+                        if (! pool.markWorkerAsBusy (idleThreadMask)) {
                             // thread was 'woken up' because of available work --> cause some other thread to be notified instead
+                            pool.unmarkScanning ();
                             pool.onAvailableTask ();
                         }
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
+                        pool.log ("executing work (2)");
                         task.run ();
+                        pool.log ("finished work");
                         continue;
                     }
-
-//                    System.err.println ("Thread " + idleThreadMask + " parking");
 
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numParks += 1;
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) {
@@ -107,15 +112,28 @@ class WorkerThread extends Thread {
                             tasksAtPark = stat_numTasksExecuted;
                         }
                     }
+
+                    pool.log ("going to sleep");
+
                     UNSAFE.park (false, 0L);
 
+                    pool.log ("woke up");
+                    // This flag is usually set before the call unpark(), but some races cause a thread to be unparked redundantly, causing the flag to be out of sync.
+                    // Setting the flag before unpark() is piggybacked on another CAS operation and therefore basically for free, so we leave it there, but we need it
+                    //  here as well.
+                    pool.markWorkerAsBusy (idleThreadMask);
+
                     if ((task = tryGetForeignWork ()) != null) {
-                        pool.unmarkScanning(); //TODO why exactly is this necessary?
+                        pool.log ("found work after wakeup");
+                        pool.unmarkScanning();
                         pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
+                        pool.log ("executing work (3)");
                         task.run ();
+                        pool.log ("finished work");
                     }
                     else {
+                        pool.log ("found no work - unmarking for scan");
                         pool.unmarkScanning();
                     }
                 }
@@ -177,8 +195,6 @@ class WorkerThread extends Thread {
             }
             currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % sharedQueues.length; //TODO bit mask instead of division?
         }
-
-//        System.err.println ("Thread " + idleThreadMask + " --> no shared work");
 
         return null;
     }
