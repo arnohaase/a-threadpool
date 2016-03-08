@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  */
 class WorkerThread extends Thread {
     final LocalQueue localQueue;
-    final SharedQueue[] sharedQueues;
+    final ASharedQueue[] sharedQueues;
     final LocalQueue[] allLocalQueues;
     final AThreadPoolImpl pool;
     final long idleThreadMask;
@@ -38,7 +38,7 @@ class WorkerThread extends Thread {
      */
     private int currentSharedQueue = 0;
 
-    WorkerThread (LocalQueue localQueue, SharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
+    WorkerThread (LocalQueue localQueue, ASharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
         super("TODO-Thread-" + threadIdx); //TODO thread names
         //TODO error handling
         //TODO on finished listener (?)

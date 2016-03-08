@@ -1154,3 +1154,167 @@ b.PoolBenchmark.testPingPong07               J9FjLifo  thrpt        3     944,16
 b.PoolBenchmark.testPingPong32                      b  thrpt        3     172,513       35,157  ops/s
 b.PoolBenchmark.testPingPong32                  naive  thrpt        3      11,552        1,493  ops/s
 b.PoolBenchmark.testPingPong32               J9FjLifo  thrpt        3     203,885       44,542  ops/s
+
+//------------------------------------------
+
+2016-03-08 - SharedQueue.popLifo synchronized with CAS inside
+
+Benchmark                                           (strategy)   Mode  Cnt        Score       Error  Units
+PoolBenchmark.___testSimpleScheduling01  b-only-scanner-clears  thrpt   10     8239,061 ±   117,303  ops/s
+PoolBenchmark.___testSimpleScheduling01               J9FjLifo  thrpt   10     3318,195 ±   338,413  ops/s
+PoolBenchmark.recPar_00010a              b-only-scanner-clears  thrpt   10     8385,829 ±  2996,527  ops/s
+PoolBenchmark.recPar_00010a                           J9FjLifo  thrpt   10     6822,011 ±   378,212  ops/s
+PoolBenchmark.recPar_00010b              b-only-scanner-clears  thrpt   10   852096,879 ± 49794,828  ops/s
+PoolBenchmark.recPar_00010b                           J9FjLifo  thrpt   10   844163,264 ± 11575,142  ops/s
+PoolBenchmark.recPar_01000               b-only-scanner-clears  thrpt   10    81645,283 ± 41633,445  ops/s
+PoolBenchmark.recPar_01000                            J9FjLifo  thrpt   10    67048,156 ±  4984,678  ops/s
+PoolBenchmark.recPar_10000               b-only-scanner-clears  thrpt   10     7078,069 ±  1076,867  ops/s
+PoolBenchmark.recPar_10000                            J9FjLifo  thrpt   10     7042,626 ±   540,903  ops/s
+PoolBenchmark.testFactorial01            b-only-scanner-clears  thrpt   10   140229,749 ±  4666,572  ops/s
+PoolBenchmark.testFactorial01                         J9FjLifo  thrpt   10    80524,534 ±  1479,928  ops/s
+PoolBenchmark.testFactorial07            b-only-scanner-clears  thrpt   10   861933,591 ± 12370,051  ops/s
+PoolBenchmark.testFactorial07                         J9FjLifo  thrpt   10   825837,875 ± 11635,320  ops/s
+PoolBenchmark.testFactorial08            b-only-scanner-clears  thrpt   10   890887,853 ± 12332,801  ops/s
+PoolBenchmark.testFactorial08                         J9FjLifo  thrpt   10  1062731,379 ± 58313,278  ops/s
+PoolBenchmark.testFactorial15            b-only-scanner-clears  thrpt   10  1206468,003 ± 30637,284  ops/s
+PoolBenchmark.testFactorial15                         J9FjLifo  thrpt   10  1218904,564 ± 34539,856  ops/s
+PoolBenchmark.testFactorial16            b-only-scanner-clears  thrpt   10  1240504,698 ± 29541,425  ops/s
+PoolBenchmark.testFactorial16                         J9FjLifo  thrpt   10  1236802,161 ± 18535,352  ops/s
+PoolBenchmark.testPingPong01             b-only-scanner-clears  thrpt   10     3050,560 ±    98,539  ops/s
+PoolBenchmark.testPingPong01                          J9FjLifo  thrpt   10      433,173 ±    17,539  ops/s
+PoolBenchmark.testPingPong02             b-only-scanner-clears  thrpt   10     1524,686 ±   341,042  ops/s
+PoolBenchmark.testPingPong02                          J9FjLifo  thrpt   10      567,099 ±    31,493  ops/s
+PoolBenchmark.testPingPong07             b-only-scanner-clears  thrpt   10     1084,939 ±    39,239  ops/s
+PoolBenchmark.testPingPong07                          J9FjLifo  thrpt   10     1039,692 ±   233,344  ops/s
+PoolBenchmark.testPingPong08             b-only-scanner-clears  thrpt   10     1480,770 ±   803,396  ops/s
+PoolBenchmark.testPingPong08                          J9FjLifo  thrpt   10      621,836 ±    48,875  ops/s
+PoolBenchmark.testPingPong15             b-only-scanner-clears  thrpt   10      636,711 ±   149,332  ops/s
+PoolBenchmark.testPingPong15                          J9FjLifo  thrpt   10      386,625 ±     5,110  ops/s
+PoolBenchmark.testPingPong16             b-only-scanner-clears  thrpt   10      543,031 ±    44,648  ops/s
+PoolBenchmark.testPingPong16                          J9FjLifo  thrpt   10      405,947 ±    87,107  ops/s
+PoolBenchmark.testPingPong32             b-only-scanner-clears  thrpt   10      391,445 ±   110,867  ops/s
+PoolBenchmark.testPingPong32                          J9FjLifo  thrpt   10      223,684 ±    15,018  ops/s
+PoolBenchmark.testRecursiveFibo          b-only-scanner-clears  thrpt   10     2268,322 ±    11,263  ops/s
+PoolBenchmark.testRecursiveFibo                       J9FjLifo  thrpt   10     7992,995 ±    60,344  ops/s
+PoolBenchmark.testSimpleScheduling07     b-only-scanner-clears  thrpt   10    36965,991 ±  2510,257  ops/s
+PoolBenchmark.testSimpleScheduling07                  J9FjLifo  thrpt   10    20082,589 ±  1728,013  ops/s
+PoolBenchmark.testSimpleScheduling08     b-only-scanner-clears  thrpt   10    34929,509 ±  3472,695  ops/s
+PoolBenchmark.testSimpleScheduling08                  J9FjLifo  thrpt   10    21241,773 ±  2160,932  ops/s
+PoolBenchmark.testSimpleScheduling15     b-only-scanner-clears  thrpt   10    11449,704 ±  5096,132  ops/s
+PoolBenchmark.testSimpleScheduling15                  J9FjLifo  thrpt   10    22807,168 ±  1186,340  ops/s
+PoolBenchmark.testSimpleScheduling16     b-only-scanner-clears  thrpt   10    14030,239 ±  5196,847  ops/s
+PoolBenchmark.testSimpleScheduling16                  J9FjLifo  thrpt   10    22830,809 ±  1245,753  ops/s
+PoolBenchmark.testStealExpensive         b-only-scanner-clears  thrpt   10      756,017 ±    14,202  ops/s
+PoolBenchmark.testStealExpensive                      J9FjLifo  thrpt   10      907,992 ±    11,969  ops/s
+PoolBenchmark.testStealVeryCheap         b-only-scanner-clears  thrpt   10     1174,776 ±    34,237  ops/s
+PoolBenchmark.testStealVeryCheap                      J9FjLifo  thrpt   10      828,139 ±    22,264  ops/s
+
+
+//----------------------------------
+
+2016-03-08 - SharedQueue.popLifo synchronized without CAS inside
+
+Benchmark                                           (strategy)   Mode  Cnt        Score       Error  Units
+PoolBenchmark.___testSimpleScheduling01  b-only-scanner-clears  thrpt   10     9260,136 ±   151,750  ops/s
+PoolBenchmark.___testSimpleScheduling01               J9FjLifo  thrpt   10     3340,003 ±   301,972  ops/s
+PoolBenchmark.recPar_00010a              b-only-scanner-clears  thrpt   10    10149,895 ±   328,939  ops/s
+PoolBenchmark.recPar_00010a                           J9FjLifo  thrpt   10     7122,989 ±   593,620  ops/s
+PoolBenchmark.recPar_00010b              b-only-scanner-clears  thrpt   10   881767,846 ± 12244,701  ops/s
+PoolBenchmark.recPar_00010b                           J9FjLifo  thrpt   10   840496,306 ± 19997,655  ops/s
+PoolBenchmark.recPar_01000               b-only-scanner-clears  thrpt   10    71024,551 ± 23512,974  ops/s
+PoolBenchmark.recPar_01000                            J9FjLifo  thrpt   10    70210,757 ± 13805,550  ops/s
+PoolBenchmark.recPar_10000               b-only-scanner-clears  thrpt   10     6521,010 ±  1249,565  ops/s
+PoolBenchmark.recPar_10000                            J9FjLifo  thrpt   10     7202,929 ±  1104,852  ops/s
+PoolBenchmark.testFactorial01            b-only-scanner-clears  thrpt   10   143308,203 ±  3129,531  ops/s
+PoolBenchmark.testFactorial01                         J9FjLifo  thrpt   10    79835,183 ±  1757,317  ops/s
+PoolBenchmark.testFactorial07            b-only-scanner-clears  thrpt   10   878206,451 ±  9378,830  ops/s
+PoolBenchmark.testFactorial07                         J9FjLifo  thrpt   10   837705,114 ± 12755,182  ops/s
+PoolBenchmark.testFactorial08            b-only-scanner-clears  thrpt   10   913961,347 ±  9545,786  ops/s
+PoolBenchmark.testFactorial08                         J9FjLifo  thrpt   10  1142876,301 ± 20677,869  ops/s
+PoolBenchmark.testFactorial15            b-only-scanner-clears  thrpt   10  1241345,793 ± 43879,131  ops/s
+PoolBenchmark.testFactorial15                         J9FjLifo  thrpt   10  1228210,785 ± 15888,499  ops/s
+PoolBenchmark.testFactorial16            b-only-scanner-clears  thrpt   10  1250257,918 ± 34973,827  ops/s
+PoolBenchmark.testFactorial16                         J9FjLifo  thrpt   10  1225548,182 ± 22894,936  ops/s
+PoolBenchmark.testPingPong01             b-only-scanner-clears  thrpt   10     2792,261 ±   599,063  ops/s
+PoolBenchmark.testPingPong01                          J9FjLifo  thrpt   10      423,769 ±    18,028  ops/s
+PoolBenchmark.testPingPong02             b-only-scanner-clears  thrpt   10     1509,918 ±   261,411  ops/s
+PoolBenchmark.testPingPong02                          J9FjLifo  thrpt   10      573,446 ±    16,344  ops/s
+PoolBenchmark.testPingPong07             b-only-scanner-clears  thrpt   10      989,952 ±   396,058  ops/s
+PoolBenchmark.testPingPong07                          J9FjLifo  thrpt   10     1026,684 ±   116,099  ops/s
+PoolBenchmark.testPingPong08             b-only-scanner-clears  thrpt   10      869,775 ±    43,318  ops/s
+PoolBenchmark.testPingPong08                          J9FjLifo  thrpt   10      660,527 ±    60,343  ops/s
+PoolBenchmark.testPingPong15             b-only-scanner-clears  thrpt   10      543,282 ±   187,569  ops/s
+PoolBenchmark.testPingPong15                          J9FjLifo  thrpt   10      415,926 ±    24,007  ops/s
+PoolBenchmark.testPingPong16             b-only-scanner-clears  thrpt   10      472,261 ±    33,529  ops/s
+PoolBenchmark.testPingPong16                          J9FjLifo  thrpt   10      403,825 ±    35,220  ops/s
+PoolBenchmark.testPingPong32             b-only-scanner-clears  thrpt   10      338,657 ±    84,843  ops/s
+PoolBenchmark.testPingPong32                          J9FjLifo  thrpt   10      238,539 ±    30,486  ops/s
+PoolBenchmark.testRecursiveFibo          b-only-scanner-clears  thrpt   10     2246,231 ±    13,604  ops/s
+PoolBenchmark.testRecursiveFibo                       J9FjLifo  thrpt   10     8007,499 ±    45,647  ops/s
+PoolBenchmark.testSimpleScheduling07     b-only-scanner-clears  thrpt   10    43526,725 ±  1715,713  ops/s
+PoolBenchmark.testSimpleScheduling07                  J9FjLifo  thrpt   10    20731,012 ±  1753,314  ops/s
+PoolBenchmark.testSimpleScheduling08     b-only-scanner-clears  thrpt   10    43472,251 ±  2573,092  ops/s
+PoolBenchmark.testSimpleScheduling08                  J9FjLifo  thrpt   10    21971,200 ±  1314,719  ops/s
+PoolBenchmark.testSimpleScheduling15     b-only-scanner-clears  thrpt   10    13443,846 ±  3201,631  ops/s
+PoolBenchmark.testSimpleScheduling15                  J9FjLifo  thrpt   10    21175,466 ±  3208,980  ops/s
+PoolBenchmark.testSimpleScheduling16     b-only-scanner-clears  thrpt   10    15650,674 ±  2616,800  ops/s
+PoolBenchmark.testSimpleScheduling16                  J9FjLifo  thrpt   10    22210,677 ±   804,891  ops/s
+PoolBenchmark.testStealExpensive         b-only-scanner-clears  thrpt   10      764,727 ±     8,767  ops/s
+PoolBenchmark.testStealExpensive                      J9FjLifo  thrpt   10      918,824 ±    10,528  ops/s
+PoolBenchmark.testStealVeryCheap         b-only-scanner-clears  thrpt   10     1055,086 ±    43,241  ops/s
+PoolBenchmark.testStealVeryCheap                      J9FjLifo  thrpt   10      793,741 ±    27,580  ops/s
+
+//----------------------------------------------
+
+2016-08-03 - SharedQueue.push synchronized with separate lock
+
+
+Benchmark                                           (strategy)   Mode  Cnt        Score       Error  Units
+PoolBenchmark.___testSimpleScheduling01  b-only-scanner-clears  thrpt   10     9031,059 ±   174,980  ops/s
+PoolBenchmark.___testSimpleScheduling01               J9FjLifo  thrpt   10     3404,566 ±   142,093  ops/s
+PoolBenchmark.recPar_00010a              b-only-scanner-clears  thrpt   10     9756,408 ±   487,955  ops/s
+PoolBenchmark.recPar_00010a                           J9FjLifo  thrpt   10     7379,172 ±   274,192  ops/s
+PoolBenchmark.recPar_00010b              b-only-scanner-clears  thrpt   10   871342,883 ± 15305,354  ops/s
+PoolBenchmark.recPar_00010b                           J9FjLifo  thrpt   10   858058,130 ± 14969,675  ops/s
+PoolBenchmark.recPar_01000               b-only-scanner-clears  thrpt   10    71076,496 ± 30445,226  ops/s
+PoolBenchmark.recPar_01000                            J9FjLifo  thrpt   10    68452,875 ±  2482,878  ops/s
+PoolBenchmark.recPar_10000               b-only-scanner-clears  thrpt   10    10367,551 ±  4111,050  ops/s
+PoolBenchmark.recPar_10000                            J9FjLifo  thrpt   10     7359,908 ±   437,434  ops/s
+PoolBenchmark.testFactorial01            b-only-scanner-clears  thrpt   10   143430,289 ±  3880,821  ops/s
+PoolBenchmark.testFactorial01                         J9FjLifo  thrpt   10    80374,378 ±   854,982  ops/s
+PoolBenchmark.testFactorial07            b-only-scanner-clears  thrpt   10   869522,178 ± 15922,018  ops/s
+PoolBenchmark.testFactorial07                         J9FjLifo  thrpt   10   837307,297 ± 18611,672  ops/s
+PoolBenchmark.testFactorial08            b-only-scanner-clears  thrpt   10   909561,104 ± 19685,903  ops/s
+PoolBenchmark.testFactorial08                         J9FjLifo  thrpt   10  1098718,931 ± 12323,866  ops/s
+PoolBenchmark.testFactorial15            b-only-scanner-clears  thrpt   10  1227382,221 ± 26532,900  ops/s
+PoolBenchmark.testFactorial15                         J9FjLifo  thrpt   10  1219641,475 ± 41708,355  ops/s
+PoolBenchmark.testFactorial16            b-only-scanner-clears  thrpt   10  1239194,994 ± 25703,413  ops/s
+PoolBenchmark.testFactorial16                         J9FjLifo  thrpt   10  1231423,496 ± 17229,451  ops/s
+PoolBenchmark.testPingPong01             b-only-scanner-clears  thrpt   10     3200,469 ±    99,244  ops/s
+PoolBenchmark.testPingPong01                          J9FjLifo  thrpt   10      415,706 ±    18,526  ops/s
+PoolBenchmark.testPingPong02             b-only-scanner-clears  thrpt   10     2008,435 ±   658,280  ops/s
+PoolBenchmark.testPingPong02                          J9FjLifo  thrpt   10      590,899 ±    11,378  ops/s
+PoolBenchmark.testPingPong07             b-only-scanner-clears  thrpt   10      791,729 ±   151,783  ops/s
+PoolBenchmark.testPingPong07                          J9FjLifo  thrpt   10      857,067 ±    86,561  ops/s
+PoolBenchmark.testPingPong08             b-only-scanner-clears  thrpt   10      802,009 ±   238,795  ops/s
+PoolBenchmark.testPingPong08                          J9FjLifo  thrpt   10      924,815 ±    17,097  ops/s
+PoolBenchmark.testPingPong15             b-only-scanner-clears  thrpt   10      752,163 ±    69,194  ops/s
+PoolBenchmark.testPingPong15                          J9FjLifo  thrpt   10      440,253 ±    55,498  ops/s
+PoolBenchmark.testPingPong16             b-only-scanner-clears  thrpt   10      466,252 ±   101,818  ops/s
+PoolBenchmark.testPingPong16                          J9FjLifo  thrpt   10      435,940 ±    52,870  ops/s
+PoolBenchmark.testPingPong32             b-only-scanner-clears  thrpt   10      202,955 ±    42,088  ops/s
+PoolBenchmark.testPingPong32                          J9FjLifo  thrpt   10      224,616 ±    21,750  ops/s
+PoolBenchmark.testRecursiveFibo          b-only-scanner-clears  thrpt   10     2256,071 ±    14,177  ops/s
+PoolBenchmark.testRecursiveFibo                       J9FjLifo  thrpt   10     8022,697 ±    60,291  ops/s
+PoolBenchmark.testSimpleScheduling07     b-only-scanner-clears  thrpt   10    37358,691 ±  3761,189  ops/s
+PoolBenchmark.testSimpleScheduling07                  J9FjLifo  thrpt   10    21200,194 ±  1248,653  ops/s
+PoolBenchmark.testSimpleScheduling08     b-only-scanner-clears  thrpt   10    37118,550 ±  3546,159  ops/s
+PoolBenchmark.testSimpleScheduling08                  J9FjLifo  thrpt   10    21759,476 ±  1624,930  ops/s
+PoolBenchmark.testSimpleScheduling15     b-only-scanner-clears  thrpt   10    12167,580 ±  1324,866  ops/s
+PoolBenchmark.testSimpleScheduling15                  J9FjLifo  thrpt   10    23101,293 ±  1482,304  ops/s
+PoolBenchmark.testSimpleScheduling16     b-only-scanner-clears  thrpt   10    14809,602 ±  4073,814  ops/s
+PoolBenchmark.testSimpleScheduling16                  J9FjLifo  thrpt   10    22447,178 ±   690,748  ops/s
+PoolBenchmark.testStealExpensive         b-only-scanner-clears  thrpt   10      753,383 ±    39,036  ops/s
+PoolBenchmark.testStealExpensive                      J9FjLifo  thrpt   10      918,264 ±    14,105  ops/s
+PoolBenchmark.testStealVeryCheap         b-only-scanner-clears  thrpt   10     1080,009 ±   209,144  ops/s
+PoolBenchmark.testStealVeryCheap                      J9FjLifo  thrpt   10      817,838 ±    13,903  ops/s

@@ -1,5 +1,6 @@
 package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
 
+import com.ajjpj.afoundation.function.AFunction1NoThrow;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
 import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
@@ -36,7 +37,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
 
     static final long MASK_IDLE_THREAD_SCANNING = Long.MIN_VALUE; // top-most bit reserved to signify 'scanning'
 
-    private final SharedQueue[] sharedQueues;
+    private final ASharedQueue[] sharedQueues;
     final LocalQueue[] localQueues;
 
     private final Map<Integer, Integer> producerToQueueAffinity = new ConcurrentHashMap<> ();
@@ -48,14 +49,10 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
 
     volatile boolean shutdown;
 
-    public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize) {
-        this (numThreads, localQueueSize, globalQueueSize, Runtime.getRuntime ().availableProcessors ());
-    }
-
-    public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize, int numSharedQueues) {
-        sharedQueues = new SharedQueue[numSharedQueues];
+    public AThreadPoolImpl (int numThreads, int localQueueSize, int numSharedQueues, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
+        sharedQueues = new ASharedQueue[numSharedQueues];
         for (int i=0; i<numSharedQueues; i++) {
-            sharedQueues[i] = new SharedQueue (this, globalQueueSize);
+            sharedQueues[i] = sharedQueueFactory.apply (this);
         }
 
         final Set<Integer> sharedQueuePrimes = primeFactors (numSharedQueues);
@@ -172,7 +169,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
 
         shutdown = true;
 
-        for (SharedQueue globalQueue: sharedQueues) {
+        for (ASharedQueue globalQueue: sharedQueues) {
             //noinspection StatementWithEmptyBody
             while (globalQueue.popFifo () != null) {
                 // do nothing, just drain the queue

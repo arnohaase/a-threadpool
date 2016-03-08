@@ -1,6 +1,7 @@
 package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
 
 import com.ajjpj.afoundation.util.AUnchecker;
+import com.ajjpj.concurrent.pool.api.exc.RejectedExecutionExceptionWithoutStacktrace;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author arno
  */
-class SharedQueue {
+class SharedQueueNonblockPushBlockPopImpl implements ASharedQueue {
     /**
      * an array holding all currently submitted tasks.
      */
@@ -34,7 +35,7 @@ class SharedQueue {
     @SuppressWarnings ("UnusedDeclaration")
     private int lock = 0;
 
-    SharedQueue (AThreadPoolImpl pool, int size) {
+    SharedQueueNonblockPushBlockPopImpl (AThreadPoolImpl pool, int size) {
         this.pool = pool;
 
         if (1 != Integer.bitCount (size)) throw new IllegalArgumentException ("size must be a power of 2");
@@ -50,7 +51,7 @@ class SharedQueue {
      * @return an approximation of the queue's current size. The value may be stale and is not synchronized in any way, and it is intended for debugging and statistics
      *  purposes only.
      */
-    int approximateSize () {
+    @Override public int approximateSize () {
         return (int) (
                 UNSAFE.getLongVolatile (this, OFFS_TOP) -
                 UNSAFE.getLongVolatile (this, OFFS_BASE)
@@ -60,7 +61,7 @@ class SharedQueue {
     /**
      * Add a new task to the top of the shared queue, incrementing 'top'.
      */
-    void push (Runnable task) {
+    @Override public void push (Runnable task) {
         lock ();
 
         final long _base;
@@ -70,7 +71,7 @@ class SharedQueue {
             _top = UNSAFE.getLongVolatile (this, OFFS_TOP);
 
             if (_top == _base + mask) {
-                throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
+                throw new RejectedExecutionExceptionWithoutStacktrace ("Shared queue overflow");
             }
 
             // We hold a lock here, so there can be no concurrent modifications of 'top', and there is no need for CAS. We must however ensure that
@@ -112,39 +113,29 @@ class SharedQueue {
 //        }
 //    }
 
-    final Map<Long, String> baseValues = new ConcurrentHashMap<> ();
-    final Map<Long, Long> offsets = new ConcurrentHashMap<> ();
-
     /**
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
      */
-     Runnable popFifo () {
-        while (true) {
-            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
-            final long _top = UNSAFE.getLongVolatile (this, OFFS_TOP);
+    @Override public synchronized Runnable popFifo () {
+        final long _base = base;
+        final long _top = top;
 
-            if (_base == _top) {
-                // Terminate the loop: the queue is empty.
-                //TODO verify that Hotspot optimizes this kind of return-from-the-middle well
-                return null;
-            }
-
-            final Runnable result = tasks[asArrayIndex (_base)];
-
-            // result == null means that another thread concurrently fetched the task from under our nose.
-            // checking _base against a re-read 'base' with volatile semantics avoids wrap-around race - 'base' could have incremented by a multiple of the queue's size between
-            //   our first reading it and fetching the task at that offset, which would cause the increment inside the following if block to significantly decrement it and
-            //   wreak havoc.
-            // CAS ensures that only one thread gets the task, and allows GC when processing is finished
-            if (result != null && _base == UNSAFE.getLongVolatile(this, OFFS_BASE) && UNSAFE.compareAndSwapObject (tasks, taskOffset (_base), result, null)) {
-                UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1); //TODO is 'putOrdered' sufficient?
-                return result;
-            }
-
-//            if (_top > _base && UNSAFE.compareAndSwapLong (this, OFFS_BASE, _base, _base+1)) {
-//                return (Runnable) UNSAFE.getAndSetObject (tasks, taskOffset (_base), null);
-//            }
+        if (_base == _top) {
+            // Terminate the loop: the queue is empty.
+            //TODO verify that Hotspot optimizes this kind of return-from-the-middle well
+            return null;
         }
+
+        final int arrIdx = asArrayIndex (_base);
+        final Runnable result = tasks [arrIdx];
+        if (result == null) return null; //TODO is this necessary?
+
+        tasks[arrIdx] = null;
+
+        // volatile put for atomicity and to ensure ordering wrt. nulling the task
+        UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1);
+
+        return result;
     }
 
     private void lock() {
@@ -187,9 +178,9 @@ class SharedQueue {
             OFFS_TASKS = UNSAFE.arrayBaseOffset (Runnable[].class);
             SCALE_TASKS = UNSAFE.arrayIndexScale (Runnable[].class);
 
-            OFFS_LOCK = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("lock"));
-            OFFS_BASE = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("base"));
-            OFFS_TOP  = UNSAFE.objectFieldOffset (SharedQueue.class.getDeclaredField ("top"));
+            OFFS_LOCK = UNSAFE.objectFieldOffset (SharedQueueNonblockPushBlockPopImpl.class.getDeclaredField ("lock"));
+            OFFS_BASE = UNSAFE.objectFieldOffset (SharedQueueNonblockPushBlockPopImpl.class.getDeclaredField ("base"));
+            OFFS_TOP  = UNSAFE.objectFieldOffset (SharedQueueNonblockPushBlockPopImpl.class.getDeclaredField ("top"));
         }
         catch (Exception e) {
             AUnchecker.throwUnchecked (e);

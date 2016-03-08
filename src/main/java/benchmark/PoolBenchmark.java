@@ -1,5 +1,7 @@
 package benchmark;
 
+import com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.AThreadPoolBuilder;
+import com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.SharedQueueStrategy;
 import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
 import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
 import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
@@ -18,17 +20,21 @@ import java.util.concurrent.*;
 @Fork (1)
 @Threads (1)
 @Warmup (iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
-@Timeout (time=10, timeUnit=TimeUnit.SECONDS)
+//@Timeout (time=20, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
-    public static final int TIMEOUT_SECONDS = 40;
+    public static final int TIMEOUT_SECONDS = 20;
     public static final int POOL_SIZE = 8;
 
     APoolOld pool;
 
     @Param ({
-            "b-only-scanner-clears",
+            "a-sync-block",
+//            "a-block-nonblock",
+            "a-lock-block",
+//            "a-nonblock-nonblock",
+            "a-nonblocking",
 //            "b-steal-only-stable",
 //            "b-scan-till-quiet",
 //            "b-scanning-counter",
@@ -53,11 +59,15 @@ public class PoolBenchmark {
     @Setup
     public void setUp() {
         switch (strategy) {
-            case "b-scanning-flag":       pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_scanning_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
-            case "b-scanning-counter":    pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
-            case "b-scan-till-quiet":     pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
-            case "b-steal-only-stable":   pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._04_steal_only_stable.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
-            case "b-only-scanner-clears": pool = new AThreadPoolAdapter (new com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+//            case "b-scanning-flag":       pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._01_scanning_flag.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+//            case "b-scanning-counter":    pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._02_scanningcounter.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+//            case "b-scan-till-quiet":     pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._03_scan_till_quiet.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+//            case "b-steal-only-stable":   pool = new NewPoolAdapter_B (new com.ajjpj.concurrent.pool._04_steal_only_stable.AThreadPoolImpl(POOL_SIZE, 16384, 16384)); break;
+
+            case "a-sync-block":       pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.SyncPush).build ()); break;
+            case "a-lock-block":    pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.LockPush).build ()); break;
+            case "a-nonblocking":       pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.NonBlockingPush).build ()); break;
+
             case "no-conc":        pool = new NoConcPool (); break;
             case "naive":          pool = new NaivePool (POOL_SIZE); break;
             case "a-global-queue": pool = new APoolImpl (POOL_SIZE, ASchedulingStrategy.SingleQueue ()).start (); break;
@@ -122,7 +132,7 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void testSimpleScheduling01() throws InterruptedException {
+    public void ___testSimpleScheduling01() throws InterruptedException {
         doSimpleScheduling ();
     }
 
@@ -254,7 +264,7 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void ___testRecursiveFibo() throws ExecutionException, InterruptedException {
+    public void testRecursiveFibo() throws ExecutionException, InterruptedException {
         try {
             fibo (8);
         }
