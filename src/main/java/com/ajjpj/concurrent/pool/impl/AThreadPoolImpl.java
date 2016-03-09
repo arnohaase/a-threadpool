@@ -47,8 +47,10 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     private final AtomicLong nextSharedQueue = new AtomicLong (0);
 
     final AtomicBoolean shutdown = new AtomicBoolean (false);
+    final boolean checkShutdownOnSubmission;
 
-    public AThreadPoolImpl (int numThreads, int localQueueSize, int numSharedQueues, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
+    public AThreadPoolImpl (int numThreads, int localQueueSize, int numSharedQueues, boolean checkShutdownOnSubmission, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
+        this.checkShutdownOnSubmission = checkShutdownOnSubmission;
         sharedQueues = new ASharedQueue[numSharedQueues];
         for (int i=0; i<numSharedQueues; i++) {
             sharedQueues[i] = sharedQueueFactory.apply (this);
@@ -123,7 +125,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     }
 
     @Override public void submit (Runnable code) {
-        if (shutdown.get ()) { //TODO make this check optional --> trade-off between performance and bug detection
+        if (checkShutdownOnSubmission && shutdown.get ()) { //TODO verify if this check incurs significant cost
             throw new IllegalStateException ("pool is already shut down");
         }
 
@@ -198,9 +200,9 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
         final List<AFuture<Void>> result = new ArrayList<> ();
 
         for (LocalQueue localQueue : localQueues) {
-            final AFutureImpl<Void> f = new AFutureImpl<> (AThreadPool.SYNC_THREADPOOL);
+            final ASettableFuture<Void> f = ASettableFuture.create ();
             sharedQueues[0].push (() -> {
-                throw new PoolShutdown ();
+                throw new PoolShutdown (f);
             });
             UNSAFE.unpark (localQueue.thread);
             result.add (f);

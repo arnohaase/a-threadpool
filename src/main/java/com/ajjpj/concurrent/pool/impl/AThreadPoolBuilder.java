@@ -12,6 +12,8 @@ import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
 //TODO error handling strategy
 
 public class AThreadPoolBuilder {
+    private boolean checkShutdownOnSubmission = true;
+
     private int numThreads = Runtime.getRuntime ().availableProcessors ();
     private int numSharedQueues = Runtime.getRuntime ().availableProcessors ();
     private int localQueueSize = 16384; //TODO smaller default; handle overflow so that it pushes to shared queue instead
@@ -27,6 +29,11 @@ public class AThreadPoolBuilder {
         }
         throw new IllegalStateException ("unknown shared queue strategy " + sharedQueueStrategy);
     };
+
+    public AThreadPoolBuilder withCheckShutdownOnSubmission (boolean checkShutdownOnSubmission) {
+        this.checkShutdownOnSubmission = checkShutdownOnSubmission;
+        return this;
+    }
 
     public AThreadPoolBuilder withNumThreads (int numThreads) {
         this.numThreads = numThreads;
@@ -70,13 +77,14 @@ public class AThreadPoolBuilder {
 
     public AThreadPoolWithAdmin build() {
         //TODO log configuration
-        return new AThreadPoolImpl (numThreads, localQueueSize, numSharedQueues, sharedQueueFactory);
+        return new AThreadPoolImpl (numThreads, localQueueSize, numSharedQueues, checkShutdownOnSubmission, sharedQueueFactory);
     }
 
     @Override
     public String toString () {
         return "AThreadPoolBuilder{" +
-                "numThreads=" + numThreads +
+                "checkShutdownOnSubmission=" + checkShutdownOnSubmission +
+                ", numThreads=" + numThreads +
                 ", numSharedQueues=" + numSharedQueues +
                 ", localQueueSize=" + localQueueSize +
                 ", sharedQueueSize=" + sharedQueueSize +

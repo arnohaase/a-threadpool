@@ -1,7 +1,6 @@
 package com.ajjpj.concurrent.pool.impl;
 
-import com.ajjpj.concurrent.pool.api.AFutureImpl;
-import com.ajjpj.concurrent.pool.api.AThreadPool;
+import com.ajjpj.concurrent.pool.api.ASettableFuture;
 
 
 /**
@@ -11,7 +10,11 @@ import com.ajjpj.concurrent.pool.api.AThreadPool;
  * @author arno
  */
 class PoolShutdown extends Error {
-    final AFutureImpl<Void> shutdownFuture = new AFutureImpl<> (AThreadPool.SYNC_THREADPOOL); //TODO ASettableFuture
+    final ASettableFuture<Void> shutdownFuture;
+
+    PoolShutdown (ASettableFuture<Void> shutdownFuture) {
+        this.shutdownFuture = shutdownFuture;
+    }
 
     @Override public Throwable fillInStackTrace () {
         return this;

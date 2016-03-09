@@ -39,7 +39,7 @@ class WorkerThread extends Thread {
     private int currentSharedQueue = 0;
 
     WorkerThread (LocalQueue localQueue, ASharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
-        super("TODO-Thread-" + threadIdx); //TODO thread names
+        super("TODO-Thread-" + threadIdx); //TODO thread names, daemon threads
         //TODO error handling
         //TODO on finished listener (?)
 

@@ -15,9 +15,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class AFutureImpl<T> implements AFuture<T> {
+class AFutureImpl<T> implements ASettableFuture<T> {
     private final AThreadPool internalThreadPool;
-    private final AtomicReference<State<T>> state = new AtomicReference<> ();
+    private final AtomicReference<State<T>> state = new AtomicReference<> (new State<> (null, AList.nil ()));
 
     public AFutureImpl (AThreadPool internalThreadPool) {
         this.internalThreadPool = internalThreadPool;
@@ -55,9 +55,7 @@ public class AFutureImpl<T> implements AFuture<T> {
         return null;
     }
 
-    //TODO move this to ASettableFuture?!
-
-    public void complete (ATry<T> o) {
+    @Override public void complete (ATry<T> o) {
         if (!tryComplete (o)) throw new IllegalStateException ("trying to complete an already completed future");
     }
 
@@ -72,15 +70,7 @@ public class AFutureImpl<T> implements AFuture<T> {
         });
     }
 
-    public void completeAsSuccess (T o) {
-        complete (ATry.success (o));
-    }
-
-    public void completeAsFailure (Throwable th) {
-        complete (ATry.failure (th));
-    }
-
-    public boolean tryComplete (ATry<T> o) {
+    @Override public boolean tryComplete (ATry<T> o) {
         State<T> before, after;
 
         do {

@@ -20,17 +20,18 @@ import java.util.concurrent.*;
 @Fork (1)
 @Threads (1)
 @Warmup (iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
 //@Timeout (time=20, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
-    public static final int TIMEOUT_SECONDS = 20;
+    public static final int TIMEOUT_SECONDS = 30;
     public static final int POOL_SIZE = 8;
 
     ABenchmarkPool pool;
 
     @Param ({
             "a-sync-block",
+            "a-sync-nocheck",
             "a-lock-block",
             "a-nonblocking",
 
@@ -54,9 +55,10 @@ public class PoolBenchmark {
     @Setup
     public void setUp() {
         switch (strategy) {
-            case "a-sync-block":       pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.SyncPush).build ()); break;
-            case "a-lock-block":    pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.LockPush).build ()); break;
-            case "a-nonblocking":       pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.NonBlockingPush).build ()); break;
+            case "a-sync-block":   pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.SyncPush).withCheckShutdownOnSubmission (true). build ()); break;
+            case "a-sync-nocheck": pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.SyncPush).withCheckShutdownOnSubmission (false).build ()); break;
+            case "a-lock-block":   pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.LockPush).build ()); break;
+            case "a-nonblocking":  pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.NonBlockingPush).build ()); break;
 
             //TODO no work stealing
             case "no-conc":        pool = new AThreadPoolAdapter (AThreadPool.SYNC_THREADPOOL); break;
