@@ -1,5 +1,8 @@
 package com.ajjpj.concurrent.pool.api;
 
+import java.util.Collections;
+import java.util.List;
+
 
 public interface AThreadPool {
     void submit (Runnable code);
@@ -15,12 +18,14 @@ public interface AThreadPool {
             return AThreadPoolStatistics.NONE;
         }
 
-        @Override public boolean isShutdown () {
-            return isShutdown;
+        @Override public State getState () {
+            return isShutdown ? State.Down : State.Rrunning;
         }
 
-        @Override public void shutdown () {
+        @Override public List<AFuture<Void>> shutdown (ShutdownMode shutdownMode) {
             isShutdown = true;
+            return Collections.emptyList ();
         }
+
     };
 }

@@ -7,6 +7,8 @@ import java.text.NumberFormat;
  * @author arno
  */
 public class AWorkerThreadStatistics {
+    public final Thread.State state;
+
     public final long numTasksExecuted;
     public final long numSharedTasksExecuted;
     public final long numSteals;
@@ -20,8 +22,9 @@ public class AWorkerThreadStatistics {
 
     public final int approximateLocalQueueSize;
 
-    public AWorkerThreadStatistics (long numTasksExecuted, long numSharedTasksExecuted, long numSteals, long numExceptions, long numParks, long numFalseAlarmUnparks, long numSharedQueueSwitches, long numLocalSubmits,
-                                    int approximateLocalQueueSize) {
+    public AWorkerThreadStatistics (Thread.State state, long numTasksExecuted, long numSharedTasksExecuted, long numSteals, long numExceptions, long numParks, long numFalseAlarmUnparks,
+                                    long numSharedQueueSwitches, long numLocalSubmits, int approximateLocalQueueSize) {
+        this.state = state;
         this.numTasksExecuted = numTasksExecuted;
         this.numSharedTasksExecuted = numSharedTasksExecuted;
         this.numSteals = numSteals;
@@ -33,17 +36,19 @@ public class AWorkerThreadStatistics {
         this.approximateLocalQueueSize = approximateLocalQueueSize;
     }
 
-    @Override public String toString () {
-        return "WorkerThreadStatistics{" +
-                "numTasksExecuted=" + NumberFormat.getNumberInstance ().format (numTasksExecuted) +
-                ", numSharedTasksExecuted=" + NumberFormat.getNumberInstance ().format (numSharedTasksExecuted) +
-                ", numSteals=" + NumberFormat.getNumberInstance ().format (numSteals) +
-                ", numExceptions=" + NumberFormat.getNumberInstance ().format (numExceptions) +
-                ", numParks=" + NumberFormat.getNumberInstance ().format (numParks) +
-                ", numFalseAlarmUnparks=" + NumberFormat.getNumberInstance ().format (numFalseAlarmUnparks) +
-                ", numSharedQueueSwitches=" + NumberFormat.getNumberInstance ().format (numSharedQueueSwitches) +
-                ", numLocalSubmits=" + NumberFormat.getNumberInstance ().format (numLocalSubmits) +
-                ", approximateLocalQueueSize=" + NumberFormat.getNumberInstance ().format (approximateLocalQueueSize) +
+    @Override
+    public String toString () {
+        return "AWorkerThreadStatistics{" +
+                "state=" + state +
+                ", numTasksExecuted=" + numTasksExecuted +
+                ", numSharedTasksExecuted=" + numSharedTasksExecuted +
+                ", numSteals=" + numSteals +
+                ", numExceptions=" + numExceptions +
+                ", numParks=" + numParks +
+                ", numFalseAlarmUnparks=" + numFalseAlarmUnparks +
+                ", numSharedQueueSwitches=" + numSharedQueueSwitches +
+                ", numLocalSubmits=" + numLocalSubmits +
+                ", approximateLocalQueueSize=" + approximateLocalQueueSize +
                 '}';
     }
 }

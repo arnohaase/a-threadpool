@@ -2,17 +2,13 @@ package com.ajjpj.concurrent.pool.impl;
 
 import com.ajjpj.afoundation.function.AFunction1NoThrow;
 import com.ajjpj.afoundation.util.AUnchecker;
-import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
-import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
-import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
+import com.ajjpj.concurrent.pool.api.*;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -20,7 +16,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author arno
  */
 public class AThreadPoolImpl implements AThreadPoolWithAdmin {
-    public static final boolean SHOULD_GATHER_STATISTICS = true; // compile-time switch to enable / disable statistics gathering
+    /**
+     * This is a compile-time switch to completely remove all statistics gathering for the really paranoid
+     */
+    public static final boolean SHOULD_GATHER_STATISTICS = true;
 
 
     /**
@@ -47,7 +46,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
      */
     private final AtomicLong nextSharedQueue = new AtomicLong (0);
 
-    volatile boolean shutdown;
+    final AtomicBoolean shutdown = new AtomicBoolean (false);
 
     public AThreadPoolImpl (int numThreads, int localQueueSize, int numSharedQueues, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
         sharedQueues = new ASharedQueue[numSharedQueues];
@@ -124,7 +123,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     }
 
     @Override public void submit (Runnable code) {
-        if (shutdown) {
+        if (shutdown.get ()) { //TODO make this check optional --> trade-off between performance and bug detection
             throw new IllegalStateException ("pool is already shut down");
         }
 
@@ -155,51 +154,59 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
         return result;
     }
 
-    //TODO replace with getState(): running, shutting down, down
-    @Override public boolean isShutdown () {
-        return shutdown;
+    @Override public State getState () {
+        if (! shutdown.get ()) return State.Rrunning;
+
+        for (LocalQueue q: this.localQueues) {
+            if (q.thread.isAlive ()) return State.ShuttingDown;
+        }
+
+        return State.Down;
     }
 
-    @Override public void shutdown() {
-        if (shutdown) {
-            return;
+    /**
+     * This method shuts down the thread pool. The method finishes immediately, returning a separate AFuture for every worker thread. In order to combine them into a single
+     *  AFuture for all worker threads, use {@code AFuture.lift()} on the result.
+     */
+    @Override public List<AFuture<Void>> shutdown (ShutdownMode shutdownMode) {
+        if (! shutdown.compareAndSet (false, true)) {
+            throw new IllegalStateException ("pool can be shut down only once");
         }
 
-        //TODO flag for 'interrupt currently running tasks'
-        //TODO return List<AFuture> to track shutdown progress
+        switch (shutdownMode) {
+            case SkipUnstarted:
+                for (ASharedQueue globalQueue: sharedQueues) {
+                    //noinspection StatementWithEmptyBody
+                    while (globalQueue.popFifo () != null) {
+                        // do nothing, just drain the queue
+                    }
+                }
 
-        //TODO flag for 'finish submitted work'
-        //TODO clean completion of submitted and cancelled tasks
-
-        shutdown = true;
-
-        for (ASharedQueue globalQueue: sharedQueues) {
-            //noinspection StatementWithEmptyBody
-            while (globalQueue.popFifo () != null) {
-                // do nothing, just drain the queue
-            }
+                for (LocalQueue queue: localQueues) {
+                    //noinspection StatementWithEmptyBody
+                    while (queue.popFifo () != null) {
+                        // do nothing, just drain the queue
+                    }
+                }
+                // fall-through is intentional
+            case InterruptRunning:
+                for (LocalQueue queue: localQueues) {
+                    queue.thread.interrupt ();
+                }
         }
 
-        for (LocalQueue queue: localQueues) {
-            //noinspection StatementWithEmptyBody
-            while (queue.popFifo () != null) {
-                // do nothing, just drain the queue
-            }
-        }
+        final List<AFuture<Void>> result = new ArrayList<> ();
 
         for (LocalQueue localQueue : localQueues) {
+            final AFutureImpl<Void> f = new AFutureImpl<> (AThreadPool.SYNC_THREADPOOL);
             sharedQueues[0].push (() -> {
                 throw new PoolShutdown ();
             });
             UNSAFE.unpark (localQueue.thread);
+            result.add (f);
         }
-    }
 
-    public void awaitTermination() throws InterruptedException { //TODO remove this
-        for (LocalQueue queue: localQueues) {
-            //noinspection ConstantConditions
-            queue.thread.join ();
-        }
+        return result;
     }
 
 

@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._02_scanningcounter;
+package com.ajjpj.concurrent.pool.impl;
 
 import org.junit.Test;
 

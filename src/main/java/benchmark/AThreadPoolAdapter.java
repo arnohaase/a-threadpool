@@ -39,6 +39,7 @@ public class AThreadPoolAdapter implements ABenchmarkPool {
     }
 
     @Override public void shutdown () throws InterruptedException {
-        inner.shutdown ();
+        //TODO blocking wait
+        inner.shutdown (AThreadPoolWithAdmin.ShutdownMode.ExecuteSubmitted);
     }
 }

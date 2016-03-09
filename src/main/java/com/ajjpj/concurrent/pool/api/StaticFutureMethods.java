@@ -9,6 +9,7 @@ import com.ajjpj.afoundation.function.APredicate;
 import com.ajjpj.concurrent.pool.api.other.ATry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,6 +53,10 @@ class StaticFutureMethods {
                     result.tryComplete ((ATry<List<T>>) tr);
                 }
             });
+        }
+
+        if (list.isEmpty ()) {
+            result.completeAsSuccess (Collections.emptyList ());
         }
 
         return result;

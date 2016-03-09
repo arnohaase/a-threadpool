@@ -14,7 +14,12 @@ class LocalQueue {
      * an array holding all currently submitted tasks.
      */
     private final Runnable[] tasks;
-    final WorkerThread thread = null;
+
+    /**
+     * The thread is really final and not-null. Because of circular references during initialization, it is technically not final and initialized not in the constructor but in
+     *  a separate call to method {@code init()}.
+     */
+    WorkerThread thread = null;
 
     //TODO here and elsewhere: memory layout
     /**
@@ -39,11 +44,7 @@ class LocalQueue {
     }
 
     void init(WorkerThread thread) {
-        AUnchecker.executeUnchecked (() -> {
-            final Field field = LocalQueue.class.getDeclaredField ("thread");
-            field.setAccessible (true);
-            field.set (this, thread);
-        });
+        this.thread = thread;
     }
 
     /**
