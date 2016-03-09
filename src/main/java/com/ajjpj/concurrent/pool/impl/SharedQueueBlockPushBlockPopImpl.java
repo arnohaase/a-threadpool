@@ -71,10 +71,8 @@ class SharedQueueBlockPushBlockPopImpl implements ASharedQueue {
             UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1);
         }
 
-        // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
-        //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
-        //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
-        if (_top - _base <= 1) { //TODO take a closer look at this
+        // Notify pool only for the first added item per queue.
+        if (_top - _base <= 1) {
             pool.onAvailableTask ();
         }
     }

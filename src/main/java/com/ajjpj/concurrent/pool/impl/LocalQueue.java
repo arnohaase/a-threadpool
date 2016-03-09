@@ -1,6 +1,7 @@
 package com.ajjpj.concurrent.pool.impl;
 
 import com.ajjpj.afoundation.util.AUnchecker;
+import com.ajjpj.concurrent.pool.api.exc.RejectedExecutionExceptionWithoutStacktrace;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -29,7 +30,7 @@ class LocalQueue {
 
     final AThreadPoolImpl pool;
 
-    @SuppressWarnings ("FieldCanBeLocal")
+    @SuppressWarnings ("unused")
     private long base = 0;
     private long top = 0;
 
@@ -64,22 +65,16 @@ class LocalQueue {
         final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE); // read base first (and only once)
         final long _top = top;
         if (_top == _base + mask) {
-            System.out.println("************************************************************** overflow");
-            //TODO handle overflow
-            throw new ArrayIndexOutOfBoundsException ("local localQueue overflow");
+            throw new RejectedExecutionExceptionWithoutStacktrace ("local queue overflow");
         }
 
-        //TODO must these be putOrdered?
         tasks[asArrayindex (_top)] = task;
         // 'top' is only ever modified by the owning thread, so we need no CAS here. Storing 'top' with volatile semantics publishes the task and ensures that changes to the task
         //  can never overtake changes to 'top' wrt visibility.
         UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1);
 
-        // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
-        //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
-        //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
-
-        if (_top - _base <= 1) { //TODO take a closer look at this
+        // Notify pool only for the first added item per queue.
+        if (_top - _base <= 1) {
             pool.onAvailableTask();
         }
     }

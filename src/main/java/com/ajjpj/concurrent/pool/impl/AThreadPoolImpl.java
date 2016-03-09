@@ -1,6 +1,8 @@
 package com.ajjpj.concurrent.pool.impl;
 
+import com.ajjpj.afoundation.function.AFunction0NoThrow;
 import com.ajjpj.afoundation.function.AFunction1NoThrow;
+import com.ajjpj.afoundation.function.AStatement1NoThrow;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.api.*;
 import sun.misc.Unsafe;
@@ -8,6 +10,7 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -31,7 +34,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
      * TODO is this really faster, and if so, is the difference significant?
      * TODO this currently limits the number of threads to 64 --> generalize
      */
-    @SuppressWarnings ("FieldCanBeLocal")
+    @SuppressWarnings({"unused"})
     private volatile long idleThreads = 0;
 
     static final long MASK_IDLE_THREAD_SCANNING = Long.MIN_VALUE; // top-most bit reserved to signify 'scanning'
@@ -49,7 +52,8 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     final AtomicBoolean shutdown = new AtomicBoolean (false);
     final boolean checkShutdownOnSubmission;
 
-    public AThreadPoolImpl (int numThreads, int localQueueSize, int numSharedQueues, boolean checkShutdownOnSubmission, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
+    public AThreadPoolImpl (boolean isDaemon, AFunction0NoThrow<String> threadNameFactory, AStatement1NoThrow<Throwable> exceptionHandler,
+                            int numThreads, int localQueueSize, int numSharedQueues, boolean checkShutdownOnSubmission, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
         this.checkShutdownOnSubmission = checkShutdownOnSubmission;
         sharedQueues = new ASharedQueue[numSharedQueues];
         for (int i=0; i<numSharedQueues; i++) {
@@ -61,7 +65,9 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
         localQueues = new LocalQueue[numThreads];
         for (int i=0; i<numThreads; i++) {
             localQueues[i] = new LocalQueue (this, localQueueSize);
-            final WorkerThread thread = new WorkerThread (localQueues[i], sharedQueues, this, i, prime (i, sharedQueuePrimes));
+            final WorkerThread thread = new WorkerThread (localQueues[i], sharedQueues, this, i, prime (i, sharedQueuePrimes), exceptionHandler);
+            thread.setDaemon (isDaemon);
+            thread.setName (threadNameFactory.apply ());
             localQueues[i].init (thread);
         }
 
@@ -114,7 +120,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
                 numPrevPrimes += 1;
             }
         }
-        throw new IllegalStateException (); //TODO
+        return 1; // this should never happen, but '1' is a safe fallback
     }
 
     static boolean isPrime (int n) {
@@ -132,7 +138,12 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
         WorkerThread wt;
         if (Thread.currentThread () instanceof WorkerThread && (wt = (WorkerThread) Thread.currentThread ()).pool == this) {
             if (SHOULD_GATHER_STATISTICS) wt.stat_numLocalSubmits += 1;
-            wt.localQueue.push (code);
+            try {
+                wt.localQueue.push (code);
+            }
+            catch (RejectedExecutionException e) {
+                sharedQueues[getSharedQueueForCurrentThread ()].push (code);
+            }
         }
         else {
             sharedQueues[getSharedQueueForCurrentThread ()].push (code);
@@ -278,7 +289,6 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
 
     boolean markWorkerAsBusyAndScanning (WorkerThread worker) {
         final long mask = worker.idleThreadMask;
-//        Log.log (" marking busy and scanning: " + (int)(Math.log (mask) / Math.log (2)));
         long prev, after;
         do {
             prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS); //TODO is a regular read more efficient here?

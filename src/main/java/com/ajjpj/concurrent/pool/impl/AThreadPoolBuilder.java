@@ -1,15 +1,15 @@
 package com.ajjpj.concurrent.pool.impl;
 
+import com.ajjpj.afoundation.function.AFunction0NoThrow;
 import com.ajjpj.afoundation.function.AFunction1NoThrow;
 import com.ajjpj.afoundation.function.AStatement1;
+import com.ajjpj.afoundation.function.AStatement1NoThrow;
 import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
 
 
 //TODO no-steal implementation
 //TODO separate implementation optimized for blocking
 //TODO configurable starvation avoidance: steal, shared
-//TODO naming strategy
-//TODO error handling strategy
 
 public class AThreadPoolBuilder {
     private boolean checkShutdownOnSubmission = true;
@@ -20,6 +20,10 @@ public class AThreadPoolBuilder {
     private int sharedQueueSize = 16384;
 
     private SharedQueueStrategy sharedQueueStrategy = SharedQueueStrategy.SyncPush;
+
+    private boolean isDaemon = false;
+    private AFunction0NoThrow<String> threadNameFactory = new DefaultThreadNameFactory ("AThreadPool");
+    private AStatement1NoThrow<Throwable> exceptionHandler = Throwable::printStackTrace;
 
     private AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory = pool -> {
         switch (sharedQueueStrategy) {
@@ -69,6 +73,26 @@ public class AThreadPoolBuilder {
         return this;
     }
 
+    public AThreadPoolBuilder withDaemonThreads (boolean daemonThreads) {
+        this.isDaemon = daemonThreads;
+        return this;
+    }
+
+    public AThreadPoolBuilder withThreadNamePrefix (String threadNamePrefix) {
+        this.threadNameFactory = new DefaultThreadNameFactory (threadNamePrefix);
+        return this;
+    }
+
+    public AThreadPoolBuilder withThreadNameFactory (AFunction0NoThrow<String> threadNameFactory) {
+        this.threadNameFactory = threadNameFactory;
+        return this;
+    }
+
+    public AThreadPoolBuilder withExceptionHandler (AStatement1NoThrow<Throwable> exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+        return this;
+    }
+
     public <T extends Throwable> AThreadPoolBuilder log (AStatement1<String, T> logOperation) throws T {
         final String stringRepresentation = toString ();
         logOperation.apply (stringRepresentation);
@@ -77,7 +101,7 @@ public class AThreadPoolBuilder {
 
     public AThreadPoolWithAdmin build() {
         //TODO log configuration
-        return new AThreadPoolImpl (numThreads, localQueueSize, numSharedQueues, checkShutdownOnSubmission, sharedQueueFactory);
+        return new AThreadPoolImpl (isDaemon, threadNameFactory, exceptionHandler, numThreads, localQueueSize, numSharedQueues, checkShutdownOnSubmission, sharedQueueFactory);
     }
 
     @Override
@@ -89,6 +113,7 @@ public class AThreadPoolBuilder {
                 ", localQueueSize=" + localQueueSize +
                 ", sharedQueueSize=" + sharedQueueSize +
                 ", sharedQueueStrategy=" + sharedQueueStrategy +
+                ", isDaemon=" + isDaemon +
                 ", sharedQueueFactory=" + sharedQueueFactory +
                 '}';
     }

@@ -77,41 +77,17 @@ class SharedQueueNonblockPushBlockPopImpl implements ASharedQueue {
             // We hold a lock here, so there can be no concurrent modifications of 'top', and there is no need for CAS. We must however ensure that
             //  no concurrently reading thread sees the incremented 'top' without the task being present in the array, therefore the 'ordered' put.
             UNSAFE.putObjectVolatile (tasks, taskOffset (_top), task);
-            UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1); //TODO volatile should not be necessary 'top' is published by 'unlock()' below.
+            UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1);
         }
         finally {
             unlock ();
         }
 
-        // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
-        //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
-        //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
-        if (_top - _base <= 1) { //TODO take a closer look at this
+        // Notify pool only for the first added item per queue.
+        if (_top - _base <= 1) {
             pool.onAvailableTask ();
         }
     }
-
-    //TODO this is a (more or less) lock free implementation --> benchmark this with several publishers
-//    void push2 (AThreadPoolTask task) {
-//        while (true) {
-//            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
-//            final long _top = top;
-//
-//            if (_top == _base + mask) {
-//                throw new ArrayIndexOutOfBoundsException ("Queue overflow"); //TODO create back pressure instead; --> how to handle with 'overflow' submissions from worker threads?!
-//            }
-//
-//            if (UNSAFE.compareAndSwapObject (tasks, taskOffset (_top), null, task)) {
-//                // if the publishing thread is interrupted here, other publishers will effectively do a spin wait
-//                UNSAFE.putOrderedLong (this, OFFS_TOP, _top+1); //TODO if we use CAS here, we can let other threads increment 'top' until they find a free slot
-//
-//                if (_top - _base <= 1) { //TODO take a closer look at this
-//                    pool.onAvailableTask ();
-//                }
-//                break;
-//            }
-//        }
-//    }
 
     /**
      * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.

@@ -1,5 +1,6 @@
 package com.ajjpj.concurrent.pool.impl;
 
+import com.ajjpj.afoundation.function.AStatement1NoThrow;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
 import sun.misc.Unsafe;
@@ -17,6 +18,7 @@ class WorkerThread extends Thread {
     final AThreadPoolImpl pool;
     final long idleThreadMask;
     final int queueTraversalIncrement;
+    final AStatement1NoThrow<Throwable> exceptionHandler;
 
     //---------------------------------------------------
     //-- statistics data, written only from this thread
@@ -38,10 +40,8 @@ class WorkerThread extends Thread {
      */
     private int currentSharedQueue = 0;
 
-    WorkerThread (LocalQueue localQueue, ASharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
-        super("TODO-Thread-" + threadIdx); //TODO thread names, daemon threads
-        //TODO error handling
-        //TODO on finished listener (?)
+    WorkerThread (LocalQueue localQueue, ASharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement, AStatement1NoThrow<Throwable> exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
 
         this.localQueue = localQueue;
         this.sharedQueues = sharedQueues;
@@ -66,7 +66,7 @@ class WorkerThread extends Thread {
     @Override public void run () {
         long tasksAtPark = -1;
 
-        topLevelLoop:
+//        topLevelLoop:
         while (true) {
             try {
                 Runnable task;
@@ -77,8 +77,8 @@ class WorkerThread extends Thread {
                     task.run ();
                 }
                 else {
-                    // spin a little before parking
-//                    for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
+                    // spin a little before parking - this currently does not provide measurable speedup
+//                    for (int i=0; i<0; i++) {
 //                        if ((task = tryGetForeignWork ()) != null) {
 //                            if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
 //                            task.run ();
@@ -132,10 +132,16 @@ class WorkerThread extends Thread {
                 e.shutdownFuture.completeAsSuccess (null);
                 return;
             }
-            catch (Throwable e) {
+            catch (Throwable th) {
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numExceptions += 1;
-                //TODO error handling
-                e.printStackTrace ();
+                //TODO special handling for 'important' errors and exceptions?
+                try {
+                    exceptionHandler.apply (th);
+                }
+                catch (Throwable th2) {
+                    System.err.println ("exception handler terminated with a throwable");
+                    th2.printStackTrace ();
+                }
             }
         }
     }
@@ -171,7 +177,6 @@ class WorkerThread extends Thread {
     private Runnable tryGetSharedWork() {
         Runnable task;
 
-        //TODO optimization: different starting points per thread
         //TODO go forward once in a while to avoid starvation
 
         final int prevQueue = currentSharedQueue;
@@ -193,7 +198,6 @@ class WorkerThread extends Thread {
     private Runnable tryStealWork () {
         Runnable task;
         for (LocalQueue otherQueue: allLocalQueues) {
-            //TODO optimization: different starting points per thread
             if (otherQueue == localQueue) {
                 continue;
             }

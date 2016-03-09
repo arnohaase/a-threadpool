@@ -69,7 +69,7 @@ class SharedQueueNonBlockingImpl implements ASharedQueue {
                     continue;
                 }
 
-                if (_top - _base <= 1) { //TODO take a closer look at this
+                if (_top - _base <= 1) {
                     pool.onAvailableTask ();
                 }
                 break;
