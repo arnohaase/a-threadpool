@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
+package com.ajjpj.concurrent.pool.impl;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.api.exc.RejectedExecutionExceptionWithoutStacktrace;
@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 /**
  * @author arno
  */
-class SharedQueueNonBlockingImpl implements ASharedQueue {
+class SharedQueueBlockPushBlockPopImpl implements ASharedQueue {
     /**
      * an array holding all currently submitted tasks.
      */
@@ -27,7 +27,7 @@ class SharedQueueNonBlockingImpl implements ASharedQueue {
     long base = 0;
     long top = 0;
 
-    SharedQueueNonBlockingImpl (AThreadPoolImpl pool, int size) {
+    SharedQueueBlockPushBlockPopImpl (AThreadPoolImpl pool, int size) {
         this.pool = pool;
 
         if (1 != Integer.bitCount (size)) throw new IllegalArgumentException ("size must be a power of 2");
@@ -48,35 +48,40 @@ class SharedQueueNonBlockingImpl implements ASharedQueue {
         );
     }
 
+    private final Object PUSH_LOCK = new Object ();
+
     /**
      * Add a new task to the top of the shared queue, incrementing 'top'.
      */
     @Override public void push (Runnable task) {
-        while (true) {
-            final long _base = UNSAFE.getLongVolatile (this, OFFS_BASE);
-            final long _top = top;
+        final long _base;
+        final long _top;
+
+        synchronized (PUSH_LOCK) {
+            _base = base;
+            _top = top;
 
             if (_top == _base + mask) {
-                throw new RejectedExecutionExceptionWithoutStacktrace ("Queue overflow");
+                throw new RejectedExecutionExceptionWithoutStacktrace ("Shared queue overflow");
             }
 
-            final long taskOffset = taskOffset (_top);
-            if (UNSAFE.compareAndSwapObject (tasks, taskOffset, null, task)) {
-                // if the publishing thread is interrupted here, other publishers will effectively do a spin wait
-                if (!UNSAFE.compareAndSwapLong (this, OFFS_TOP, _top, _top+1)) {
-                    // there was a buffer wrap-around in the meantime --> undo the CAS 'put' operation and try again
-                    UNSAFE.putObjectVolatile (tasks, taskOffset, null);
-                    continue;
-                }
+            tasks[asArrayIndex (_top)] = task;
 
-                if (_top - _base <= 1) { //TODO take a closer look at this
-                    pool.onAvailableTask ();
-                }
-                break;
-            }
+            // volatile put for atomicity and to ensure ordering wrt. storing the task
+            UNSAFE.putLongVolatile (this, OFFS_TOP, _top+1);
+        }
+
+        // Notify pool only for the first added item per queue. This unparks *all* idling threads, which then look for work in all queues. So if this queue already
+        //  contained work, either all workers are busy, or they are in the process of looking for work and will find this newly added item anyway without being notified
+        //  again. //TODO does this require newly woken-up threads to scan twice? Is there still a race here?
+        if (_top - _base <= 1) { //TODO take a closer look at this
+            pool.onAvailableTask ();
         }
     }
 
+    /**
+     * Fetch (and remove) a task from the bottom of the queue, i.e. FIFO semantics. This method can be called by any thread.
+     */
     @Override public synchronized Runnable popFifo () {
         final long _base = base;
         final long _top = top;
@@ -99,19 +104,12 @@ class SharedQueueNonBlockingImpl implements ASharedQueue {
         return result;
     }
 
-    private long taskOffset (long l) {
-        return OFFS_TASKS + SCALE_TASKS * (l & mask);
-    }
-
     private int asArrayIndex (long l) {
         return (int) (l & mask);
     }
 
     //------------- Unsafe stuff
     private static final Unsafe UNSAFE;
-
-    private static final long OFFS_TASKS;
-    private static final long SCALE_TASKS;
 
     private static final long OFFS_BASE;
     private static final long OFFS_TOP;
@@ -122,11 +120,8 @@ class SharedQueueNonBlockingImpl implements ASharedQueue {
             f.setAccessible (true);
             UNSAFE = (Unsafe) f.get (null);
 
-            OFFS_TASKS = UNSAFE.arrayBaseOffset (Runnable[].class);
-            SCALE_TASKS = UNSAFE.arrayIndexScale (Runnable[].class);
-
-            OFFS_BASE = UNSAFE.objectFieldOffset (SharedQueueNonBlockingImpl.class.getDeclaredField ("base"));
-            OFFS_TOP  = UNSAFE.objectFieldOffset (SharedQueueNonBlockingImpl.class.getDeclaredField ("top"));
+            OFFS_BASE = UNSAFE.objectFieldOffset (SharedQueueBlockPushBlockPopImpl.class.getDeclaredField ("base"));
+            OFFS_TOP  = UNSAFE.objectFieldOffset (SharedQueueBlockPushBlockPopImpl.class.getDeclaredField ("top"));
         }
         catch (Exception e) {
             AUnchecker.throwUnchecked (e);

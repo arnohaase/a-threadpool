@@ -1,22 +1,19 @@
 package benchmark;
 
-import com.ajjpj.concurrent.pool.a.AFutureOld;
-import com.ajjpj.concurrent.pool.a.APoolOld;
-
 import java.util.concurrent.*;
 
 
 /**
  * @author arno
  */
-public class ForkJoinForkingPool implements APoolOld {
+public class ForkJoinForkingPool implements ABenchmarkPool {
     private final ForkJoinPool ec;
 
     public ForkJoinForkingPool (ForkJoinPool ec) {
         this.ec = ec;
     }
 
-    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
+    @Override public <T> ABenchmarkFuture<T> submit (Callable<T> code) {
         if (Thread.currentThread () instanceof ForkJoinWorkerThread) {
             final ForkJoinTask<T> task = ForkJoinTask.adapt (code);
             task.fork ();

@@ -1,7 +1,5 @@
 package benchmark;
 
-import com.ajjpj.concurrent.pool.a.AFutureOld;
-import com.ajjpj.concurrent.pool.a.APoolOld;
 import jdk.j9new.*;
 
 import java.util.concurrent.Callable;
@@ -10,14 +8,14 @@ import java.util.concurrent.Callable;
 /**
  * @author arno
  */
-public class J9NewForkingPool implements APoolOld {
+public class J9NewForkingPool implements ABenchmarkPool {
     private final jdk.j9new.ForkJoinPool ec;
 
     public J9NewForkingPool (ForkJoinPool ec) {
         this.ec = ec;
     }
 
-    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
+    @Override public <T> ABenchmarkFuture<T> submit (Callable<T> code) {
         if (Thread.currentThread () instanceof ForkJoinWorkerThread) {
             final ForkJoinTask<T> task = ForkJoinTask.adapt (code);
             task.fork ();

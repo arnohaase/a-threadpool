@@ -1,15 +1,12 @@
 package benchmark;
 
-import com.ajjpj.concurrent.pool.a.AFutureOld;
-import com.ajjpj.concurrent.pool.a.APoolOld;
 import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
 import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
 
 
-public class AThreadPoolAdapter implements APoolOld {
+public class AThreadPoolAdapter implements ABenchmarkPool {
     final AThreadPoolWithAdmin inner;
 
     public AThreadPoolAdapter (AThreadPoolWithAdmin inner) {
@@ -24,7 +21,7 @@ public class AThreadPoolAdapter implements APoolOld {
         return inner.getStatistics ();
     }
 
-    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
+    @Override public <T> ABenchmarkFuture<T> submit (Callable<T> code) {
         final SettableFutureTask<T> f = new SettableFutureTask<> (code);
         final WrappingAFuture<T> result = new WrappingAFuture<> (f);
 

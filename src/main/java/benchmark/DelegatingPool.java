@@ -1,8 +1,5 @@
 package benchmark;
 
-import com.ajjpj.concurrent.pool.a.AFutureOld;
-import com.ajjpj.concurrent.pool.a.APoolOld;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
@@ -10,14 +7,14 @@ import java.util.concurrent.ExecutorService;
 /**
  * @author arno
  */
-public class DelegatingPool implements APoolOld {
+public class DelegatingPool implements ABenchmarkPool {
     private final ExecutorService ec;
 
     public DelegatingPool (ExecutorService ec) {
         this.ec = ec;
     }
 
-    @Override public <T> AFutureOld<T> submit (Callable<T> code) {
+    @Override public <T> ABenchmarkFuture<T> submit (Callable<T> code) {
         return new WrappingAFuture<> (ec.submit (code));
     }
 

@@ -1,9 +1,10 @@
-package com.ajjpj.concurrent.pool._01_scanning_flag;
+package com.ajjpj.concurrent.pool.impl;
 
+import com.ajjpj.afoundation.function.AFunction1NoThrow;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.AThreadPool___;
 import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
+import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
 import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
 import sun.misc.Unsafe;
 
@@ -11,16 +12,14 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
  * @author arno
  */
-public class AThreadPoolImpl implements AThreadPool___ {
+public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     public static final boolean SHOULD_GATHER_STATISTICS = true; // compile-time switch to enable / disable statistics gathering
 
 
@@ -38,7 +37,7 @@ public class AThreadPoolImpl implements AThreadPool___ {
 
     static final long MASK_IDLE_THREAD_SCANNING = Long.MIN_VALUE; // top-most bit reserved to signify 'scanning'
 
-    private final SharedQueue[] sharedQueues;
+    private final ASharedQueue[] sharedQueues;
     final LocalQueue[] localQueues;
 
     private final Map<Integer, Integer> producerToQueueAffinity = new ConcurrentHashMap<> ();
@@ -50,14 +49,10 @@ public class AThreadPoolImpl implements AThreadPool___ {
 
     volatile boolean shutdown;
 
-    public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize) {
-        this (numThreads, localQueueSize, globalQueueSize, Runtime.getRuntime ().availableProcessors ());
-    }
-
-    public AThreadPoolImpl (int numThreads, int localQueueSize, int globalQueueSize, int numSharedQueues) {
-        sharedQueues = new SharedQueue[numSharedQueues];
+    public AThreadPoolImpl (int numThreads, int localQueueSize, int numSharedQueues, AFunction1NoThrow<AThreadPoolImpl,ASharedQueue> sharedQueueFactory) {
+        sharedQueues = new ASharedQueue[numSharedQueues];
         for (int i=0; i<numSharedQueues; i++) {
-            sharedQueues[i] = new SharedQueue (this, globalQueueSize);
+            sharedQueues[i] = sharedQueueFactory.apply (this);
         }
 
         final Set<Integer> sharedQueuePrimes = primeFactors (numSharedQueues);
@@ -80,7 +75,7 @@ public class AThreadPoolImpl implements AThreadPool___ {
      *  so some or all of the data may be stale, and some numbers may be pretty outdated while others are very current, even for the same thread. For long-running pools however
      *  the data may be useful in analyzing behavior in general and performance anomalies in particular. Your mileage may vary, you have been warned! ;-)
      */
-    public AThreadPoolStatistics getStatistics() {
+    @Override public AThreadPoolStatistics getStatistics() {
         final AWorkerThreadStatistics[] workerStats = new AWorkerThreadStatistics[localQueues.length];
         for (int i=0; i<localQueues.length; i++) {
             //noinspection ConstantConditions
@@ -128,23 +123,19 @@ public class AThreadPoolImpl implements AThreadPool___ {
         return true;
     }
 
-    public <T> Future<T> submit (Callable<T> code) {
+    @Override public void submit (Runnable code) {
         if (shutdown) {
             throw new IllegalStateException ("pool is already shut down");
         }
 
-        final AThreadPoolTask<T> task = new AThreadPoolTask<> (code);
-
         WorkerThread wt;
         if (Thread.currentThread () instanceof WorkerThread && (wt = (WorkerThread) Thread.currentThread ()).pool == this) {
             if (SHOULD_GATHER_STATISTICS) wt.stat_numLocalSubmits += 1;
-            wt.localQueue.push (task);
+            wt.localQueue.push (code);
         }
         else {
-            sharedQueues[getSharedQueueForCurrentThread ()].push (task);
+            sharedQueues[getSharedQueueForCurrentThread ()].push (code);
         }
-
-        return task.future;
     }
 
     private int getSharedQueueForCurrentThread() {
@@ -164,17 +155,25 @@ public class AThreadPoolImpl implements AThreadPool___ {
         return result;
     }
 
-    public void shutdown() {
+    //TODO replace with getState(): running, shutting down, down
+    @Override public boolean isShutdown () {
+        return shutdown;
+    }
+
+    @Override public void shutdown() {
         if (shutdown) {
             return;
         }
+
+        //TODO flag for 'interrupt currently running tasks'
+        //TODO return List<AFuture> to track shutdown progress
 
         //TODO flag for 'finish submitted work'
         //TODO clean completion of submitted and cancelled tasks
 
         shutdown = true;
 
-        for (SharedQueue globalQueue: sharedQueues) {
+        for (ASharedQueue globalQueue: sharedQueues) {
             //noinspection StatementWithEmptyBody
             while (globalQueue.popFifo () != null) {
                 // do nothing, just drain the queue
@@ -189,14 +188,14 @@ public class AThreadPoolImpl implements AThreadPool___ {
         }
 
         for (LocalQueue localQueue : localQueues) {
-            sharedQueues[0].push (new AThreadPoolTask<> (() -> {
+            sharedQueues[0].push (() -> {
                 throw new PoolShutdown ();
-            }));
+            });
             UNSAFE.unpark (localQueue.thread);
         }
     }
 
-    public void awaitTermination() throws InterruptedException {
+    public void awaitTermination() throws InterruptedException { //TODO remove this
         for (LocalQueue queue: localQueues) {
             //noinspection ConstantConditions
             queue.thread.join ();
@@ -227,10 +226,11 @@ public class AThreadPoolImpl implements AThreadPool___ {
         for (LocalQueue localQueue : localQueues) {
             if ((idleBitMask & 1L) != 0) {
                 //noinspection ConstantConditions
-                if (markWorkerAsBusyAndScanning (localQueue.thread.idleThreadMask)) {
+                if (markWorkerAsBusyAndScanning (localQueue.thread)) {
                     // wake up the worker only if no-one else woke up the thread in the meantime
                     UNSAFE.unpark (localQueue.thread);
                 }
+                // even if someone else woke up the thread in the meantime, at least one thread is scanning --> we can safely abort here
                 break;
             }
             idleBitMask = idleBitMask >> 1;
@@ -246,7 +246,7 @@ public class AThreadPoolImpl implements AThreadPool___ {
             // A 'scanning' thread (i.e. a thread that was triggered by 'onAvailableTask') going to sleep means that scanning is finished, so we
             //  can clear the flag. A thread going to sleep after doing some work also triggers the flag to be cleared, but that is safe and
             //  incurs little additional overhead - clearing the flag in this place is basically for free.
-            after = after & ~MASK_IDLE_THREAD_SCANNING;
+//            after = after & ~MASK_IDLE_THREAD_SCANNING;
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
     }
@@ -267,10 +267,12 @@ public class AThreadPoolImpl implements AThreadPool___ {
         return true;
     }
 
-    boolean markWorkerAsBusyAndScanning (long mask) {
+    boolean markWorkerAsBusyAndScanning (WorkerThread worker) {
+        final long mask = worker.idleThreadMask;
+//        Log.log (" marking busy and scanning: " + (int)(Math.log (mask) / Math.log (2)));
         long prev, after;
         do {
-            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS); //TODO is a regular read more efficient here?
             if ((prev & mask) == 0L) {
                 // someone else woke up the thread concurrently --> it is scanning now, and there is no need to wake it up or change the 'idle' mask
                 return false;
@@ -281,6 +283,18 @@ public class AThreadPoolImpl implements AThreadPool___ {
         }
         while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
         return true;
+    }
+
+    void unmarkScanning() {
+        long prev, after;
+        do {
+            prev = UNSAFE.getLongVolatile (this, OFFS_IDLE_THREADS);
+            after = prev & ~MASK_IDLE_THREAD_SCANNING;
+            if (prev == after) {
+                return;
+            }
+        }
+        while (! UNSAFE.compareAndSwapLong (this, OFFS_IDLE_THREADS, prev, after));
     }
 
     //------------------ Unsafe stuff

@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._05_only_scanning_thread_clears_flag;
+package com.ajjpj.concurrent.pool.impl;
 
 /**
  * This Throwable is thrown by a special 'shutdown' task to signal worker threads to

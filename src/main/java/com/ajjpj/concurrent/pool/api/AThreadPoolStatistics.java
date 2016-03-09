@@ -7,6 +7,8 @@ import java.util.Arrays;
  * @author arno
  */
 public class AThreadPoolStatistics {
+    public static final AThreadPoolStatistics NONE = new AThreadPoolStatistics (new AWorkerThreadStatistics[0], new ASharedQueueStatistics[0]);
+
     public final AWorkerThreadStatistics[] workerThreadStatistics;
     public final ASharedQueueStatistics[] sharedQueueStatisticses;
 

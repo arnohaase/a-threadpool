@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool.a;
+package benchmark;
 
 import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
 import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 /**
  * @author arno
  */
-public interface APoolOld {
+public interface ABenchmarkPool {
     default void submit (Runnable code) {
         submit (() -> {
             code.run ();
@@ -22,6 +22,6 @@ public interface APoolOld {
         return new AThreadPoolStatistics (new AWorkerThreadStatistics[0], new ASharedQueueStatistics[0]);
     }
 
-    <T> AFutureOld<T> submit (Callable<T> code);
+    <T> ABenchmarkFuture<T> submit (Callable<T> code);
     void shutdown () throws InterruptedException;
 }

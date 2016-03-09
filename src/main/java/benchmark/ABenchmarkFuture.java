@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool.a;
+package benchmark;
 
 import java.util.concurrent.ExecutionException;
 
@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author arno
  */
-public interface AFutureOld<T> {
+public interface ABenchmarkFuture<T> {
     boolean isDone ();
     T get () throws InterruptedException, ExecutionException;
 }

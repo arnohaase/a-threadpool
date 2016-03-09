@@ -12,6 +12,7 @@ import java.util.List;
 //TODO this AFuture's thread pool as default thread pool
 
 public interface AFuture<T> {
+    //TODO ready, await --> 'value()' instead of 'await()'
 //    void ready (long amount, TimeUnit timeUnit) throws TimeoutException;
 //    T await (long amount, TimeUnit timeUnit) throws TimeoutException; //TODO subclass without stacktrace
 

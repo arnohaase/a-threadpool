@@ -1,4 +1,4 @@
-package com.ajjpj.concurrent.pool._02_scanningcounter;
+package com.ajjpj.concurrent.pool.impl;
 
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  */
 class WorkerThread extends Thread {
     final LocalQueue localQueue;
-    final SharedQueue[] globalQueues;
+    final ASharedQueue[] sharedQueues;
     final LocalQueue[] allLocalQueues;
     final AThreadPoolImpl pool;
     final long idleThreadMask;
@@ -36,15 +36,21 @@ class WorkerThread extends Thread {
     /**
      * This is the index of the shared queue that this thread currently feeds from.
      */
-    private int currentSharedQueue = 0; //TODO spread initial value across the range?
+    private int currentSharedQueue = 0;
 
-    WorkerThread (LocalQueue localQueue, SharedQueue[] globalQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
+    WorkerThread (LocalQueue localQueue, ASharedQueue[] sharedQueues, AThreadPoolImpl pool, int threadIdx, int queueTraversalIncrement) {
+        super("TODO-Thread-" + threadIdx); //TODO thread names
+        //TODO error handling
+        //TODO on finished listener (?)
+
         this.localQueue = localQueue;
-        this.globalQueues = globalQueues;
+        this.sharedQueues = sharedQueues;
         this.pool = pool;
         this.allLocalQueues = pool.localQueues;
-        idleThreadMask = 1L << (AThreadPoolImpl.NUM_SCANNING_BITS + threadIdx);
+        idleThreadMask = 1L << threadIdx;
         this.queueTraversalIncrement = queueTraversalIncrement;
+
+        currentSharedQueue = threadIdx % sharedQueues.length;
     }
 
     /**
@@ -62,40 +68,36 @@ class WorkerThread extends Thread {
         topLevelLoop:
         while (true) {
             try {
-                AThreadPoolTask task;
+                Runnable task;
 
                 //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
                 if ((task = tryGetWork ()) != null) {
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                    task.execute ();
+                    task.run ();
                 }
                 else {
                     // spin a little before parking
-                    pool.registerScanningThread();
-                    for (int i=0; i<5; i++) { //TODO make this configurable, optimize, benchmark, ...
-                        if ((task = tryGetForeignWork ()) != null) {
-                            if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                            pool.unregisterScanningThread();
-                            pool.onAvailableTask(); // wake up some other thread (TODO is this necessary?)
-                            task.execute ();
-                            continue topLevelLoop;
-                        }
-                    }
+//                    for (int i=0; i<00; i++) { //TODO make this configurable, optimize, benchmark, ...
+//                        if ((task = tryGetForeignWork ()) != null) {
+//                            if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
+//                            task.run ();
+//                            continue topLevelLoop;
+//                        }
+//                    }
 
                     pool.markWorkerAsIdle (idleThreadMask);
 
                     // re-check availability of work after marking the thread as idle --> avoid races
                     if ((task = tryGetForeignWork ()) != null) {
-                        if (pool.markWorkerAsBusy (idleThreadMask)) {
+                        if (! pool.markWorkerAsBusy (idleThreadMask)) {
                             // thread was 'woken up' because of available work --> cause some other thread to be notified instead
+                            pool.unmarkScanning (); //TODO merge with 'markWorkerAsBusy'
                             pool.onAvailableTask ();
                         }
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                        task.execute ();
+                        task.run ();
                         continue;
                     }
-
-//                    System.err.println ("parking " + getName ());
 
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numParks += 1;
                     if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) {
@@ -106,32 +108,40 @@ class WorkerThread extends Thread {
                             tasksAtPark = stat_numTasksExecuted;
                         }
                     }
+
                     UNSAFE.park (false, 0L);
 
-//                    System.err.println ("unparked " + getName ());
+                    // This flag is usually set before the call unpark(), but some races cause a thread to be unparked redundantly, causing the flag to be out of sync.
+                    // Setting the flag before unpark() is piggybacked on another CAS operation and therefore basically for free, so we leave it there, but we need it
+                    //  here as well.
+                    pool.markWorkerAsBusy (idleThreadMask);
 
                     if ((task = tryGetForeignWork ()) != null) {
+                        pool.unmarkScanning();
                         pool.wakeUpWorker ();
                         if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numTasksExecuted += 1;
-                        task.execute ();
+                        task.run ();
+                    }
+                    else {
+                        pool.unmarkScanning();
                     }
                 }
-            }
-            catch (Exception e) {
-                if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numExceptions += 1;
-                //TODO error handling
-                e.printStackTrace ();
             }
             catch (PoolShutdown e) {
                 return;
             }
+            catch (Throwable e) {
+                if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numExceptions += 1;
+                //TODO error handling
+                e.printStackTrace ();
+            }
         }
     }
 
-    private AThreadPoolTask tryGetWork() {
-        AThreadPoolTask task;
+    private Runnable tryGetWork() {
+        Runnable task;
 
-        //TODO intermittently read from global localQueue(s) and FIFO end of local localQueue
+        //TODO intermittently read from global SharedQueue(s) and FIFO end of local localQueue
         if ((task = localQueue.popLifo ()) != null) {
             return task;
         }
@@ -144,8 +154,8 @@ class WorkerThread extends Thread {
         return null;
     }
 
-    private AThreadPoolTask tryGetForeignWork () {
-        AThreadPoolTask task;
+    private Runnable tryGetForeignWork () {
+        Runnable task;
 
         if ((task = tryGetSharedWork ()) != null) {
             return task;
@@ -156,8 +166,8 @@ class WorkerThread extends Thread {
         return null;
     }
 
-    private AThreadPoolTask tryGetSharedWork() {
-        AThreadPoolTask task;
+    private Runnable tryGetSharedWork() {
+        Runnable task;
 
         //TODO optimization: different starting points per thread
         //TODO go forward once in a while to avoid starvation
@@ -165,26 +175,21 @@ class WorkerThread extends Thread {
         final int prevQueue = currentSharedQueue;
 
         //noinspection ForLoopReplaceableByForEach
-        for (int i=0; i<globalQueues.length; i++) {
-            if ((task = globalQueues[currentSharedQueue].popFifo ()) != null) {
+        for (int i=0; i < sharedQueues.length; i++) {
+            if ((task = sharedQueues[currentSharedQueue].popFifo ()) != null) {
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS) stat_numSharedTasksExecuted += 1;
                 //noinspection PointlessBooleanExpression,ConstantConditions
                 if (AThreadPoolImpl.SHOULD_GATHER_STATISTICS && prevQueue != currentSharedQueue) stat_numSharedQueueSwitches += 1;
-//                if (prevQueue != currentSharedQueue) System.err.println ("fetched work from (new) shared queue: " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
                 return task;
             }
-//            int oldQueue = currentSharedQueue;
-            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % globalQueues.length;
-//            System.err.println ("Switching Global Queue: from: "+oldQueue+" to: "+currentSharedQueue+" Worker "+Thread.currentThread ().getName ());
+            currentSharedQueue = (currentSharedQueue + queueTraversalIncrement) % sharedQueues.length; //TODO bit mask instead of division?
         }
-
-//        if (prevQueue != currentSharedQueue) System.err.println ("ASSERT FAILED: no work found but changed shared queue to " + currentSharedQueue + ", was " + prevQueue + " @" + Thread.currentThread ().getName ());
 
         return null;
     }
 
-    private AThreadPoolTask tryStealWork () {
-        AThreadPoolTask task;
+    private Runnable tryStealWork () {
+        Runnable task;
         for (LocalQueue otherQueue: allLocalQueues) {
             //TODO optimization: different starting points per thread
             if (otherQueue == localQueue) {
@@ -213,5 +218,4 @@ class WorkerThread extends Thread {
             throw new RuntimeException(); // for the compiler
         }
     }
-
 }
