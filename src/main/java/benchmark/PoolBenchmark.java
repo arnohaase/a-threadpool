@@ -24,8 +24,8 @@ import java.util.concurrent.*;
 @State (Scope.Benchmark)
 //@Timeout (time=20, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
-    public static final int TIMEOUT_SECONDS = 30;
-    public static final int POOL_SIZE = 8;
+    public static final int TIMEOUT_SECONDS = 60;
+    public static final int POOL_SIZE = 16;
 
     ABenchmarkPool pool;
 
