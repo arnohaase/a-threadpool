@@ -8,11 +8,15 @@ import com.ajjpj.afoundation.function.APartialFunction;
 import com.ajjpj.afoundation.function.APredicate;
 import com.ajjpj.afoundation.function.AStatement1;
 import com.ajjpj.afoundation.util.AUnchecker;
+import com.ajjpj.concurrent.pool.api.exc.TimeoutExceptionWithoutStackTrace;
 import com.ajjpj.concurrent.pool.api.other.APartialStatement;
 import com.ajjpj.concurrent.pool.api.other.ATry;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
 
 class AFutureImpl<T> implements ASettableFuture<T> {
@@ -49,6 +53,19 @@ class AFutureImpl<T> implements ASettableFuture<T> {
 
     @Override public AOption<ATry<T>> optValue () {
         return AOption.fromNullable (state.get ().value);
+    }
+
+    @Override public void await (long atMost, TimeUnit timeUnit) throws TimeoutException, InterruptedException {
+        final CompletionLatch l = new CompletionLatch ();
+        onComplete (AThreadPool.SYNC_THREADPOOL, x -> l.releaseShared (1));
+        if (! l.tryAcquireNanos (1, timeUnit.toNanos (atMost))) {
+            throw new TimeoutExceptionWithoutStackTrace ();
+        }
+    }
+
+    @Override public T value (long atMost, TimeUnit timeUnit) throws TimeoutException, InterruptedException {
+        await (atMost, timeUnit);
+        return optValue ().get ().getValue ();
     }
 
     @Override public AFuture<Throwable> inverse() {
@@ -220,6 +237,17 @@ class AFutureImpl<T> implements ASettableFuture<T> {
                     "value=" + value +
                     ", listeners=" + listeners +
                     '}';
+        }
+    }
+
+    static class CompletionLatch extends AbstractQueuedSynchronizer {
+        @Override protected int tryAcquireShared (int ignored) {
+            return getState () == 0 ? 1 : -1;
+        }
+
+        @Override protected boolean tryReleaseShared (int ignored) {
+            setState (1);
+            return true;
         }
     }
 }

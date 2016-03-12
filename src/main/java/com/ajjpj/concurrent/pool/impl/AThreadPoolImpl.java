@@ -168,7 +168,7 @@ public class AThreadPoolImpl implements AThreadPoolWithAdmin {
     }
 
     @Override public State getState () {
-        if (! shutdown.get ()) return State.Rrunning;
+        if (! shutdown.get ()) return State.Running;
 
         for (LocalQueue q: this.localQueues) {
             if (q.thread.isAlive ()) return State.ShuttingDown;

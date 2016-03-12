@@ -1,11 +1,8 @@
 package benchmark;
 
+import com.ajjpj.concurrent.pool.api.*;
 import com.ajjpj.concurrent.pool.impl.AThreadPoolBuilder;
 import com.ajjpj.concurrent.pool.impl.SharedQueueStrategy;
-import com.ajjpj.concurrent.pool.api.ASharedQueueStatistics;
-import com.ajjpj.concurrent.pool.api.AThreadPool;
-import com.ajjpj.concurrent.pool.api.AThreadPoolStatistics;
-import com.ajjpj.concurrent.pool.api.AWorkerThreadStatistics;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -25,15 +22,15 @@ import java.util.concurrent.*;
 //@Timeout (time=20, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
     public static final int TIMEOUT_SECONDS = 60;
-    public static final int POOL_SIZE = 16;
+    public static final int POOL_SIZE = 8;
 
     ABenchmarkPool pool;
 
     @Param ({
-            "a-sync-block",
+//            "a-sync-block",
             "a-sync-nocheck",
-            "a-lock-block",
-            "a-nonblocking",
+//            "a-lock-block",
+//            "a-nonblocking",
 
 //            "a-strict-own",
 //            "no-conc",
@@ -61,7 +58,7 @@ public class PoolBenchmark {
             case "a-nonblocking":  pool = new AThreadPoolAdapter (new AThreadPoolBuilder ().withNumThreads (POOL_SIZE).withSharedQueueStrategy (SharedQueueStrategy.NonBlockingPush).build ()); break;
 
             //TODO no work stealing
-            case "no-conc":        pool = new AThreadPoolAdapter (AThreadPool.SYNC_THREADPOOL); break;
+            case "no-conc":        pool = new AThreadPoolAdapter (AThreadPoolWithAdmin.withDummyAdminApi (AThreadPool.SYNC_THREADPOOL)); break;
 
             case "Executors.newFixedThreadPool": pool = new DelegatingPool (Executors.newFixedThreadPool (POOL_SIZE)); break;
 

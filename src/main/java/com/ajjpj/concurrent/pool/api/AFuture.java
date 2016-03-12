@@ -7,14 +7,15 @@ import com.ajjpj.concurrent.pool.api.other.APartialStatement;
 import com.ajjpj.concurrent.pool.api.other.ATry;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 //TODO this AFuture's thread pool as default thread pool
 
 public interface AFuture<T> {
-    //TODO ready, await --> 'value()' instead of 'await()'
-//    void ready (long amount, TimeUnit timeUnit) throws TimeoutException;
-//    T await (long amount, TimeUnit timeUnit) throws TimeoutException; //TODO subclass without stacktrace
+    void await (long atMost, TimeUnit timeUnit) throws TimeoutException, InterruptedException;
+    T value (long atMost, TimeUnit timeUnit) throws TimeoutException, InterruptedException;
 
     //TODO onSuccess, onFailure with APartialStatement
     default AFuture<T> onSuccess  (AThreadPool tp, AStatement1<T, ?> handler) {
