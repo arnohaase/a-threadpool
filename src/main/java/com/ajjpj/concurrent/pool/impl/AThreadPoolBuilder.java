@@ -7,7 +7,7 @@ import com.ajjpj.afoundation.function.AStatement1NoThrow;
 import com.ajjpj.concurrent.pool.api.AThreadPoolWithAdmin;
 
 
-//TODO no-steal implementation
+//TODO no-steal implementation: WakeupForLocalTasks, StealOnIdle, NoStealing
 //TODO separate implementation optimized for blocking
 //TODO configurable starvation avoidance: steal, shared
 

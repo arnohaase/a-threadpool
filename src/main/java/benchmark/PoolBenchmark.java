@@ -12,38 +12,42 @@ import java.util.concurrent.*;
 /**
  * @author arno
  */
-//@Fork (2)
+@Fork (2)
 //@Fork (0)
-@Fork (1)
+//@Fork (1)
 @Threads (1)
-@Warmup (iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+@Warmup (iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 5, time = 20, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
 //@Timeout (time=20, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
-    public static final int TIMEOUT_SECONDS = 60;
-    public static final int POOL_SIZE = 8;
+    public static final int TIMEOUT_SECONDS = 200;
+    public static final int POOL_SIZE = Runtime.getRuntime ().availableProcessors ();
+
+    static {
+        System.out.println ("Running with " + POOL_SIZE + " threads on " + Runtime.getRuntime ().availableProcessors () + " processors");
+    }
 
     ABenchmarkPool pool;
 
     @Param ({
-//            "a-sync-block",
+            "a-sync-block",
             "a-sync-nocheck",
-//            "a-lock-block",
-//            "a-nonblocking",
+            "a-lock-block",
+            "a-nonblocking",
 
 //            "a-strict-own",
-//            "no-conc",
+            "no-conc",
 
 //            "Executors.newFixedThreadPool",
 
 //            "ForkJoinSharedQueues",
-//            "ForkJoinLifo",
+            "ForkJoinLifo",
 //            "ForkJoinFifo",
 
-//            "J9FjSharedQueues",
+            "J9FjSharedQueues",
             "J9FjLifo",
-//            "J9FjFifo"
+            "J9FjFifo"
     })
     public String strategy;
 
