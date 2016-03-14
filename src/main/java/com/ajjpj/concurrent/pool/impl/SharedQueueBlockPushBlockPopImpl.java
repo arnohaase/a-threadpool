@@ -96,7 +96,7 @@ class SharedQueueBlockPushBlockPopImpl implements ASharedQueue {
 
         tasks[arrIdx] = null;
 
-        // volatile put for atomicity and to ensure ordering wrt. nulling the task
+        // volatile put for atomicity and to ensure ordering wrt. nulling the task --> read operations do not hold the same monitor
         UNSAFE.putLongVolatile (this, OFFS_BASE, _base+1);
 
         return result;

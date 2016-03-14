@@ -12,12 +12,12 @@ import java.util.concurrent.*;
 /**
  * @author arno
  */
-@Fork (2)
+//@Fork (2)
 //@Fork (0)
-//@Fork (1)
+@Fork (1)
 @Threads (1)
-@Warmup (iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
-@Measurement (iterations = 5, time = 20, timeUnit = TimeUnit.SECONDS)
+@Warmup (iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement (iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
 @State (Scope.Benchmark)
 //@Timeout (time=20, timeUnit=TimeUnit.SECONDS)
 public class PoolBenchmark {
@@ -41,9 +41,9 @@ public class PoolBenchmark {
 
 //            "Executors.newFixedThreadPool",
 
-//            "ForkJoinSharedQueues",
+            "ForkJoinSharedQueues",
             "ForkJoinLifo",
-//            "ForkJoinFifo",
+            "ForkJoinFifo",
 
             "J9FjSharedQueues",
             "J9FjLifo",
@@ -122,16 +122,26 @@ public class PoolBenchmark {
     }
 
     @Benchmark
-    public void ___testSimpleScheduling01() throws InterruptedException {
-        doSimpleScheduling ();
+    public void testSimpleScheduling01() throws InterruptedException {
+        doSimpleScheduling (false);
     }
 
-    private void doSimpleScheduling() throws InterruptedException {
+    @Benchmark
+    public void ___testSimpleScheduling01WithWork() throws InterruptedException {
+        doSimpleScheduling (true);
+    }
+
+    private void doSimpleScheduling(boolean withWork) throws InterruptedException {
         final int num = 1_000;
         final CountDownLatch latch = new CountDownLatch (num);
 
         for (int i=0; i<num; i++) {
-            pool.submit (latch::countDown);
+            pool.submit (() -> {
+                if (withWork) {
+                    Blackhole.consumeCPU (100);
+                }
+                latch.countDown();
+            });
         }
         latch.await ();
     }
@@ -139,25 +149,49 @@ public class PoolBenchmark {
     @Benchmark
     @Threads (7)
     public void testSimpleScheduling07() throws InterruptedException {
-        doSimpleScheduling ();
+        doSimpleScheduling (false);
+    }
+
+    @Benchmark
+    @Threads (7)
+    public void testSimpleScheduling07WithWork() throws InterruptedException {
+        doSimpleScheduling (true);
     }
 
     @Benchmark
     @Threads (8)
     public void testSimpleScheduling08() throws InterruptedException {
-        doSimpleScheduling ();
+        doSimpleScheduling (false);
+    }
+
+    @Benchmark
+    @Threads (8)
+    public void testSimpleScheduling08WithWork() throws InterruptedException {
+        doSimpleScheduling (true);
     }
 
     @Benchmark
     @Threads (15)
     public void testSimpleScheduling15() throws InterruptedException {
-        doSimpleScheduling ();
+        doSimpleScheduling (false);
+    }
+
+    @Benchmark
+    @Threads (15)
+    public void testSimpleScheduling15WithWork() throws InterruptedException {
+        doSimpleScheduling (true);
     }
 
     @Benchmark
     @Threads (16)
     public void testSimpleScheduling16() throws InterruptedException {
-        doSimpleScheduling ();
+        doSimpleScheduling (false);
+    }
+
+    @Benchmark
+    @Threads (16)
+    public void testSimpleScheduling16WithWork() throws InterruptedException {
+        doSimpleScheduling (true);
     }
 
     @Benchmark
